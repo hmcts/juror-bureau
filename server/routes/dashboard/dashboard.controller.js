@@ -213,42 +213,42 @@
               manualPercent: getPercentageValue(onlineResponseCount, manualResponseCount),
             },
             timeReceived: {
-              within7DaysDigital: response.mandatoryKpis.onlineResponsesOverTime.within7days,
-              within7DaysPaper: response.mandatoryKpis.paperResponsesOverTime.within7days,
+              within7DaysDigital: response.mandatoryKpis.onlineResponsesOverTime.within7Days,
+              within7DaysPaper: response.mandatoryKpis.paperResponsesOverTime.within7Days,
               within7DaysTotalFormatted: '0',
-              within7DaysPercent: Math.round(response.mandatoryKpis.percentResponsesWithin7days),
+              within7DaysPercent: Math.round(response.mandatoryKpis.percentResponsesWithin7Days),
 
-              within14DaysDigital: response.mandatoryKpis.onlineResponsesOverTime.within14days,
-              within14DaysPaper: response.mandatoryKpis.paperResponsesOverTime.within14days,
+              within14DaysDigital: response.mandatoryKpis.onlineResponsesOverTime.within14Days,
+              within14DaysPaper: response.mandatoryKpis.paperResponsesOverTime.within14Days,
               within14DaysTotalFormatted: '0',
-              within14DaysPercent: Math.round(response.mandatoryKpis.percentResponsesWithin14days),
+              within14DaysPercent: Math.round(response.mandatoryKpis.percentResponsesWithin14Days),
 
-              within21DaysDigital: response.mandatoryKpis.onlineResponsesOverTime.within21days,
-              within21DaysPaper: response.mandatoryKpis.paperResponsesOverTime.within21days,
+              within21DaysDigital: response.mandatoryKpis.onlineResponsesOverTime.within21Days,
+              within21DaysPaper: response.mandatoryKpis.paperResponsesOverTime.within21Days,
               within21DaysTotalFormatted: '0',
-              within21DaysPercent: Math.round(response.mandatoryKpis.percentResponsesWithin21days),
+              within21DaysPercent: Math.round(response.mandatoryKpis.percentResponsesWithin21Days),
 
-              over21DaysDigital: response.mandatoryKpis.onlineResponsesOverTime.over21days,
-              over21DaysPaper: response.mandatoryKpis.paperResponsesOverTime.over21days,
+              over21DaysDigital: response.mandatoryKpis.onlineResponsesOverTime.over21Days,
+              over21DaysPaper: response.mandatoryKpis.paperResponsesOverTime.over21Days,
               over21DaysTotalFormatted: '0',
-              over21DaysPercent: Math.round(response.mandatoryKpis.percentResponsesOver21days),
+              over21DaysPercent: Math.round(response.mandatoryKpis.percentResponsesOver21Days),
 
               labels: [
                 'Within 7 days: ' +
-                Math.round(response.mandatoryKpis.percentResponsesWithin7days) +
-                '% (' + response.mandatoryKpis.allResponsesOverTime.within7days + ')',
+                Math.round(response.mandatoryKpis.percentResponsesWithin7Days) +
+                '% (' + response.mandatoryKpis.allResponsesOverTime.within7Days + ')',
 
                 'Within 14 days: ' +
-                  Math.round(response.mandatoryKpis.percentResponsesWithin14days) +
-                  '% (' + response.mandatoryKpis.allResponsesOverTime.within14days + ')',
+                  Math.round(response.mandatoryKpis.percentResponsesWithin14Days) +
+                  '% (' + response.mandatoryKpis.allResponsesOverTime.within14Days + ')',
 
                 'Within 21 days: ' +
-                Math.round(response.mandatoryKpis.percentResponsesWithin21days) +
-                '% (' + response.mandatoryKpis.allResponsesOverTime.within21days + ')',
+                Math.round(response.mandatoryKpis.percentResponsesWithin21Days) +
+                '% (' + response.mandatoryKpis.allResponsesOverTime.within21Days + ')',
 
                 'Over 21 days: ' +
-                Math.round(response.mandatoryKpis.percentResponsesOver21days) +
-                '% (' + response.mandatoryKpis.allResponsesOverTime.over21days + ')',
+                Math.round(response.mandatoryKpis.percentResponsesOver21Days) +
+                '% (' + response.mandatoryKpis.allResponsesOverTime.over21Days + ')',
               ],
             },
           };

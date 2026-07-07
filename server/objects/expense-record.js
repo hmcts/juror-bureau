@@ -3,7 +3,9 @@
 
   const urljoin = require('url-join');
   const { DAO } = require('./dataAccessObject');
-  const { extractDataAndHeadersFromResponse } = require('../lib/mod-utils');
+  const { extractDataAndHeadersFromResponse, mapSnakeToCamel, extractDataAndHeadersFromResponse2, mapCamelToSnake } = require('../lib/mod-utils');
+  const { transform } = require('lodash');
+  const { basicDataTransform2 } = require('../lib/utils');
 
   const endpoint = '/moj/expenses/{locCode}';
 
@@ -18,7 +20,7 @@
       return { 
         uri: urljoin(this.resource.replace('{locCode}', locCode), jurorNumber, 'DRAFT/view'),
         headers,
-        transform: extractDataAndHeadersFromResponse(),
+        transform: extractDataAndHeadersFromResponse2(),
       };
     }
   })
@@ -27,9 +29,10 @@
     post: function(locCode, jurorNumber, attendanceDates) {
       return { 
         uri: urljoin(this.resource.replace('{locCode}', locCode), jurorNumber, 'submit-for-approval'),
-        body: {
+        body: mapCamelToSnake({
           dates: attendanceDates,
-        },
+        }),
+        transform: basicDataTransform2,
       };
     },
   });
@@ -38,8 +41,8 @@
     post: function(locCode, jurorNumber, body) {
       return { 
         uri: urljoin(this.resource.replace('{locCode}', locCode), jurorNumber, 'entered'),
-        body,
-        transform: (data) => { delete data._headers; return Object.values(data); }
+        body: mapCamelToSnake(body),
+        transform: (data) => { delete data._headers; return Object.values(mapSnakeToCamel(data)); }
       }
     }
   });
@@ -48,7 +51,8 @@
     put: function(locCode, jurorNumber, expenseType, body) {
       return { 
         uri: urljoin(this.resource.replace('{locCode}', locCode), jurorNumber, expenseType, 'edit'),
-        body,
+        body: mapCamelToSnake(body),
+        transform: basicDataTransform2,
       };
     },
   });
@@ -57,6 +61,7 @@
     get: function(locCode, expenseType, jurorNumber) {
       return { 
         uri: urljoin(this.resource.replace('{locCode}', locCode), jurorNumber, expenseType, 'view/simplified'),
+        transform: mapSnakeToCamel,
       }
     }
   });
@@ -65,7 +70,8 @@
     post: function(locCode, jurorNumber, body) {
       return { 
         uri: urljoin(this.resource.replace('{locCode}', locCode), jurorNumber, 'calculate/totals'),
-        body,
+        body: mapCamelToSnake(body),
+        transform: basicDataTransform2,
       };
     }
   });
@@ -74,7 +80,7 @@
     patch: function(locCode, jurorNumber, body) {
       return { 
         uri: urljoin(this.resource.replace('{locCode}', locCode), jurorNumber, 'smartcard'),
-        body,
+        body: mapCamelToSnake(body),
       };
     }
   })
@@ -89,7 +95,7 @@
         const dao = new DAO(urljoin(endpoint.replace('{locCode}', locCode), jurorNumber, 'counts'));
 
         try {
-          const response = await dao.get(req);
+          const response = mapSnakeToCamel(await dao.get(req));
           req.expensesCount = response;
           return next();
         } catch (err) {
@@ -112,7 +118,8 @@
     post: function(locCode, jurorNumber, body) {
       return { 
         uri: urljoin(this.resource.replace('{locCode}', locCode), jurorNumber, 'view'),
-        body,
+        body: mapCamelToSnake(body),
+        transform: basicDataTransform2,
       };
     }
   });
@@ -121,7 +128,8 @@
     post: function(locCode, jurorNumber, type, body) {
       return { 
         uri: urljoin(this.resource.replace('{locCode}', locCode), jurorNumber, 'edit', type),
-        body,
+        body: mapCamelToSnake(body),
+        transform: basicDataTransform2,
       }
     }
   });

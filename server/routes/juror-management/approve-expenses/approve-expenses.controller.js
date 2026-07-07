@@ -54,8 +54,6 @@
           auth: req.session.authentication,
         });
 
-        data = replaceAllObjKeys(_.cloneDeep(data), _.camelCase);
-
         const jurors = data.pendingApproval;
 
         const tabHeaders = {
@@ -91,8 +89,11 @@
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 
-        if (err.statusCode === 422 && err.error.code === 'INVALID_JUROR_ATTENDANCE_RECORD') {
-          const tmpErrors = makeManualError('jurors', err.error.message);
+        if (err.statusCode === 422 && err.error?.code === 'INVALID_JUROR_ATTENDANCE_RECORD') {
+          const tmpErrors = makeManualError(
+            'jurors',
+            err.error?.message || 'Invalid juror attendance record'
+          );
 
           return res.render('juror-management/approve-expenses/approve-expenses.njk', {
             processDateFilterUrl,
@@ -259,15 +260,13 @@
         poolNumber: j.poolNumber,
         approvalType: j.expenseType,
         isCashPayment: currentTab === 'CASH',
-        revisions: j.revisions,
+        revisions: j.dateToRevisions,
       });
     });
 
-    replaceAllObjKeys(payload, _.snakeCase);
-
     try {
       const response = await approveExpensesDAO.post(req, locCode, currentTab, payload);
-      delete response._headers;
+      delete response.headers;
 
       const financialNumbers = Object.values(response).map((financialNumber) => financialNumber).join(',');
 
@@ -312,12 +311,12 @@
           'DATA_OUT_OF_DATE': 'Some of the expenses were updated. Review your selection and try again.',
           'CAN_NOT_APPROVE_OWN_EDIT': 'You cannot approve your own submitted expenses.',
           'CAN_NOT_APPROVE_MORE_THAN_LIMIT': 'You cannot approve more than your allowed limit.',
-          'INVALID_JUROR_ATTENDANCE_RECORD': err.error.message,
+          'INVALID_JUROR_ATTENDANCE_RECORD': err.error?.message,
         };
 
         req.session.errors = {
           selectedJurors: [{
-            details: errorMessages[err.error.code] || 'Unable to approve selected expenses',
+            details: errorMessages[err.error?.code] || 'Unable to approve selected expenses',
           }],
         };
 

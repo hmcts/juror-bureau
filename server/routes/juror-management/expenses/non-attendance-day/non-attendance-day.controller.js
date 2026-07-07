@@ -214,7 +214,8 @@
           'INVALID_JUROR_STATUS': `You cannot mark this date as a non-attendance day because ${bulkRequest ? 'one or more jurors are' : 'the juror is'} in summoned status.`,
         };
 
-        const errorMessage = errorMessages[err.error.code] || err.error.message || 'Could not add non-attendance date';
+        const errorMessage =
+          errorMessages[err.error?.code] || err.error?.message || 'Could not add non-attendance date';
         req.session.errors = makeManualError('nonAttendanceDay', errorMessage);
         req.session.formFields = req.body;
 

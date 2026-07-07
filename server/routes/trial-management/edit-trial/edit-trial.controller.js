@@ -233,7 +233,7 @@
       });
 
       if (err.statusCode === 422) {
-        req.session.errors = makeManualError('trial', err.error.message);
+        req.session.errors = makeManualError('trial', err.error?.message || 'Unable to edit trial');
         req.session.formFields = req.body;
         
         return res.redirect(app.namedRoutes.build('trial-management.edit-trial.get', { trialNumber, locationCode }));

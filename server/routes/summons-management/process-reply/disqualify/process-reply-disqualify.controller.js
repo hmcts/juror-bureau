@@ -96,6 +96,19 @@
         data: req.body,
       });
 
+      if (typeof req.session.disqualificationReasons === 'undefined') {
+        try {
+        const disqualifyReasons = (await getDisqualificationReasons.get(req)).disqualifyReasons;
+        req.session.disqualificationReasons = disqualifyReasons;
+        } catch (err) {
+          app.logger.crit('Failed to retrieve disqualification reasons after juror disqualification', {
+            auth: req.session.authentication,
+            jurorNumber: req.params.id,
+            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+          });
+        }
+      }
+
       let actionProcessed = (disqualifyCode) => req.session.disqualificationReasons.filter(
         (i) => i.code === disqualifyCode)[0].description
 

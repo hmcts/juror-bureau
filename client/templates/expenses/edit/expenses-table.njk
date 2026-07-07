@@ -27,9 +27,9 @@
   </thead>
   <tbody class="govuk-table__body">
 
-    {% for expense in expensesData.expense_details %}
+    {% for expense in expensesData.expenseDetails %}
 
-      {% set originalExpense = originalExpenses[expense.attendance_date] %}
+      {% set originalExpense = originalExpenses[expense.attendanceDate] %}
 
       <tr class="govuk-table__row {% if originalExpense %}mod-highlight-table-row__light-blue{% endif %}">
         <td class="govuk-table__cell jd-middle-align">
@@ -37,32 +37,32 @@
             jurorNumber: jurorNumber,
             locCode: locCode,
             status: status
-          }) }}?date={{ expense.attendance_date }}&page={{ loop.index }}">
-            {{ expense.attendance_date | dateFilter("YYYY-MM-DD", "ddd DD MMM YYYY") }}
+          }) }}?date={{ expense.attendanceDate }}&page={{ loop.index }}">
+            {{ expense.attendanceDate | dateFilter("YYYY-MM-DD", "ddd DD MMM YYYY") }}
           </a>
         </td>
         <td class="govuk-table__cell">
           {% if originalExpense %}
-            {{ attendanceType({ attendance: originalExpense.attendance_type }) }}
+            {{ attendanceType({ attendance: originalExpense.attendanceType }) }}
           {% endif %}
-          <div class="{% if originalExpense and originalExpense.attendance_type !== expense.attendance_type %}mod-bold{% endif %}">
-            {{ attendanceType({ attendance: expense.attendance_type }) }}
+          <div class="{% if originalExpense and originalExpense.attendanceType !== expense.attendanceType %}mod-bold{% endif %}">
+            {{ attendanceType({ attendance: expense.attendanceType }) }}
           </div>
         </td>
         <td class="govuk-table__cell">
           {% if originalExpense %}
-            £{{ originalExpense.loss_of_earnings | toFixed(2) }}
+            £{{ originalExpense.lossOfEarnings | toFixed(2) }}
           {% endif %}
-          <div class="{% if originalExpense and originalExpense.loss_of_earnings !== expense.loss_of_earnings %}mod-bold{% endif %}">
-            £{{ expense.loss_of_earnings | toFixed(2) }}
+          <div class="{% if originalExpense and originalExpense.lossOfEarnings !== expense.lossOfEarnings %}mod-bold{% endif %}">
+            £{{ expense.lossOfEarnings | toFixed(2) }}
           </div>
         </td>
         <td class="govuk-table__cell">
           {% if originalExpense %}
-            £{{ originalExpense.extra_care | toFixed(2) }}
+            £{{ originalExpense.extraCare | toFixed(2) }}
           {% endif %}
-          <div class="{% if originalExpense and originalExpense.extra_care !== expense.extra_care %}mod-bold{% endif %}">
-            £{{ expense.extra_care | toFixed(2) }}
+          <div class="{% if originalExpense and originalExpense.extraCare !== expense.extraCare %}mod-bold{% endif %}">
+            £{{ expense.extraCare | toFixed(2) }}
           </div>
         </td>
         <td class="govuk-table__cell">
@@ -75,10 +75,10 @@
         </td>
         <td class="govuk-table__cell">
           {% if originalExpense %}
-            £{{ originalExpense.public_transport | toFixed(2) }}
+            £{{ originalExpense.publicTransport | toFixed(2) }}
           {% endif %}
-          <div class="{% if originalExpense and originalExpense.public_transport !== expense.public_transport %}mod-bold{% endif %}">
-            £{{ expense.public_transport | toFixed(2) }}
+          <div class="{% if originalExpense and originalExpense.publicTransport !== expense.publicTransport %}mod-bold{% endif %}">
+            £{{ expense.publicTransport | toFixed(2) }}
           </div>
         </td>
         <td class="govuk-table__cell">
@@ -115,7 +115,7 @@
         </td>
         <td class="govuk-table__cell">
           {% if originalExpense %}
-            £{{ originalExpenses[expense.attendance_date].parking | toFixed(2) }}
+            £{{ originalExpenses[expense.attendanceDate].parking | toFixed(2) }}
           {% endif %}
           <div class="{% if originalExpense and originalExpense.parking !== expense.parking %}mod-bold{% endif %}">
             £{{ expense.parking | toFixed(2) }}
@@ -123,26 +123,26 @@
         </td>
         <td class="govuk-table__cell">
           {% if originalExpense %}
-            £{{ originalExpense.food_and_drink | toFixed(2) }}
+            £{{ originalExpense.foodAndDrink | toFixed(2) }}
           {% endif %}
-          <div class="{% if originalExpense and originalExpense.food_and_drink !== expense.food_and_drink %}mod-bold{% endif %}">
-            £{{ expense.food_and_drink | toFixed(2) }}
+          <div class="{% if originalExpense and originalExpense.foodAndDrink !== expense.foodAndDrink %}mod-bold{% endif %}">
+            £{{ expense.foodAndDrink | toFixed(2) }}
           </div>
         </td>
         <td class="govuk-table__cell">
           {% if originalExpense %}
-            (£{{ originalExpense.smart_card | toFixed(2) }})
+            (£{{ originalExpense.smartCard | toFixed(2) }})
           {% endif %}
-          <div class="{% if originalExpense and originalExpense.smart_card !== expense.smart_card %}mod-bold{% endif %}">
-            (£{{ expense.smart_card | toFixed(2) }})
+          <div class="{% if originalExpense and originalExpense.smartCard !== expense.smartCard %}mod-bold{% endif %}">
+            (£{{ expense.smartCard | toFixed(2) }})
           </div>
         </td>
         <td class="govuk-table__cell">
           {% if originalExpense %}
-            {{ originalExpense.payment_method }}
+            {{ originalExpense.paymentMethod }}
           {% endif %}
-          <div class="{% if originalExpense and originalExpense.payment_method !== expense.payment_method %}mod-bold{% endif %}">
-            {{ expense.payment_method }}
+          <div class="{% if originalExpense and originalExpense.paymentMethod !== expense.paymentMethod %}mod-bold{% endif %}">
+            {{ expense.paymentMethod }}
           </div>
         </td>
         <td class="govuk-table__cell mod-highlight-table-data__grey mod-center-table-data">
@@ -161,19 +161,19 @@
         <b>Totals</b>
       </td>
       <td class="govuk-table__cell">
-        <b>{{ total.total_days }}</b>
+        <b>{{ total.totalDays }}</b>
       </td>
       <td class="govuk-table__cell">
-        <b>£{{ total.loss_of_earnings | toFixed(2) }}</b>
+        <b>£{{ total.lossOfEarnings | toFixed(2) }}</b>
       </td>
       <td class="govuk-table__cell">
-        <b>£{{ total.extra_care | toFixed(2) }}</b>
+        <b>£{{ total.extraCare | toFixed(2) }}</b>
       </td>
       <td class="govuk-table__cell">
         <b>£{{ total.other | toFixed(2) }}</b>
       </td>
       <td class="govuk-table__cell">
-        <b>£{{ total.public_transport | toFixed(2) }}</b>
+        <b>£{{ total.publicTransport | toFixed(2) }}</b>
       </td>
       <td class="govuk-table__cell">
         <b>£{{ total.taxi | toFixed(2) }}</b>
@@ -191,10 +191,10 @@
         <b>£{{ total.parking | toFixed(2) }}</b>
       </td>
       <td class="govuk-table__cell">
-        <b>£{{ total.food_and_drink | toFixed(2) }}</b>
+        <b>£{{ total.foodAndDrink | toFixed(2) }}</b>
       </td>
       <td class="govuk-table__cell">
-        <b>(£{{ total.smart_card | toFixed(2) }})</b>
+        <b>(£{{ total.smartCard | toFixed(2) }})</b>
       </td>
       <td class="govuk-table__cell"></td>
       <td class="govuk-table__cell mod-center-table-data">

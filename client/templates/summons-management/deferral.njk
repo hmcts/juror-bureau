@@ -13,7 +13,7 @@
 
 {% set currentApp = "Summons replies" %}
 
-{% block beforeContent %}
+{% block containerStart %}
     <a href="{{ backLinkUrl }}" class="govuk-back-link">Back</a>
 {% endblock %}
 
@@ -73,7 +73,9 @@
         {% set codeSelected = false %}
       {% endif %}
       
-      {% set reasonList = (reasonList.push({value: reason.code, text: reason.code + " - " + reason.description, selected: codeSelected }), reasonList) %}
+      {% if reason.code != 'D' %} {# Exclude 'Deceased' code for deferral #}
+        {% set reasonList = (reasonList.push({value: reason.code, text: reason.code + " - " + reason.description, selected: codeSelected }), reasonList) %}
+      {% endif %}
     {% endfor %}
               
   <h1 class="govuk-heading-l">Defer this juror</h1>

@@ -1,0 +1,212 @@
+{% extends "layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "includes/csrf.njk" import csrfProtection %}
+
+{% block page_title %}{{ serviceName }} - Reports - {{ title }} - select courts{% endblock %}
+{% block page_identifier %}Reports - {{ title }} - select courts{% endblock %}
+
+{% set currentApp = "System administration" if isSystemAdministrator and isSuperUser else "Reports" %}
+
+{% block containerStart %}
+  {% if backLinkUrl.url %}
+    {% include "includes/back-link.njk" %}
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+  {% include "includes/errors.njk" %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h1 class="govuk-heading-xl">{{ title }}</h1>
+      <h2 class="govuk-heading-m">Select one or more courts</h2>
+
+      <form action="{{ filterUrl }}" method="GET" class="mod-flex mod-items-end mod-gap-x-2" id="filterCourtsForm">
+        {{ govukInput({
+          label: {
+            text: "Filter by court name or location code",
+            for: "filter"
+          },
+          classes: "govuk-input govuk-input--width-20",
+          id: "filter",
+          name: "filter",
+          value: filter
+        }) }}
+
+        <input type="hidden" name="selectionSubmitted" value="true">
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Filter",
+            classes: "govuk-button--secondary",
+            attributes: {
+              id: "filter-button"
+            }
+          }) }}
+          <a class="govuk-link govuk-link--no-visited-state" href="{{ clearFilterUrl }}" id="clearFilterLink">Clear filter</a>
+        </div>
+      </form>
+
+      <form action="{{ reportUrl }}" method="post" id="courtSelectForm">
+        {% if errors.items["selectedCourts"] %}<div class="govuk-form-group govuk-form-group--error">{% endif %}
+
+        {% if errors.items["selectedCourts"] %}
+          <div class="error-allocation">
+            <p class="govuk-error-message">{{ errors.items["selectedCourts"][0].details }}</p>
+          </div>
+        {% endif %}
+
+        <p class="govuk-body govuk-!-margin-bottom-2">
+          <span id="checkedCourts">{{ selectedCount }}</span> selected
+          {% if selectedCount > 0 %}
+            <a class="govuk-link govuk-link--no-visited-state govuk-!-margin-left-2" href="{{ clearSelectionUrl }}">Clear selected courts</a>
+          {% endif %}
+        </p>
+
+        {% for locCode in selectedHiddenCourts %}
+          <input type="hidden" name="selectedCourts" value="{{ locCode }}">
+        {% endfor %}
+
+        {% if courts.length === 0 %}
+          <hr class="govuk-section-break govuk-section-break--visible">
+          <h2 class="govuk-heading-m govuk-!-margin-top-4">No courts found</h2>
+        {% else %}
+          <div class="fixTableHead">
+            <table class="govuk-table mod-assign-courts-table" data-module="moj-sortable-table" id="courts" name="courts">
+              <caption class="govuk-table__caption govuk-visually-hidden">Courts list</caption>
+
+              <thead class="govuk-table__head">
+                <tr class="govuk-table__row">
+                  <th scope="col" class="govuk-table__header mod-checkbox-header">
+                    <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">
+                      <input type="checkbox" class="govuk-checkboxes__input select-check court-select-check" id="selectAllCheckbox" name="selectAllCheckbox">
+                      <label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="selectAllCheckbox">
+                        <span class="govuk-visually-hidden">Select visible courts</span>
+                      </label>
+                    </div>
+                  </th>
+                  <th scope="col" class="govuk-table__header jd-middle-align fixTableHead__data-header">Court name</th>
+                </tr>
+              </thead>
+              <tbody class="govuk-table__body">
+                {% for court in courts %}
+                  <tr class="govuk-table__row{% if court.checked %} govuk-table__row--selected{% endif %}">
+                    <td class="govuk-table__cell">
+                      <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">
+                        <input type="checkbox" class="govuk-checkboxes__input select-check court-select-check" id="select-{{ court.locCode }}" name="selectedCourts" value="{{ court.name }}" {% if court.checked %}checked{% endif %}>
+                        <label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="select-{{ court.locCode }}">
+                          <span class="govuk-visually-hidden">Select {{ court.name }}</span>
+                        </label>
+                      </div>
+                    </td>
+                    <td id="{{ court.locCode }}-courtName" class="govuk-table__cell jd-middle-align">{{ court.name }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% endif %}
+
+        {% if errors.items["selectedCourts"] %}</div>{% endif %}
+
+        <div class="govuk-button-group govuk-!-padding-top-5">
+          {{ govukButton({
+            text: "Continue",
+            type: "submit",
+            attributes: {
+              id: "continueButton"
+            }
+          }) }}
+          <a class="govuk-link govuk-link--no-visited-state" href="{{ cancelUrl }}">Cancel</a>
+        </div>
+
+        <input type="hidden" name="filter" value="{{ filter }}">
+        {{ csrfProtection(csrftoken) }}
+      </form>
+    </div>
+  </div>
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+
+  <script nonce="{{ nonce }}">
+    const filterForm = document.getElementById('filterCourtsForm');
+    const courtSelectForm = document.getElementById('courtSelectForm');
+    const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+    const selectedCounter = document.getElementById('checkedCourts');
+    const clearFilterLink = document.getElementById('clearFilterLink');
+
+    function courtCode(value) {
+      const matches = value.match(/\d+/g);
+
+      return matches ? matches[0] : value;
+    }
+
+    function selectedCourtInputs() {
+      return Array.from(courtSelectForm.querySelectorAll('input[name="selectedCourts"]'));
+    }
+
+    function updateSelectedCount() {
+      const selected = new Set();
+
+      selectedCourtInputs().forEach(function(input) {
+        if (input.type === 'hidden' || input.checked) {
+          selected.add(courtCode(input.value));
+        }
+      });
+
+      selectedCounter.innerHTML = selected.size;
+    }
+
+    if (selectAllCheckbox) {
+      selectAllCheckbox.addEventListener('change', function() {
+        courtSelectForm.querySelectorAll('input[type="checkbox"][name="selectedCourts"]').forEach(function(checkbox) {
+          checkbox.checked = selectAllCheckbox.checked;
+        });
+        updateSelectedCount();
+      });
+    }
+
+    courtSelectForm.querySelectorAll('input[type="checkbox"][name="selectedCourts"]').forEach(function(checkbox) {
+      checkbox.addEventListener('change', updateSelectedCount);
+    });
+
+    filterForm.addEventListener('submit', function() {
+      filterForm.querySelectorAll('input[data-selected-court-copy="true"]').forEach(function(input) {
+        input.remove();
+      });
+
+      selectedCourtInputs().forEach(function(input) {
+        if (input.type === 'hidden' || input.checked) {
+          const copy = document.createElement('input');
+
+          copy.type = 'hidden';
+          copy.name = 'selectedCourts';
+          copy.value = input.value;
+          copy.dataset.selectedCourtCopy = 'true';
+          filterForm.appendChild(copy);
+        }
+      });
+    });
+
+    clearFilterLink.addEventListener('click', function(event) {
+      const url = new URL(clearFilterLink.href, window.location.origin);
+
+      event.preventDefault();
+      url.searchParams.set('selectionSubmitted', 'true');
+
+      selectedCourtInputs().forEach(function(input) {
+        if (input.type === 'hidden' || input.checked) {
+          url.searchParams.append('selectedCourts', input.value);
+        }
+      });
+
+      window.location.href = url.pathname + url.search;
+    });
+
+    updateSelectedCount();
+  </script>
+{% endblock %}

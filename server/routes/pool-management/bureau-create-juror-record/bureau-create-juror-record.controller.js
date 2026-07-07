@@ -6,7 +6,21 @@
   module.exports.index = function(app) {
     return async function(req, res) {
       const { poolNumber } = req.params;
-      const pool = (await poolSummaryObject.get(req, poolNumber)).poolDetails;
+      let pool;
+
+      try {
+        pool = (await poolSummaryObject.get(req, poolNumber)).poolDetails;
+      } catch (err) {
+        app.logger.crit('Failed to fetch pool details before creating a juror record:', {
+          auth: req.session.authentication,
+          data: {
+            poolNumber
+          },
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+
+        return res.render('_errors/generic', { err });
+      }
 
       // if user bypases the button and tries to access page directly
       // and the pool is not a nil pool, or the pool is not active, or the pool is not owned by the bureau

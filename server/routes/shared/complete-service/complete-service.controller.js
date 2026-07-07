@@ -194,7 +194,7 @@
 
         req.session.errors = {
           completionDate: [{
-            details: err.error.message,
+            details: err.error?.message || 'Could not complete service',
           }],
         };
 

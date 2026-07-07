@@ -139,19 +139,23 @@
           });
 
           if (err.statusCode === 409) {
+            const errorMessage = err.error?.message || '';
+
             // Username already taken
             req.session.formFields = req.body;
             req.session.errors = {
               login: [{
                 summary: 'Please check the new staff member Juror application user name',
-                details: 'This ' + err.error.message.replace(req.body.login + ' ', ''),
+                details: 'This ' + errorMessage.replace(req.body.login + ' ', ''),
               }],
             }
           } else {
+            const errorMessage = err.error?.message || 'Unable to create staff member';
+
             req.session.errors = {
               login: [{
                 summary: 'Error creating new staff member',
-                details: err.error.message.replace(req.body.login + ' ', ''),
+                details: errorMessage.replace(req.body.login + ' ', ''),
               }],
             }
           }
@@ -322,12 +326,14 @@
           }
 
           if (err.statusCode === 409) {
+            const errorMessage = err.error?.message || '';
+
             // Username already taken
             req.session.formFields = req.body;
             req.session.errors = {
               login: [{
                 summary: 'The staff member that you are trying to update has been updated by someone else since you started this process. Please check the updated values and reapply your changes if necessary.',
-                details: 'This ' + err.error.message.replace(req.body.login + ' ', ''),
+                details: 'This ' + errorMessage.replace(req.body.login + ' ', ''),
               }],
             }
           }

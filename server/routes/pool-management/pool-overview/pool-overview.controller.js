@@ -103,7 +103,7 @@ module.exports.getJurors = function(app) {
         ? courtView(app, req, res, pool, members, tmpError, selectedJurors || [], selectAll)
         : require('./bureau-view.js')(app, req, res, pool, members, tmpError, selectedJurors || [], selectAll))
       .catch((err) => {
-        if (err.statusCode === 422 && err.error.code === 'MAX_ITEMS_EXCEEDED') {
+        if (err.statusCode === 422 && err.error?.code === 'MAX_ITEMS_EXCEEDED') {
           const members = { data: [], totalItems: 501 };
 
           if (isCourtUser(req, res)) {

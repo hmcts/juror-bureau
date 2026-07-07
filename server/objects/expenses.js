@@ -1,3 +1,6 @@
+const { transform } = require('lodash');
+const { basicDataTransform2 } = require('../lib/utils');
+
 ;(function() {
   'use strict';
 
@@ -29,6 +32,7 @@
       return {
         uri: urljoin(`moj/expenses/${locCode}/unpaid-summary`),
         body: modUtils.mapCamelToSnake(body),
+        transform: modUtils.mapSnakeToCamel,
       };
     },
   })
@@ -39,6 +43,7 @@
     get: function(locCode, jurorNumber) {
       return {
         uri: urljoin(this.resource.replace('{locCode}', locCode).replace('{jurorNumber}', jurorNumber)),
+        transform: modUtils.mapSnakeToCamel,
       };
     },
     post: function(locCode, jurorNumber, body) {
@@ -80,6 +85,7 @@
 
       return {
         uri,
+        transform: modUtils.mapSnakeToCamel,
       };
     },
     post: function(locCode, paymentMethod, body) {
@@ -88,7 +94,8 @@
 
       return {
         uri,
-        body,
+        body: modUtils.mapCamelToSnake(body),
+        transform: basicDataTransform2,
       };
     },
   });

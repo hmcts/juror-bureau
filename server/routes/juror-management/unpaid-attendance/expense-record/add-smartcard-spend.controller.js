@@ -64,7 +64,7 @@
 
       const body = {
         dates: attendanceDates.split(','),
-        'smart_card_amount': smartcardAmount,
+        smartCardAmount: smartcardAmount,
       };
 
       try {
@@ -89,10 +89,12 @@
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
+        const errorMessage = err.error?.message || 'Could not update the smart card amount';
+
         req.session.errors = {
           smartcardAmount: [{
-            summary: err.error.message,
-            details: err.error.message,
+            summary: errorMessage,
+            details: errorMessage,
           }],
         };
 

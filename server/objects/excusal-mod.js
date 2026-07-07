@@ -14,6 +14,8 @@
         excusalReasonCode: body.excusalCode,
       }
 
+      tmpBody.useSummonsAddress = body.useSummonsAddress;
+
       if (replyMethod) {
         tmpBody.replyMethod = toReplyMethod(replyMethod);
       }

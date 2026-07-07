@@ -1,0 +1,130 @@
+{% extends "../../layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "moj/components/alert/macro.njk" import mojAlert %}
+{%- from "govuk/components/table/macro.njk" import govukTable -%}
+
+{% block page_title %}{{ serviceName }} - Ineligible jurors{% endblock %}
+{% block page_identifier %}Ineligible jurors{% endblock %}
+
+{% block containerStart %}
+
+  {% if bannerMessage %}
+    <div class="govuk-!-margin-top-5">
+      {{ mojAlert({
+        variant: "success",
+        html: bannerMessage,
+        iconFallbackText: "Success",
+        classes: "govuk-!-margin-bottom-0"
+      }) }}
+    </div>
+  {% endif %}
+
+{% endblock %}
+
+{% block content %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <form action="{{ processUrl }}" method="POST" id="ageIneligibleJurorsForm">
+
+        <h1 class="govuk-heading-l">Not {{ action or "deferred" }} due to age</h1>
+
+        <p class="govuk-body">These jurors would be 76 or over on the new date. They have not been {{ action or "deferred" }}.</p>
+
+        {% set jurorRows = [] %}
+        {% for juror in ineligibleJurors %}
+          {% set row = [
+              {
+                text: juror.jurorNumber
+              },
+              {
+                text: juror.name.firstName + " " + juror.name.lastName
+              },
+              {
+                text: juror.activePool.status
+              },
+              {
+                text: juror.newDate | dateFilter("yyyy-mm-DD", "D MMMM yyyy"),
+                attributes: {
+                  "data-sort-value": juror.newDate
+                }
+              },
+              {
+                text: juror.dob | dateFilter("yyyy-mm-DD", "D MMMM yyyy"),
+                attributes: {
+                  "data-sort-value": juror.dob
+                }
+              },
+              {
+                text: juror.ageOnNewDate
+              }
+            ] %}
+          {% set jurorRows = (jurorRows.push(row), jurorRows) %}
+          <input type="hidden" name="jurorNumbers" value="{{ juror.jurorNumber }}">
+        {% endfor %}
+
+        {{ govukTable({
+          attributes: {
+            "data-module": "moj-sortable-table"
+          },
+          head: [
+            {
+              text: "Juror number",
+              attributes: {
+                "aria-sort": "ascending"
+              }
+            },
+            {
+              text: "Name",
+              attributes: {
+                "aria-sort": "none"
+              }
+            },
+            {
+              text: "Previous status",
+              attributes: {
+                "aria-sort": "none"
+              }
+            },
+            {
+              text: "New date",
+              attributes: {
+                "aria-sort": "none"
+              }
+            },
+            {
+              text: "Date of birth",
+              attributes: {
+                "aria-sort": "none"
+              }
+            },
+            {
+              text: "Age on new date",
+              attributes: {
+                "aria-sort": "none",
+                "data-sortable": "numeric"
+              }
+            }
+          ],
+          rows: jurorRows
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Disqualify jurors",
+            attributes: {
+              type: "submit"
+            },
+            classes: "govuk-button--warning"
+          }) }}
+
+          <a class="govuk-link" href="{{ cancelUrl }}">{{ cancelText or "Cancel and return to deferral maintenance" }}</a>
+        </div>
+
+        <input type="hidden" name="_csrf" id="_csrf" value="{{ csrftoken }}">
+      </form>
+    </div>
+  </div>
+
+{% endblock %}

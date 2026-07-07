@@ -200,7 +200,42 @@ function isNumber(n) {
   return !isNaN(parseFloat(n)) && !(moment(n, 'yyyy-MM-DD', true).isValid());
 }
 
+const makeLink = (app) => {
+  return {
+    poolNumber: (poolNumber) => {
+      return `<a class='govuk-link govuk-link--no-visited-state' href='${app.namedRoutes.build('pool-overview.get', {poolNumber: poolNumber})}'>Pool ${poolNumber}</a>`
+    }
+  }
+}
+
+const addTrialJurorSelectionHeader = (req = null) => {
+  return {
+    jurorSelection: {
+      displayName: 'Juror selection',
+      dataType: 'String',
+      value: req?.query?.currentTrialJurors === 'true' ? 'Current jurors' : 'All jurors',
+    }
+  };
+};
+
+const splitPoolNumberHeading = (data) => {
+  const match = data.match(/^(\d+)(.*)$/);
+  const [rawPoolNumber, rawPoolType] = data.includes(',')
+    ? data.split(',')
+    : [match?.[1] ?? data, match?.[2] ?? ''];
+
+  const poolNumber = rawPoolNumber.trim();
+  const poolType = rawPoolType
+    .trim()
+    .replace(/([a-z])([A-Z])/g, '$1 $2');
+
+  return [poolNumber, poolType];
+}
+
 module.exports.tableDataMappers = tableDataMappers;
 module.exports.constructPageHeading = constructPageHeading;
 module.exports.buildTableHeaders = buildTableHeaders;
 module.exports.sort = sort;
+module.exports.makeLink = makeLink;
+module.exports.addTrialJurorSelectionHeader = addTrialJurorSelectionHeader;
+module.exports.splitPoolNumberHeading = splitPoolNumberHeading;

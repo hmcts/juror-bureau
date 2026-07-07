@@ -99,7 +99,6 @@
 
   async function createBallotPDF(jurors) {
     return new Promise((resolve, reject) => {
-      const printer = new pdfMake(layout().fonts);
       const chunks = [];
 
       const _documentContent = [ ...documentTableData(jurors) ];
@@ -112,21 +111,13 @@
         pageMargins: 0,
       };
 
-      const document = printer.createPdfKitDocument(pdfOptions);
+      pdfMake.addFonts(layout().fonts);
 
-      document.on('data', function(data) {
-        chunks.push(data);
+      pdfMake.createPdf(pdfOptions).getBuffer().then((buffer) => {
+        return resolve(buffer);
+      }, err => {
+        return reject(err);
       });
-
-      document.on('end', function() {
-        return resolve(Buffer.concat(chunks));
-      });
-
-      document.on('error', function(error) {
-        return reject(error);
-      });
-
-      document.end();
     });
   };
 

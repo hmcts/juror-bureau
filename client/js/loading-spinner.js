@@ -23,9 +23,9 @@
       $container = $('.govuk-grid-row').first();
     }
     $container.html(
-      '<div class="hods-loading-spinner" id="request-pool-spinner">' +
-        '<div class="hods-loading-spinner__spinner" aria-live="polite" role="status"></div>' +
-        '<div class="hods-loading-spinner__content">' +
+      '<div class="loading-spinner" id="request-pool-spinner">' +
+        '<div class="loading-spinner__spinner" aria-live="polite" role="status"></div>' +
+        '<div class="loading-spinner__content">' +
           '<h1 class="govuk-heading-m"> ' + message + ' </h1>' +
         '</div>' +
       '</div>'

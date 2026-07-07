@@ -5,6 +5,70 @@ var moment = require('moment');
 
   var filters = require('../components/filters')
 
+  function hasPdfContent(node) {
+    if (Array.isArray(node)) {
+      return node.some(hasPdfContent);
+    }
+
+    if (node === undefined || node === null || node === '') {
+      return false;
+    }
+
+    if (typeof node !== 'object') {
+      return true;
+    }
+
+    if (node.table || node.image || node.ul || node.ol) {
+      return true;
+    }
+
+    if (node.stack) {
+      return hasPdfContent(node.stack);
+    }
+
+    if (node.columns) {
+      return hasPdfContent(node.columns);
+    }
+
+    if (node.canvas) {
+      return node.canvas.some(function(item) {
+        return item && Object.keys(item).length > 0 && item.lineWidth !== 0 && item.lineColor !== '#fff';
+      });
+    }
+
+    if (Object.prototype.hasOwnProperty.call(node, 'text')) {
+      return hasPdfContent(node.text);
+    }
+
+    return true;
+  }
+
+  function compactPdfContent(content) {
+    return content.filter(hasPdfContent);
+  }
+
+  function getDeferralDateLine(text, marginBottom) {
+    return {
+      text: text,
+      style: 'textReg',
+      marginBottom: marginBottom || 0
+    };
+  }
+
+  function getDeferralDateStack(juror, texts, marginBottom) {
+    return {
+      stack: [
+        getDeferralDateLine(texts.jurorPDF.deferralDate1Label),
+        getDeferralDateLine(filters.translateDate(juror.deferral.displayDates['date1'], 'DD/MM/YYYY', 'dddd D MMMM YYYY', texts.sharedText.lang), 10),
+        getDeferralDateLine(texts.jurorPDF.deferralDate2Label),
+        getDeferralDateLine(filters.translateDate(juror.deferral.displayDates['date2'], 'DD/MM/YYYY', 'dddd D MMMM YYYY', texts.sharedText.lang), 10),
+        getDeferralDateLine(texts.jurorPDF.deferralDate3Label),
+        getDeferralDateLine(filters.translateDate(juror.deferral.displayDates['date3'], 'DD/MM/YYYY', 'dddd D MMMM YYYY', texts.sharedText.lang))
+      ],
+      marginBottom: marginBottom
+    };
+  }
+
   module.exports.getPdfDocumentDescription = function(juror, texts) {
     return {
       pageSize: 'A4',
@@ -43,7 +107,7 @@ var moment = require('moment');
           marginRight: 40
         };
       },
-      content: [
+      content: compactPdfContent([
 
         //////////////////////////////////////////////////////
         // Section 1
@@ -883,10 +947,10 @@ var moment = require('moment');
           style: 'smallDull',
           marginBottom: juror.deferral ? 10 : 0
         },
-        {
-          text: juror.deferral ? texts.jurorPDF.deferralDate1Label + '\n' + filters.translateDate(juror.deferral.displayDates['date1'], 'DD/MM/YYYY', 'dddd D MMMM YYYY', texts.sharedText.lang) + '\n\n' + texts.jurorPDF.deferralDate2Label + '\n' + filters.translateDate(juror.deferral.displayDates['date2'], 'DD/MM/YYYY', 'dddd D MMMM YYYY', texts.sharedText.lang) + '\n\n' + texts.jurorPDF.deferralDate3Label + '\n' + filters.translateDate(juror.deferral.displayDates['date3'], 'DD/MM/YYYY', 'dddd D MMMM YYYY', texts.sharedText.lang)  : '',
+        juror.deferral ? getDeferralDateStack(juror, texts, 5) : {
+          text: '',
           style: 'textReg',
-          marginBottom: juror.deferral ? 5 : 0
+          marginBottom: 0
         },
         {
           canvas: [ juror.deferral ? {
@@ -977,15 +1041,15 @@ var moment = require('moment');
             lineWidth: 1,
             lineColor: juror.assistanceSpecialArrangements ? '#ccc' : '#fff'
           }],
-          marginBottom: 20,
-          pageBreak: 'after'
+          marginBottom: 20
         },
         //////////////////////////////////////////////////////
         // Section 4
         //////////////////////////////////////////////////////
         {
           text: texts.sharedText.getReadyHeader,
-          style: 'bigBold'
+          style: 'bigBold',
+          pageBreak: 'before'
         },
         {
           canvas: [{
@@ -1084,7 +1148,7 @@ var moment = require('moment');
           link: texts.sharedText.contactingInfoCallChargesLink,
           color: 'blue'
         },
-      ],
+      ]),
       styles: {
         mainHeader: {
           fontSize: 23,
@@ -1151,7 +1215,7 @@ var moment = require('moment');
           marginRight: 40
         };
       },
-      content: [
+      content: compactPdfContent([
 
         //////////////////////////////////////////////////////
         // Section 1
@@ -2164,10 +2228,10 @@ var moment = require('moment');
           style: 'smallDull',
           marginBottom: juror.deferral ? 10 : 0
         },
-        {
-          text: juror.deferral ? texts.jurorPDF.deferralDate1Label + '\n' + filters.translateDate(juror.deferral.displayDates['date1'], 'DD/MM/YYYY', 'dddd D MMMM YYYY', texts.sharedText.lang) + '\n\n' + texts.jurorPDF.deferralDate2Label + '\n' + filters.translateDate(juror.deferral.displayDates['date2'], 'DD/MM/YYYY', 'dddd D MMMM YYYY', texts.sharedText.lang) + '\n\n' + texts.jurorPDF.deferralDate3Label + '\n' + filters.translateDate(juror.deferral.displayDates['date3'], 'DD/MM/YYYY', 'dddd D MMMM YYYY', texts.sharedText.lang)  : '',
+        juror.deferral ? getDeferralDateStack(juror, texts, 10) : {
+          text: '',
           style: 'textReg',
-          marginBottom: juror.deferral ? 10 : 0
+          marginBottom: 0
         },
         {
           canvas: [ juror.deferral ? {
@@ -2274,8 +2338,7 @@ var moment = require('moment');
             lineWidth: 1,
             lineColor: juror.assistanceSpecialArrangements ? '#ccc' : '#fff'
           }],
-          marginBottom: 20,
-          pageBreak: 'after'
+          marginBottom: 20
         },
 
 
@@ -2284,7 +2347,8 @@ var moment = require('moment');
         //////////////////////////////////////////////////////
         {
           text: texts.sharedText.getReadyHeader,
-          style: 'bigBold'
+          style: 'bigBold',
+          pageBreak: 'before'
         },
         {
           canvas: [{
@@ -2383,7 +2447,7 @@ var moment = require('moment');
           link: texts.sharedText.contactingInfoCallChargesLink,
           color: 'blue'
         },
-      ],
+      ]),
       styles: {
         mainHeader: {
           fontSize: 23,
@@ -2450,7 +2514,7 @@ var moment = require('moment');
           marginRight: 40
         };
       },
-      content: [
+      content: compactPdfContent([
 
         //////////////////////////////////////////////////////
         // Section 1
@@ -2575,7 +2639,7 @@ var moment = require('moment');
         },
         {
           text: texts.deceasedPDF.distressApology,
-          marginBotton: 20
+          marginBottom: 20
         },
         {
           canvas: [{
@@ -2623,7 +2687,7 @@ var moment = require('moment');
           link: texts.sharedText.contactingInfoCallChargesLink,
           color: 'blue'
         },
-      ],
+      ]),
       styles: {
         mainHeader: {
           fontSize: 23,
@@ -2690,7 +2754,7 @@ var moment = require('moment');
           marginRight: 40
         };
       },
-      content: [
+      content: compactPdfContent([
 
         //////////////////////////////////////////////////////
         // Section 1
@@ -2827,7 +2891,6 @@ var moment = require('moment');
             lineWidth: 1.5
           }],
           marginBottom: 20,
-          //pageBreak: juror.thirdParty === 'Yes' ? 'after' : ''
           pageBreak: 'after'
         },
         {
@@ -3217,7 +3280,7 @@ var moment = require('moment');
           link: texts.sharedText.contactingInfoCallChargesLink,
           color: 'blue'
         },
-      ],
+      ]),
       styles: {
         mainHeader: {
           fontSize: 23,

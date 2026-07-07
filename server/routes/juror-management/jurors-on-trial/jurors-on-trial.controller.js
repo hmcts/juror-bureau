@@ -150,7 +150,10 @@ module.exports.postConfirmAttendance = function(app) {
       });
 
       if (err.error?.code === 'DAY_ALREADY_CONFIRMED') {
-        req.session.errors = makeManualError('dayAlreadyConfirmedForJuror', err.error.message);
+        req.session.errors = makeManualError(
+          'dayAlreadyConfirmedForJuror',
+          err.error?.message || 'Attendance has already been confirmed'
+        );
 
         return res.redirect(app.namedRoutes.build('juror-management.jurors-on-trial.confirm-attendance.get', {
           trialNumber,

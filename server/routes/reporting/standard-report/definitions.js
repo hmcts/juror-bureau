@@ -17,14 +17,7 @@
     overdueUtilisationReportDAO,
     digitalResponsesCompletedReportDAO
   } = require('../../../objects/reports');
-
-  const makeLink = (app) => {
-    return {
-      poolNumber: (poolNumber) => {
-        return `<a class='govuk-link govuk-link--no-visited-state' href='${app.namedRoutes.build('pool-overview.get', {poolNumber: poolNumber})}'>Pool ${poolNumber}</a>`
-      }
-    }
-  }
+  const { makeLink, addTrialJurorSelectionHeader, splitPoolNumberHeading } = require('./utils');
 
   // type IReportKey = {
   //   [key: string]: {
@@ -289,6 +282,10 @@
           'judge',
         ],
         defaultSortColumn: 'lastName',
+        selectTrialJurors: true,
+        bespokeReport: {
+          addPageHeadings: addTrialJurorSelectionHeader,
+        },
       },
       'bulk-print-audit': {
         title: 'Bulk-print audit report',
@@ -316,6 +313,10 @@
           'judge',
         ],
         defaultSortColumn: 'lastName',
+        selectTrialJurors: true,
+        bespokeReport: {
+          addPageHeadings: addTrialJurorSelectionHeader,
+        },
       },
       'jury-list': {
         title: 'Jury list',
@@ -333,6 +334,10 @@
           'judge',
         ],
         defaultSortColumn: 'lastName',
+        selectTrialJurors: true,
+        bespokeReport: {
+          addPageHeadings: addTrialJurorSelectionHeader,
+        },
       },
       'pool-status': {
         title: 'Pool status report',
@@ -520,7 +525,8 @@
         grouped: {
           headings: {
             transformer: (data, isPrint) => {
-              const [attendanceDate, poolType] = data.split(',');
+              const [attendanceDate, poolType] = splitPoolNumberHeading(data);
+
               const formattedAttendanceDate = dateFilter(attendanceDate, 'YYYY-mm-dd', 'dddd D MMMM YYYY');
 
               if (isPrint) {
@@ -576,6 +582,10 @@
               { label: 'Returned jurors', value: data.filter(juror => juror.panelStatus === 'Returned Juror').length },
             ];
           },
+        },
+        selectTrialJurors: true,
+        bespokeReport: {
+          addPageHeadings: addTrialJurorSelectionHeader,
         },
       },
       'prepare-monthly-utilisation': {
@@ -705,7 +715,7 @@
               const group = [[
                 {
                   text: 'No payments authorised',
-                  color: '#505A5F',
+                  color: '#484949',
                   colSpan: colspan
                 },
               ]];
@@ -747,11 +757,11 @@
               });
               return isPrint ? [
                 {
-                  text: 'Daily sub total', colSpan: 8, bold: true, fillColor: '#F3F2F1',
+                  text: 'Daily sub total', colSpan: 8, bold: true, fillColor: '#F3F3F3',
                 },
                 {}, {}, {}, {}, {}, {}, {},
                 {
-                  text: toMoney(total), bold: true, fillColor: '#F3F2F1',
+                  text: toMoney(total), bold: true, fillColor: '#F3F3F3',
                 },
               ] : [
                 {
@@ -845,32 +855,32 @@
                     {
                       text: type,
                       colspan: 4,
-                      bold: true, fillColor: '#F3F2F1',
+                      bold: true, fillColor: '#F3F3F3',
                     },
                     {}, {}, {},
                     {
                       text: toMoney(lossOfEarningsTotal),
-                      bold: true, fillColor: '#F3F2F1',
+                      bold: true, fillColor: '#F3F3F3',
                       alignment: 'right',
                     },
                     {
                       text: toMoney(foodAndDrinkTotal),
-                      bold: true, fillColor: '#F3F2F1',
+                      bold: true, fillColor: '#F3F3F3',
                       alignment: 'right',
                     },
                     {
                       text: toMoney(smartcardTotal),
-                      bold: true, fillColor: '#F3F2F1',
+                      bold: true, fillColor: '#F3F3F3',
                       alignment: 'right',
                     },
                     {
                       text: toMoney(travelTotal),
-                      bold: true, fillColor: '#F3F2F1',
+                      bold: true, fillColor: '#F3F3F3',
                       alignment: 'right',
                     },
                     {
                       text: toMoney(total),
-                      bold: true, fillColor: '#F3F2F1',
+                      bold: true, fillColor: '#F3F3F3',
                       alignment: 'right',
                     },
                   ]);
@@ -976,17 +986,19 @@
         grouped: {
           headings: {
             transformer: (data, isPrint) => {
-              const [poolNumber, poolType] = data.split(',');
+              const [poolNumber, poolType] = splitPoolNumberHeading(data);
               if (isPrint) {
                 return [
                   `Pool ${poolNumber} `,
                   {
                     text: capitalizeFully(poolType),
-                    color: '#505A5F',
+                    color: '#484949',
                     fontSize: 10,
                     bold: false
-                  }];
+                  }
+                ];
               }
+
               return `${makeLink(app)['poolNumber'](poolNumber)} <span class="grouped-display-inline">${capitalizeFully(poolType)}</span>`;
             },
           },
@@ -1100,13 +1112,13 @@
           totals: true,
           headings: {
             transformer: (data, isPrint) => {
-              const [poolNumber, poolType] = data.split(',');
+              const [poolNumber, poolType] = splitPoolNumberHeading(data);
               if (isPrint) {
                 return [
                   `Pool ${poolNumber} `,
                   {
                     text: capitalizeFully(poolType),
-                    color: '#505A5F',
+                    color: '#484949',
                     fontSize: 10,
                     bold: false
                   }];
@@ -1173,20 +1185,20 @@
           };
 
           return [
-            { text: '', fillColor: '#F3F2F1' },
-            { text: '', fillColor: '#F3F2F1' },
-            { text: totals.jurorsSummonedTotal, bold: true, fillColor: '#F3F2F1' },
-            { text: htmlTemplate(totals.respondedTotal), bold: true, fillColor: '#F3F2F1' },
-            { text: htmlTemplate(totals.attendedTotal), bold: true, fillColor: '#F3F2F1' },
-            { text: htmlTemplate(totals.panelTotal), bold: true, fillColor: '#F3F2F1' },
-            { text: htmlTemplate(totals.jurorTotal), bold: true, fillColor: '#F3F2F1' },
-            { text: htmlTemplate(totals.excusedTotal), bold: true, fillColor: '#F3F2F1' },
-            { text: htmlTemplate(totals.disqualifiedTotal), bold: true, fillColor: '#F3F2F1' },
-            { text: htmlTemplate(totals.deferredTotal), bold: true, fillColor: '#F3F2F1' },
-            { text: htmlTemplate(totals.reassignedTotal), bold: true, fillColor: '#F3F2F1' },
-            { text: htmlTemplate(totals.undeliverableTotal), bold: true, fillColor: '#F3F2F1' },
-            { text: htmlTemplate(totals.transferredTotal), bold: true, fillColor: '#F3F2F1' },
-            { text: htmlTemplate(totals.failedToAttendTotal), bold: true, fillColor: '#F3F2F1' },
+            { text: '', fillColor: '#F3F3F3' },
+            { text: '', fillColor: '#F3F3F3' },
+            { text: totals.jurorsSummonedTotal, bold: true, fillColor: '#F3F3F3' },
+            { text: htmlTemplate(totals.respondedTotal), bold: true, fillColor: '#F3F3F3' },
+            { text: htmlTemplate(totals.attendedTotal), bold: true, fillColor: '#F3F3F3' },
+            { text: htmlTemplate(totals.panelTotal), bold: true, fillColor: '#F3F3F3' },
+            { text: htmlTemplate(totals.jurorTotal), bold: true, fillColor: '#F3F3F3' },
+            { text: htmlTemplate(totals.excusedTotal), bold: true, fillColor: '#F3F3F3' },
+            { text: htmlTemplate(totals.disqualifiedTotal), bold: true, fillColor: '#F3F3F3' },
+            { text: htmlTemplate(totals.deferredTotal), bold: true, fillColor: '#F3F3F3' },
+            { text: htmlTemplate(totals.reassignedTotal), bold: true, fillColor: '#F3F3F3' },
+            { text: htmlTemplate(totals.undeliverableTotal), bold: true, fillColor: '#F3F3F3' },
+            { text: htmlTemplate(totals.transferredTotal), bold: true, fillColor: '#F3F3F3' },
+            { text: htmlTemplate(totals.failedToAttendTotal), bold: true, fillColor: '#F3F3F3' },
           ]
         }
       },
@@ -1309,21 +1321,21 @@
                   ]);
                 } else {
                   rows.push([
-                    {text:'', fillColor: '#F3F2F1'},
-                    {text:'', fillColor: '#F3F2F1'},
-                    {text:'', fillColor: '#F3F2F1'},
-                    {text:'', fillColor: '#F3F2F1'},
-                    {text:'', fillColor: '#F3F2F1'},
-                    {text:'', fillColor: '#F3F2F1'},
-                    {text:'', fillColor: '#F3F2F1'},
-                    {text:'', fillColor: '#F3F2F1'},
+                    {text:'', fillColor: '#F3F3F3'},
+                    {text:'', fillColor: '#F3F3F3'},
+                    {text:'', fillColor: '#F3F3F3'},
+                    {text:'', fillColor: '#F3F3F3'},
+                    {text:'', fillColor: '#F3F3F3'},
+                    {text:'', fillColor: '#F3F3F3'},
+                    {text:'', fillColor: '#F3F3F3'},
+                    {text:'', fillColor: '#F3F3F3'},
                     {
                       text: toMoney(totalDue),
-                      bold: true, fillColor: '#F3F2F1',
+                      bold: true, fillColor: '#F3F3F3',
                     },
                     {
                       text: toMoney(totalPaid),
-                      bold: true, fillColor: '#F3F2F1',
+                      bold: true, fillColor: '#F3F3F3',
                     },
                   ]);
                 }
@@ -1350,6 +1362,10 @@
           printWidths: ['*', '*', '*', '*', '*', '*', '*', '*', '6.667%', '6.667%']
         },
         printLandscape: true,
+        selectTrialJurors: true,
+        bespokeReport: {
+          addPageHeadings: addTrialJurorSelectionHeader,
+        },
       },
       'jury-cost-bill': {
         title: 'Jury cost bill',
@@ -1399,13 +1415,13 @@
           };
 
           return [
-            { text: '', fillColor: '#F3F2F1' },
-            { text: htmlTemplate(totals.financialLossDueSum), bold: true, fillColor: '#F3F2F1' },
-            { text: htmlTemplate(totals.travelDueSum), bold: true, fillColor: '#F3F2F1' },
-            { text: htmlTemplate(totals.subsistenceDueSum), bold: true, fillColor: '#F3F2F1' },
-            { text: htmlTemplate(totals.smartcardDueSum), bold: true, fillColor: '#F3F2F1' },
-            { text: htmlTemplate(totals.totalDueSum), bold: true, fillColor: '#F3F2F1' },
-            { text: htmlTemplate(totals.totalPaidSum), bold: true, fillColor: '#F3F2F1' },
+            { text: '', fillColor: '#F3F3F3' },
+            { text: htmlTemplate(totals.financialLossDueSum), bold: true, fillColor: '#F3F3F3' },
+            { text: htmlTemplate(totals.travelDueSum), bold: true, fillColor: '#F3F3F3' },
+            { text: htmlTemplate(totals.subsistenceDueSum), bold: true, fillColor: '#F3F3F3' },
+            { text: htmlTemplate(totals.smartcardDueSum), bold: true, fillColor: '#F3F3F3' },
+            { text: htmlTemplate(totals.totalDueSum), bold: true, fillColor: '#F3F3F3' },
+            { text: htmlTemplate(totals.totalPaidSum), bold: true, fillColor: '#F3F3F3' },
           ]
         }
       },
@@ -1557,12 +1573,12 @@
           };
 
           return [
-            { text: '', fillColor: '#F3F2F1' },
-            { text: htmlTemplate(totals.policeCheckResponded), bold: true, fillColor: '#F3F2F1' },
-            { text: htmlTemplate(totals.policeCheckSubmitted), bold: true, fillColor: '#F3F2F1' },
-            { text: htmlTemplate(totals.policeCheckComplete), bold: true, fillColor: '#F3F2F1' },
-            { text: htmlTemplate(totals.policeCheckTimedOut), bold: true, fillColor: '#F3F2F1' },
-            { text: htmlTemplate(totals.policeCheckDisqualified), bold: true, fillColor: '#F3F2F1' },
+            { text: '', fillColor: '#F3F3F3' },
+            { text: htmlTemplate(totals.policeCheckResponded), bold: true, fillColor: '#F3F3F3' },
+            { text: htmlTemplate(totals.policeCheckSubmitted), bold: true, fillColor: '#F3F3F3' },
+            { text: htmlTemplate(totals.policeCheckComplete), bold: true, fillColor: '#F3F3F3' },
+            { text: htmlTemplate(totals.policeCheckTimedOut), bold: true, fillColor: '#F3F3F3' },
+            { text: htmlTemplate(totals.policeCheckDisqualified), bold: true, fillColor: '#F3F3F3' },
           ]
         }
       },
@@ -1618,7 +1634,7 @@
           const template = (name, hintValue) => {
             return !isPrint
                 ? `${name} <br> <span class='govuk-hint'>${hintValue}</span>`
-                : [name, '\n', {text: hintValue, color: '#505A5F', bold: false}]
+                : [name, '\n', {text: hintValue, color: '#484949', bold: false}]
           } 
 
           switch (data.id) {
@@ -1688,13 +1704,13 @@
         grouped: {
           headings: {
             transformer: (data, isPrint) => {
-              const [poolNumber, poolType] = data.split(',');
+              const [poolNumber, poolType] = splitPoolNumberHeading(data);
               if (isPrint) {
                 return [
                   `Pool ${poolNumber} `,
                   {
                     text: capitalizeFully(poolType),
-                    color: '#505A5F',
+                    color: '#484949',
                     fontSize: 10,
                     bold: false
                   }];
@@ -1750,10 +1766,10 @@
           dao: (req, config) => yieldPerformanceDAO.post(
             req,
             {
-              'court_loc_codes': config.courts,
-              'all_courts': false,
-              'from_date': config.fromDate,
-              'to_date': config.toDate,
+              'courtLocCodes': config.courts,
+              'allCourts': false,
+              'fromDate': config.fromDate,
+              'toDate': config.toDate,
             },
           ),
           printWidths: ['*', '*', '*', '*', '*', '25%'],
@@ -1793,8 +1809,8 @@
           dao: (req) => allCourtUtilisationDAO.post(
             req,
             {
-              "court_loc_codes": req.params.filter !== 'all-courts' ? req.session.reportCourts : [],
-              "all_courts": req.params.filter === 'all-courts',
+              "courtLocCodes": req.params.filter !== 'all-courts' ? req.session.reportCourts : [],
+              "allCourts": req.params.filter === 'all-courts',
             },
           ),
         },
@@ -1966,6 +1982,29 @@
         bespokeReport: {
           dao: (req) => overdueUtilisationReportDAO.get(req)
         },
+      },
+      'sitting-days':{
+        title: 'Sitting days report',
+        apiKey: 'SittingDaysReport',
+        search: 'courts',
+        searchLabelMappers: {
+          dateRange: 'Enter attendance dates to search',
+        },
+        headings: [
+          'dateFrom',
+          'reportDate',
+          'dateTo',
+          'reportTime',
+          'courts',
+          'noSittingDays',
+          'noJurors',
+        ],
+        defaultSortColumn: 'courtName',
+        queryParams: {
+          fromDate: req?.query?.fromDate || '',
+          toDate: req?.query?.toDate || '',
+        },
+        exportLabel: 'Export data'
       },
       'digital-responses-completed': {
         title: 'Digital responses completed',

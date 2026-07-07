@@ -7,6 +7,7 @@
   module.exports.getReports = function(app) {
     return function(req, res) {
       delete req.session.preReportRoute;
+      delete req.session.preTrialReportRoute;
 
       if (isCourtUser(req, res)) {
         return res.render('reporting/court-reports.njk');
@@ -23,6 +24,7 @@
   module.exports.getStatistics = function(app) {
     return function(req, res) {
       delete req.session.preReportRoute;
+      delete req.session.preTrialReportRoute;
       return res.render('reporting/court-statistics.njk');
     };
   };

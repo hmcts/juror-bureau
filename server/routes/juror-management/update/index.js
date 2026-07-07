@@ -43,6 +43,11 @@ module.exports = function(app) {
     auth.verify,
     controller.getConfirmDeferral(app));
 
+  app.get('/juror-management/juror/:jurorNumber/update/deferral/ineligible-age/:newDate',
+    'juror.update.deferral.ineligible-age.get',
+    auth.verify,
+    controller.getIneligibleAge(app));
+
   // Transfer - transfer juror to another court
   // -Step 1 - select court and date
   app.get('/juror-management/juror/:jurorNumber/update/transfer/select-court'

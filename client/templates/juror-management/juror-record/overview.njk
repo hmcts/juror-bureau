@@ -8,7 +8,7 @@
 
 {% set currentApp = "Juror management" %}
 
-{% block beforeContent %}
+{% block containerStart %}
   {% include "includes/back-link.njk" %}
 {% endblock %}
 
@@ -154,7 +154,7 @@
                   attributes: {
                     "aria-label": "Change next court date"
                   }
-                } if isCourtUser
+                } if isCourtUser and juror.commonDetails.jurorStatus === "Responded" and juror.commonDetails.locCode === authentication.locCode
               ]
             }
           } if juror.commonDetails.jurorStatus !== 'Deferred',

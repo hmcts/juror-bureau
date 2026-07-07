@@ -14,7 +14,7 @@
 {% set currentApp = "Court administration" if isCourtManager else ("Bureau administration" if isBureauManager else "System administration") %} 
 {% set nav = "users" %}
 
-{% block beforeContent %}
+{% block containerStart %}
   {{ govukBackLink({
     text: "Back to users",
     href: backLinkUrl,

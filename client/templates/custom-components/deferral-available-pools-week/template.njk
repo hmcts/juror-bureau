@@ -16,7 +16,7 @@
         {% set poolRowUtilisationClass = "govuk-tag--grey" %}
     {% else %}
         {% set poolRowUtilisationText = " JURORS " + poolRow.utilisationDescription %}
-        {% set poolRowUtilisationClass = "govuk-tag--pink" if poolRow.utilisationDescription == "SURPLUS" else "govuk-tag--blue" %}
+        {% set poolRowUtilisationClass = "govuk-tag--magenta" if poolRow.utilisationDescription == "SURPLUS" else "govuk-tag--blue" %}
     {% endif %}
 
     {% set poolRowText = "Add to pool " + poolRowUrl %}
