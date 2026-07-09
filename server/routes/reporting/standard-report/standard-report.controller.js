@@ -7,9 +7,7 @@
     makeManualError,
     checkIfArrayEmpty,
     transformRadioSelectTrialsList,
-    replaceAllObjKeys,
     camelToSnake,
-    mapCamelToSnake,
     paginationBuilder,
     constants,
     generateReportSelectMonths,
@@ -78,7 +76,7 @@
                 return res.render('_errors/generic', { err });
               }
 
-              poolList = api.poolRequests;
+              poolList = api.data;
               resultsCount = api.resultsCount;
             }
           }
@@ -117,11 +115,11 @@
         delete req.session.errors;
 
         const payload = {
-          page_limit: 500,
-          sort_method: 'DESC',
-          sort_field: 'JUROR_NUMBER',
-          page_number: 1,
-          juror_number: filter
+          pageLimit: 500,
+          sortMethod: 'DESC',
+          sortField: 'JUROR_NUMBER',
+          pageNumber: 1,
+          jurorNumber: filter
         }
 
         if (filter) {
@@ -144,7 +142,7 @@
           }
           
           jurorList = data.data;
-          _resultsCount = data.total_items;
+          _resultsCount = data.totalItems;
         }
 
         _errors = { ..._errors, ...submitError };
@@ -240,7 +238,7 @@
         const sortBy = req.query['sortBy'] || 'trialNumber';
         const sortOrder = req.query['sortOrder'] || 'ascending';
         const opts = {
-          active: false, // we want all trials not just active
+          isActive: false, // we want all trials not just active
           pageNumber: page || 1,
           pageLimit: constants.PAGE_SIZE,
           sortField: capitalise(camelToSnake(sortBy)),
@@ -250,9 +248,7 @@
           opts.trialNumber = filter
         }
         try{
-          let data = await trialsListDAO.post(req, mapCamelToSnake(opts));
-
-          data = replaceAllObjKeys(data, _.camelCase);
+          let data = await trialsListDAO.post(req, opts);
 
           let paginationObject;
           if (data.totalItems > constants.PAGE_SIZE) {

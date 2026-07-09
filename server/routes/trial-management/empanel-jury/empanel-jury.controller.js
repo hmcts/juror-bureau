@@ -60,7 +60,7 @@
         locationCode,
         req.body.numberOfJurors
       ).then(resp => {
-        const noOfJurors = resp.length;
+        const noOfJurors = resp.empanelList.length;
         const validatorResult = validate(req.body, validator.numberOfJurors(noOfJurors));
 
         if (typeof validatorResult !== 'undefined') {
@@ -74,7 +74,7 @@
         };
 
         req.session[`${trialNumber}-${locationCode}-trial`].requiredNumberOfJurors = req.body.numberOfJurors;
-        req.session[`${trialNumber}-${locationCode}-trial`].panelledJurors = resp;
+        req.session[`${trialNumber}-${locationCode}-trial`].panelledJurors = resp.empanelList;
 
         return res.redirect(app.namedRoutes.build('trial-management.empanel.select.get', {
           trialNumber,
@@ -95,7 +95,7 @@
     return function(req, res) {
       const { trialNumber, locationCode } = req.params;
       const requiredNumberOfJurors = req.session[`${trialNumber}-${locationCode}-trial`].requiredNumberOfJurors;
-      const availableJurors = req.session[`${trialNumber}-${locationCode}-trial`].panelledJurors.filter((juror) => juror.juror_status === 'Panel');
+      const availableJurors = req.session[`${trialNumber}-${locationCode}-trial`].panelledJurors.filter((juror) => juror.status === 'Panel');
       let tmpErrors = _.clone(req.session[`${trialNumber}-${locationCode}-empanelJuryError`]);
       let tmpBody = _.clone(req.session.formFields);
 
@@ -153,7 +153,7 @@
       };
 
       req.session[`${trialNumber}-${locationCode}-trial`].panelledJurors.forEach(member => {
-        panel[member.juror_number] = member;
+        panel[member.jurorNumber] = member;
       });
 
       for (const [key, value] of Object.entries(tmpBody)) {
@@ -161,8 +161,10 @@
           juryCount += 1;
         }
         jurors.push({
-          ...panel[key],
-          empanel_status: statuses[value],
+          jurorNumber: panel[key].jurorNumber,
+          firstName: panel[key].firstName,
+          lastName: panel[key].lastName,
+          result: statuses[value],
         });
       };
 
@@ -179,9 +181,9 @@
 
       empanelJurorsDAO.post(req, {
         jurors,
-        trial_number: trialNumber,
-        court_location_code: locationCode,
-        number_requested: requiredNumberOfJurors,
+        trialNumber,
+        courtLocationCode: locationCode,
+        numberRequested: requiredNumberOfJurors,
       }).then(() => {
 
         delete req.session[`${trialNumber}-${locationCode}-trial`];

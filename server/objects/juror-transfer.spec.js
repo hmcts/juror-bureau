@@ -33,20 +33,20 @@
       expect(testObj.uri).to.equal(realUri);
       expect(testObj.method).to.equal('PUT');
 
-      expect(testObj.body.hasOwnProperty('jurorNumbers')).to.equal(true);
-      expect(testObj.body.jurorNumbers[0]).to.equal('111111111');
+      expect(testObj.body.hasOwnProperty('juror_numbers')).to.equal(true);
+      expect(testObj.body.juror_numbers[0]).to.equal('111111111');
 
-      expect(testObj.body.hasOwnProperty('receivingCourtLocCode')).to.equal(true);
-      expect(testObj.body.receivingCourtLocCode).to.equal('433');
+      expect(testObj.body.hasOwnProperty('receiving_court_loc_code')).to.equal(true);
+      expect(testObj.body.receiving_court_loc_code).to.equal('433');
 
-      expect(testObj.body.hasOwnProperty('targetServiceStartDate')).to.equal(true);
-      expect(testObj.body.targetServiceStartDate).to.equal('2023-07-05');
+      expect(testObj.body.hasOwnProperty('service_start_date')).to.equal(true);
+      expect(testObj.body.service_start_date).to.equal('2023-07-05');
 
-      expect(testObj.body.hasOwnProperty('sendingCourtLocCode')).to.equal(true);
-      expect(testObj.body.sendingCourtLocCode).to.equal('415');
+      expect(testObj.body.hasOwnProperty('sending_court_loc_code')).to.equal(true);
+      expect(testObj.body.sending_court_loc_code).to.equal('415');
 
-      expect(testObj.body.hasOwnProperty('sourcePoolNumber')).to.equal(true);
-      expect(testObj.body.sourcePoolNumber).to.equal('415230701');
+      expect(testObj.body.hasOwnProperty('source_pool_number')).to.equal(true);
+      expect(testObj.body.source_pool_number).to.equal('415230701');
 
     });
 

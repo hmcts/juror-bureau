@@ -10,7 +10,7 @@
     post: function(body) {
       return {
         uri: this.resource,
-        transform: (data) => replaceAllObjKeys(basicDataTransform(data), _.camelCase),
+        transform: basicDataTransform,
         body: replaceAllObjKeys(body, _.snakeCase),
       }
     }
@@ -20,7 +20,7 @@
     get: function() {
       return {
         uri: this.resource,
-        transform: (data) => replaceAllObjKeys(basicDataTransform(data), _.camelCase),
+        transform: basicDataTransform,
       }
     }
   });
@@ -29,7 +29,7 @@
     get: function() {
       return {
         uri: this.resource,
-        transform: (data) => replaceAllObjKeys(basicDataTransform(data), _.camelCase),
+        transform: basicDataTransform,
       }
     }
   });
@@ -38,7 +38,7 @@
     get: function(laCode) {
       return {
         uri: this.resource.replace('{laCode}', laCode),
-        transform: (data) => replaceAllObjKeys(basicDataTransform(data), _.camelCase),
+        transform: basicDataTransform,
       }
     }
   });
@@ -47,7 +47,7 @@
     get: function(status) {
       return {
         uri: this.resource + (status === 'active' ? '?active_only=true' : ''),
-        transform: (data) => replaceAllObjKeys(basicDataTransform(data), _.camelCase),
+        transform: basicDataTransform,
       }
     }
   });
@@ -66,7 +66,7 @@
       return {
         uri: this.resource,
         body: replaceAllObjKeys(body, _.snakeCase),
-        transform: (data) => replaceAllObjKeys(basicDataTransform(data), _.camelCase),
+        transform: basicDataTransform,
       }
     }
   });
@@ -84,7 +84,7 @@
     put: function(body) {
       return {
         uri: this.resource,
-        transform: (data) => replaceAllObjKeys(basicDataTransform(data), _.camelCase),
+        transform: basicDataTransform,
         body: replaceAllObjKeys(body, _.snakeCase),
       };
     }
@@ -95,7 +95,7 @@
       return {
         uri: this.resource,
         body: replaceAllObjKeys(body, _.snakeCase),
-        transform: (data) => replaceAllObjKeys(basicDataTransform(data), _.camelCase),
+        transform: basicDataTransform,
       }
     }
   });

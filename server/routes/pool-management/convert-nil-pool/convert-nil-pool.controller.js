@@ -96,10 +96,10 @@
       }
 
       selectedPool = _.clone(req.session.poolDetails.poolDetails);
-      if (typeof req.session.poolDetails.locCode === 'undefined'
+      if (typeof req.session.poolDetails.poolDetails.courtLocationCode === 'undefined'
         || typeof selectedCourt === 'undefined') {
         selectedCourt = req.session.courtsList.find(function(court) {
-          return court.locationCode === selectedPool.locCode;
+          return court.locationCode === selectedPool.courtLocationCode;
         });
       }
 

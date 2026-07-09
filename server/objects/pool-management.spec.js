@@ -87,16 +87,16 @@
       expect(testObj.uri).to.equal(realUri);
       expect(testObj.method).to.equal('PUT');
       expect(testObj.body).to.not.be.undefined;
-      expect(testObj.body.hasOwnProperty('jurorNumbers')).to.be.true;
-      expect(testObj.body.jurorNumbers).to.be.eql(payload.jurorNumbers);
-      expect(testObj.body.hasOwnProperty('receivingCourtLocCode')).to.be.true;
-      expect(testObj.body.receivingCourtLocCode).to.be.equal(payload.receivingCourtLocCode);
-      expect(testObj.body.hasOwnProperty('receivingPoolNumber')).to.be.true;
-      expect(testObj.body.receivingPoolNumber).to.be.equal(payload.receivingPoolNumber);
-      expect(testObj.body.hasOwnProperty('sourceCourtLocCode')).to.be.true;
-      expect(testObj.body.sourceCourtLocCode).to.be.equal(payload.sourceCourtLocCode);
-      expect(testObj.body.hasOwnProperty('sourcePoolNumber')).to.be.true;
-      expect(testObj.body.sourcePoolNumber).to.be.equal(payload.sourcePoolNumber);
+      expect(testObj.body.hasOwnProperty('juror_numbers')).to.be.true;
+      expect(testObj.body.juror_numbers).to.be.eql(payload.jurorNumbers);
+      expect(testObj.body.hasOwnProperty('receiving_court_loc_code')).to.be.true;
+      expect(testObj.body.receiving_court_loc_code).to.be.equal(payload.receivingCourtLocCode);
+      expect(testObj.body.hasOwnProperty('receiving_pool_number')).to.be.true;
+      expect(testObj.body.receiving_pool_number).to.be.equal(payload.receivingPoolNumber);
+      expect(testObj.body.hasOwnProperty('source_court_loc_code')).to.be.true;
+      expect(testObj.body.source_court_loc_code).to.be.equal(payload.sourceCourtLocCode);
+      expect(testObj.body.hasOwnProperty('source_pool_number')).to.be.true;
+      expect(testObj.body.source_pool_number).to.be.equal(payload.sourcePoolNumber);
     });
 
   });

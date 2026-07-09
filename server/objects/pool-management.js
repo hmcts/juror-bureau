@@ -3,13 +3,15 @@
 
   const { DAO } = require('./dataAccessObject');
   const urljoin = require('url-join');
-  const { basicDataTransform2 } = require('../lib/utils');
+  const { basicDataTransform } = require('../lib/utils');
+  const { mapCamelToSnake, mapSnakeToCamel } = require('../lib/mod-utils');
 
   module.exports.deferralMaintenance = {
     deferrals: new DAO('moj/deferral-maintenance/deferrals', {
       get: function(locationCode) {
         return {
           uri: urljoin(this.resource, locationCode.toString()),
+          transform: mapSnakeToCamel,
         }
       }
     }),
@@ -21,7 +23,7 @@
             poolNumber: poolNumber,
             jurors: jurors,
           },
-          transform: basicDataTransform2
+          transform: basicDataTransform
         }
       }
     }),
@@ -34,7 +36,7 @@
         return {
           uri: this.resource,
           body: payload,
-          transform: basicDataTransform2
+          transform: basicDataTransform
         }
       }
     }),
@@ -48,11 +50,25 @@
     availableCourtOwnedPools: {
       get: availablePools.bind({ resource: 'moj/manage-pool/available-pools-court-owned/{}' }),
     },
-    reassignJuror: new DAO('moj/manage-pool/reassign-jurors'),
+    reassignJuror: new DAO('moj/manage-pool/reassign-jurors', {
+      put: function(body) {
+        return {
+          body: mapCamelToSnake(body),
+          transform: mapSnakeToCamel,
+        };
+      }
+    }),
   };
 
   module.exports.validateMovement = {
-    validateMovement: new DAO('moj/manage-pool/movement/validation')
+    validateMovement: new DAO('moj/manage-pool/movement/validation', {
+      put: function(body) {
+        return {
+          body: mapCamelToSnake(body),
+          transform: mapSnakeToCamel,
+        };
+      }
+    })
   };
 
   async function availablePools(req, locationCode, deferralDates) {
@@ -65,7 +81,20 @@
       };
     }
 
-    const dao = new DAO(uri);
+    const dao = new DAO(uri, {
+      get: function(body) {
+        return {
+          body,
+          transform: mapSnakeToCamel,
+        };
+      },
+      post: function(body) {
+        return {
+          body,
+          transform: mapSnakeToCamel,
+        };
+      },
+    });
 
     if (this.method === 'POST') {
       return await dao.post(req, body);

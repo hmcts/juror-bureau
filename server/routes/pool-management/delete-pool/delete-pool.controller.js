@@ -14,7 +14,7 @@
       let members, isActive;
       try {
         const response = await poolSummaryObj.get(req, poolNumber);
-        members = response.additionalStatistics.courtSupply + response.bureauSummoning.confirmed;
+        members = response.additionalStatistics.courtSupply + response.bureauSummoning.confirmedFromBureau;
         isActive = response.poolDetails.isActive;
       } catch (err) {
         app.logger.crit('Failed to fetch pool summary (delete pool journey): ', {

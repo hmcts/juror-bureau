@@ -246,14 +246,14 @@
             , fieldErrorMessages = {}
             , maxExceededError = {};
 
-          if (typeof response !== 'undefined' && response.CourtCatchmentItems) {
+          if (typeof response !== 'undefined' && response.courtCatchmentSummaryItems) {
 
-            postcodes = modUtils.transformPostcodes(response.CourtCatchmentItems)[0];
+            postcodes = modUtils.transformPostcodes(response.courtCatchmentSummaryItems)[0];
 
             delete req.session.errors;
             delete req.session.formFields;
             delete req.session.addCitizensError;
-            req.session.coronerPostcodes = response.CourtCatchmentItems;
+            req.session.coronerPostcodes = response.courtCatchmentSummaryItems;
 
             if (tmpErrors) {
               tmpErrors.coronerPostcodes[0].fields.forEach(function(element, index) {

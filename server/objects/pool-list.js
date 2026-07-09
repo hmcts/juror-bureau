@@ -11,7 +11,8 @@ const SORT_KEYS = {
   serviceStartDate: 'SERVICE_START_DATE',
   jurorsInPool: 'JURORS_IN_POOL',
   totalNumberRequested: 'TOTAL_NUMBER_REQUESTED',
-  jurorsConfirmed: 'JURORS_CONFIRMED',
+  requestedFromBureau: 'TOTAL_NUMBER_REQUESTED',
+  confirmedFromBureau: 'JURORS_CONFIRMED',
   poolCapacity: 'POOL_CAPACITY',
 }
 
@@ -40,6 +41,9 @@ module.exports.poolRequestsDAO = new DAO('moj/pool-request/pools-', {
 
     uri = uri + Object.keys(query).map(key => `${key}=${query[key]}`).join('&');
 
-    return { uri };
+    return {
+      uri,
+      transform: (data) => modUtils.mapSnakeToCamel(data),
+    };
   },
 });

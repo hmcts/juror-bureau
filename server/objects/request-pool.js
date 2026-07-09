@@ -4,10 +4,27 @@
   const { DAO } = require('./dataAccessObject');
   const urljoin = require('url-join');
   const utils = require('../lib/utils');
+  const { mapCamelToSnake, mapSnakeToCamel } = require('../lib/mod-utils');
 
-  module.exports.fetchCourts = new DAO('moj/pool-request/court-locations');
+  const transformCourtListResponse = (response) => {
+    const obj = mapSnakeToCamel(response);
 
-  module.exports.fetchAllCourts = new DAO('moj/court-location/all-court-locations');
+    const { data: courts } = obj;
+
+    return { courts };
+  };
+
+  module.exports.fetchCourts = new DAO('moj/pool-request/court-locations', {
+    get: function() {
+      return { transform: transformCourtListResponse };
+    },
+  });
+
+  module.exports.fetchAllCourts = new DAO('moj/court-location/all-court-locations', {
+    get: function() {
+      return { transform: transformCourtListResponse };
+    },
+  });
 
   module.exports.generatePoolNumber = new DAO('moj/pool-request/generate-pool-number', {
     get: function(locationCode, attendanceDate) {
@@ -25,10 +42,13 @@
       }
 
       body.numberRequested = body.numberRequested || 0;
+      body.locationCode = body.courtCode;
+      delete body.courtCode;
 
       return {
         uri: this.resource,
-        body,
+        body: mapCamelToSnake(body),
+        transform: mapSnakeToCamel,
       }
     }
   });
@@ -37,7 +57,7 @@
     get: function(locationCode, attendanceDate) {
       return {
         uri: `${this.resource}?locationCode=${locationCode}&attendanceDate=${attendanceDate}`,
-        transform: utils.basicDataTransform2,
+        transform: utils.basicDataTransform,
       }
     }
   });
@@ -60,24 +80,47 @@
     }
   });
 
-  module.exports.addCoronerCitizens = new DAO('moj/pool-create/add-citizens');
+  module.exports.addCoronerCitizens = new DAO('moj/pool-create/add-citizens', {
+    post: function(body) {
+      return {
+        body,
+        transform: mapSnakeToCamel,
+      };
+    },
+  });
 
   module.exports.fetchPoolsAtCourt = new DAO('moj/pool-request/pools-at-court', {
     get: function(locCode) {
       return { 
         uri: `${this.resource}?locCode=${locCode}`,
-        transform: utils.basicDataTransform,
+        transform: (data) => {
+          const poolsAtCourtLocation = data.data || [];
+
+          delete data._headers;
+          return {
+            ...mapSnakeToCamel(data),
+            poolsAtCourtLocation: mapSnakeToCamel(poolsAtCourtLocation),
+          };
+        },
       };
     }
   });
 
-  module.exports.fetchCourtsDAO = new DAO('moj/pool-request/court-locations');
+  module.exports.fetchCourtsDAO = new DAO('moj/pool-request/court-locations', {
+    get: function() {
+      return { transform: transformCourtListResponse };
+    },
+  });
 
-  module.exports.fetchAllCourtsDAO = new DAO('moj/court-location/all-court-locations');
+  module.exports.fetchAllCourtsDAO = new DAO('moj/court-location/all-court-locations', {
+    get: function() {
+      return { transform: transformCourtListResponse };
+    },
+  });
 
   module.exports.createCoronerPoolDAO = new DAO('moj/pool-create/create-coroner-pool', {
     post: function(body) {
-      return { body };
+      return { body, transform: mapSnakeToCamel };
     },
   });
 
@@ -90,7 +133,18 @@
         headers['If-None-Match'] = `${etag}`;
       }
 
-      return { uri, headers };
+      return {
+        uri,
+        headers,
+        transform: (data) => {
+          const headers = data._headers || {};
+          delete data._headers;
+          return {
+            _headers: headers,
+            ...mapSnakeToCamel(data),
+          };
+        },
+      };
     },
   });
 

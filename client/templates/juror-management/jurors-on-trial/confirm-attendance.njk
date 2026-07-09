@@ -53,23 +53,23 @@
     {% set rows = (rows.push(
       [
         {
-          html: checkJurorInput(juror.juror_number, selectedJurors | arrayIncludes(juror.juror_number)),
+          html: checkJurorInput(juror.jurorNumber, selectedJurors | arrayIncludes(juror.jurorNumber)),
           classes: "jd-middle-align"
         },
         {
-          text: juror.juror_number,
+          text: juror.jurorNumber,
           classes: "jd-middle-align"
         },
         {
-          text: juror.first_name,
+          text: juror.firstName,
           classes: "jd-middle-align"
         },
         {
-          text: juror.last_name,
+          text: juror.lastName,
           classes: "jd-middle-align"
         },
         {
-          text: juror.juror_status,
+          text: juror.jurorStatus,
           classes: "jd-middle-align"
         }
       ]

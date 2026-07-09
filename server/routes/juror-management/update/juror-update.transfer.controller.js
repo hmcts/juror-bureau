@@ -176,7 +176,7 @@
             sourcePoolNumber: req.params.poolNumber || req.session.jurorUpdate.poolNumber,
             sendingCourtLocCode: await resolveLocationCode(app, req),
             receivingCourtLocCode: modUtils.getLocCodeFromCourtNameOrLocation(req.body.courtNameOrLocation),
-            targetServiceStartDate: dateFilter(req.body.attendanceDate, 'DD/MM/YYYY', 'YYYY-MM-DD'),
+            serviceStartDate: dateFilter(req.body.attendanceDate, 'DD/MM/YYYY', 'YYYY-MM-DD'),
             jurorNumbers: req.body.selectedJurors,
           })
             .then((data) => {
@@ -247,6 +247,6 @@
       });
     }
 
-    return poolSummary.poolDetails.locCode;
+    return poolSummary.poolDetails.courtLocationCode;
   }
 })();

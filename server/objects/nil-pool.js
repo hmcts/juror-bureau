@@ -3,6 +3,7 @@
 
   const { DAO } = require('./dataAccessObject');
   const { basicDataTransform } = require('../lib/utils');
+  const { mapCamelToSnake, mapSnakeToCamel } = require('../lib/mod-utils');
 
   module.exports.nilPoolCheck = new DAO('moj/pool-create/nil-pool-check', {
     post: function(payload) {
@@ -20,7 +21,24 @@
       }
     }
   });
-  module.exports.nilPoolCreate = new DAO('moj/pool-create/nil-pool-create');
+  module.exports.nilPoolCreate = new DAO('moj/pool-create/nil-pool-create', {
+    post: function(body) {
+      return {
+        body,
+        transform: mapSnakeToCamel,
+      };
+    },
+  });
 
-  module.exports.nilPoolConvert = new DAO('moj/pool-create/nil-pool-convert');
+  module.exports.nilPoolConvert = new DAO('moj/pool-create/nil-pool-convert', {
+    put: function(body) {
+      body.locationCode = body.courtCode;
+      delete body.courtCode;
+
+      return {
+        body: mapCamelToSnake(body),
+        transform: mapSnakeToCamel,
+      };
+    }
+  });
 })();

@@ -2,13 +2,17 @@
   'use strict';
 
   const { DAO } = require('./dataAccessObject');
-  const { basicDataTransform, basicDataTransform2 } = require('../lib/utils')
+  const { basicDataTransform } = require('../lib/utils')
+  const { mapSnakeToCamel } = require('../lib/mod-utils');
 
   module.exports.courtLocationsFromPostcodeObj = new DAO('moj/court-location/catchment-areas', {
     get: function(postcode) {
       return {
         uri: this.resource + '?postcode=' + postcode,
-        transform: (data) => { delete data._headers; return Object.values(data); },
+        transform: (data) => {
+          delete data._headers;
+          return Object.values(mapSnakeToCamel(data));
+        },
       }
     }
   });
@@ -17,7 +21,7 @@
     get: function(locCode) {
       return {
         uri: this.resource.replace('{loc_code}', locCode),
-        transform: basicDataTransform2,
+        transform: basicDataTransform,
       }
     }
   });

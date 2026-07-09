@@ -432,8 +432,8 @@
           );
         }
 
-        const dates = attendance.juror_attendance_response_data?.map(attendances => {
-          const [year, month, day] = attendances.attendance_date;
+        const dates = attendance.jurorAttendanceResponseData?.map(attendances => {
+          const [year, month, day] = attendances.attendanceDate;
 
           return new Date(year, month - 1, day);
         }) || [];
@@ -443,7 +443,7 @@
         const formattedDate = ('0' + latestDate.getDate()).slice(-2) +
         '/' + ('0' + (latestDate.getMonth() + 1)).slice(-2) + '/' + latestDate.getFullYear();
 
-        jurorOverview.data.commonDetails.onCall = attendance['on_call'];
+        jurorOverview.data.commonDetails.onCall = attendance.onCall;
         cacheJurorCommonDetails(req, jurorOverview.data.commonDetails);
         req.session.jurorAttendanceName = jurorOverview.data.commonDetails.firstName + ' '
         + jurorOverview.data.commonDetails.lastName;
@@ -1156,7 +1156,7 @@
       if (commonDetails.excusalCode) {
         title = 'Excusal refused';
       }
-      if (commonDetails.deferral_code) {
+      if (commonDetails.deferralCode) {
         title = 'Deferral refused';
       }
 

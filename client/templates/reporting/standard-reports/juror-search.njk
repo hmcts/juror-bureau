@@ -91,23 +91,23 @@
               html: '<div class="govuk-radios__item govuk-radios--small govuk-!-padding-left-0">' +
                 '  <input' +
                 '    class="govuk-radios__input"' +
-                '    id="' + juror.juror_number + '"' +
+                '    id="' + juror.jurorNumber + '"' +
                 '    name="jurorNumberToPrint"' +
                 '    type="radio"' +
-                '    value="' + juror.juror_number + '"' +
+                '    value="' + juror.jurorNumber + '"' +
                 '    aria-controls="conditional-jurorNumber"' +
                 '    aria-expanded="false"' +
                 '  >' +
-                '  <label class="govuk-label govuk-radios__label" for="jurorNumber-' + juror.juror_number + '"/>' +
+                '  <label class="govuk-label govuk-radios__label" for="jurorNumber-' + juror.jurorNumber + '"/>' +
                 '</div>'
             },
             
             {
-              text: juror.juror_name,
+              text: juror.jurorName,
               classes: "jd-middle-align"
             },
             {
-              text: juror.juror_number,
+              text: juror.jurorNumber,
               classes: "jd-middle-align"
             },
             {
@@ -115,11 +115,11 @@
               classes: "jd-middle-align"
             },
             {
-              text: juror.pool_number,
+              text: juror.poolNumber,
               classes: "jd-middle-align"
             },
             {
-              text: juror.court_name,
+              text: juror.courtName,
               classes: "jd-middle-align"
             }
           ]

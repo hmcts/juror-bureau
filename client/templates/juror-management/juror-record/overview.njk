@@ -128,10 +128,10 @@
       </div>
 
       {% set nextDate = juror.commonDetails.startDate | dateFilter(null, "dddd D MMMM YYYY") %}
-      {% if attendance["next_date"] %}
-        {% set nextDate = attendance["next_date"] | makeDate | dateFilter(null, "dddd D MMMM YYYY") %}
+      {% if attendance.nextDate %}
+        {% set nextDate = attendance.nextDate | makeDate | dateFilter(null, "dddd D MMMM YYYY") %}
       {% endif %}
-      {% if attendance["on_call"] === true %}
+      {% if attendance.onCall === true %}
         {% set nextDate = "On call" %}
       {% endif %}
 
@@ -163,9 +163,9 @@
               text: "Checked in today"
             },
             value: {
-              text: juror.checked_in_today_time | convert24to12
+              text: juror.checkedInTodayTime | convert24to12
             }
-          } if juror.checked_in_today_time,
+          } if juror.checkedInTodayTime,
           {
             key: {
               text: "Location"

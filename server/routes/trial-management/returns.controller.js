@@ -37,7 +37,7 @@
       return res.render('_errors/generic', { err });
     }
 
-    const isJuryEmpanelled = trialDetails['is_jury_empanelled'];
+    const isJuryEmpanelled = trialDetails.isJuryEmpanelled;
 
     let validatorResult;
 
@@ -61,12 +61,18 @@
 
     // setup the payload to be sent to api - needs names and status
     panelData.forEach(juror => {
-      if (juror['juror_status'] === 'Juror') {
-        juror['empanel_status'] = 'JUROR';
+      if (juror.jurorStatus === 'Juror') {
+        juror.result = 'JUROR';
       }
-      delete juror['juror_status'];
     });
-    req.session[`${trialNumber}-${locationCode}-returnJurors`] = panelData.filter(juror => req.body.selectedJurors.includes(juror['juror_number']));
+    req.session[`${trialNumber}-${locationCode}-returnJurors`] = panelData
+      .filter(juror => req.body.selectedJurors.includes(juror.jurorNumber))
+      .map((juror) => ({
+        jurorNumber: juror.jurorNumber,
+        firstName: juror.firstName,
+        lastName: juror.lastName,
+        result: juror.result,
+      }));
 
     if (!isJuryEmpanelled) {
       // Panel route
@@ -151,7 +157,7 @@
         attendanceDate: dateFilter(new Date(), null, 'YYYY-MM-DD'),
         locationCode,
       },
-      juror: req.session[`${trialNumber}-${locationCode}-returnJurors`].map(juror => juror['juror_number']),
+      juror: req.session[`${trialNumber}-${locationCode}-returnJurors`].map(juror => juror.jurorNumber),
     };
 
     jurorAttendanceDao.post(req, body)
@@ -159,8 +165,8 @@
         let earliestCheckInTime;
 
         attendanceRecords.details.forEach((juror) => {
-          const checkInTime = juror['check_in_time'][0].toString()
-          + juror['check_in_time'][1].toString().padStart(2, '0');
+          const checkInTime = juror.checkInTime[0].toString()
+          + juror.checkInTime[1].toString().padStart(2, '0');
 
           earliestCheckInTime = checkInTime < earliestCheckInTime
             || !earliestCheckInTime ? checkInTime : earliestCheckInTime;
@@ -304,7 +310,7 @@
       return res.render('_errors/generic', { err });
     }
 
-    const isPanel = !trialDetails['is_jury_empanelled']
+    const isPanel = !trialDetails.isJuryEmpanelled;
 
     if (isPanel) {
       backUrl = app.namedRoutes.build('trial-management.trials.detail.get', {
@@ -368,7 +374,7 @@
       return res.render('_errors/generic', { err });
     }
 
-    const panelType = trialDetails['is_jury_empanelled'] ? 'jury' : 'panel';
+    const panelType = trialDetails.isJuryEmpanelled ? 'jury' : 'panel';
 
     if (req.session[`${trialNumber}-${locationCode}-handleAttendance`] === 'return') {
       let validatorResult = validate({
@@ -403,9 +409,9 @@
       payload = selectedJurors;
     } else {
       payload = {
-        'check_in': checkInTime,
-        'check_out': checkOutTime,
-        completed: completeService,
+        checkIn: checkInTime,
+        checkOut: checkOutTime,
+        completed: completeService === 'true',
         jurors: selectedJurors,
       };
     }

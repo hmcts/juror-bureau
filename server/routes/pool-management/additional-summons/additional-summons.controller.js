@@ -20,8 +20,8 @@
           var transformedPostCodes
             , tmpErrors;
 
-          if (typeof response[1] !== 'undefined' && response[1].hasOwnProperty('CourtCatchmentItems')) {
-            transformedPostCodes = modUtils.transformPostcodes(response[1].CourtCatchmentItems);
+          if (typeof response[1] !== 'undefined' && response[1].hasOwnProperty('courtCatchmentSummaryItems')) {
+            transformedPostCodes = modUtils.transformPostcodes(response[1].courtCatchmentSummaryItems);
           }
 
           tmpErrors = _.clone(req.session.errors);
@@ -53,7 +53,7 @@
               app.logger.info('Fetched the number of bureau deferrals: ', {
                 auth: req.session.authentication,
                 data: {
-                  poolNumber: response[0].poolDetails.locCode,
+                  poolNumber: response[0].poolDetails.courtLocationCode,
                 },
               });
 

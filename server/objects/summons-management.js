@@ -3,9 +3,8 @@
   'use strict';
 
   const { DAO } = require('./dataAccessObject');
-  const { basicDataTransform, basicDataTransform2 } = require('../lib/utils');
+  const { basicDataTransform } = require('../lib/utils');
   const urljoin = require('url-join');
-  const { replaceAllObjKeys } = require('../lib/mod-utils');
   const _ = require('lodash');
 
   module.exports.requestInfoObject = new DAO('moj/letter/request-information', {
@@ -26,7 +25,7 @@
     put: function(jurorNumber, key) {
       return {
         uri: urljoin(this.resource, jurorNumber, key),
-        transform: basicDataTransform2,
+        transform: basicDataTransform,
       };
     },
   });
@@ -43,6 +42,7 @@
     },
     patch: function(req, id, part, payload) {
       let uri;
+      const body = _.cloneDeep(payload);
 
       if (part === 'PERSONAL') {
         uri = urljoin(this.resource['PERSONAL'].replace('{}', id));
@@ -50,17 +50,27 @@
         uri = urljoin(this.resource['BASE'].replace('{}', id), this.resource[part]);
       }
 
+      if (body.thirdParty) {
+        body.thirdParty = {
+          ...body.thirdParty,
+          thirdPartyPhone: body.thirdParty.mainPhone,
+          thirdPartyEmail: body.thirdParty.emailAddress,
+        };
+        delete body.thirdParty.mainPhone;
+        delete body.thirdParty.emailAddress;
+      }
+
       const dao = new DAO(uri, {
         patch: function(body) {
           return {
             uri: uri,
             body,
-            transform: basicDataTransform2,
+            transform: basicDataTransform,
           };
         },
       });
 
-      return dao.patch(req, payload);
+      return dao.patch(req, body);
     }
   };
 

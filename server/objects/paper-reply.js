@@ -3,9 +3,50 @@
 
   const { DAO } = require('./dataAccessObject');
   const urljoin = require('url-join');
-  const _ = require('lodash');
-  const { basicDataTransform2 } = require('../lib/utils');
-  const { extractDataAndHeadersFromResponse, replaceAllObjKeys, extractDataAndHeadersFromResponse2 } = require('../lib/mod-utils');
+  const { basicDataTransform } = require('../lib/utils');
+  const { extractDataAndHeadersFromResponse } = require('../lib/mod-utils');
+
+  function normaliseThirdPartyForFe(response) {
+    const details = response.data || response.response || response;
+    const thirdParty = details?.thirdParty;
+
+    if (!thirdParty) {
+      return response;
+    }
+
+    if (typeof thirdParty.thirdPartyFname !== 'undefined') {
+      thirdParty.thirdPartyFName = thirdParty.thirdPartyFname;
+      delete thirdParty.thirdPartyFname;
+    }
+
+    if (typeof thirdParty.thirdPartyLname !== 'undefined') {
+      thirdParty.thirdPartyLName = thirdParty.thirdPartyLname;
+      delete thirdParty.thirdPartyLname;
+    }
+
+    return response;
+  }
+
+  function normaliseThirdPartyForRequest(thirdParty) {
+    if (typeof thirdParty === 'string') {
+      return null;
+    }
+
+    if (!thirdParty) {
+      return thirdParty;
+    }
+
+    const requestThirdParty = {
+      ...thirdParty,
+      thirdPartyPhone: thirdParty.mainPhone,
+      thirdPartyEmail: thirdParty.emailAddress,
+    };
+
+    delete requestThirdParty.mainPhone;
+    delete requestThirdParty.emailAddress;
+
+    return requestThirdParty;
+  }
 
   module.exports.paperReplyObject = new DAO('moj/juror-paper-response/response', {
     post: function(pr) {
@@ -28,7 +69,7 @@
         'lastName': pr.lastName,
         'signed': pr.signed,
         'specialNeeds': pr.specialNeeds,
-        'thirdParty': (typeof pr.thirdParty === 'string') ? null : pr.thirdParty,
+        'thirdParty': normaliseThirdPartyForRequest(pr.thirdParty),
         'title': pr.title,
         'welsh': pr.welsh,
         'canServeOnSummonsDate': pr.canServeOnSummonsDate,
@@ -53,13 +94,13 @@
       return {
         uri: this.resource,
         body,
-        transform: basicDataTransform2,
+        transform: basicDataTransform,
       }
     },
     get: function(jurorNumber) {
       return {
         uri: urljoin('moj/juror-paper-response/juror', jurorNumber),
-        transform: extractDataAndHeadersFromResponse2('data'),
+        transform: (data) => normaliseThirdPartyForFe(extractDataAndHeadersFromResponse('data')(data)),
       }
     }
   });

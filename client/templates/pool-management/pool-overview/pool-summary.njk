@@ -7,7 +7,7 @@
             Bureau summoning
           </span>
           <span class="govuk-!-font-size-80 govuk-!-font-weight-bold">
-            {{ bureauSummoning.required }}
+            {{ bureauSummoning.requestedFromBureau }}
           </span>
           <span class="label">
             Jurors requested
@@ -15,7 +15,7 @@
         </div>
         <div class="pool-values__jurors-confirmed">
           <span class="govuk-!-font-size-80 govuk-!-font-weight-bold">
-            {{ bureauSummoning.confirmed }}
+            {{ bureauSummoning.confirmedFromBureau }}
           </span>
           <span class="label">
             Jurors confirmed
@@ -25,10 +25,10 @@
           {{ poolRecordDoughnut({
             id: "poolRecordStats",
             values: {
-              required: bureauSummoning.required,
-              confirmed: bureauSummoning.confirmed,
+              required: bureauSummoning.requestedFromBureau,
+              confirmed: bureauSummoning.confirmedFromBureau,
               unavailable: bureauSummoning.unavailable,
-              notResponded: bureauSummoning.notResponded,
+              notResponded: bureauSummoning.unresolved,
               surplus: bureauSummoning.surplus,
               total: bureauSummoning.totalSummoned
             },

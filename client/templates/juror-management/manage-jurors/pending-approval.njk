@@ -16,30 +16,30 @@
       {% endif %}
     {% endif %}
 
-    {% if juror['pending_juror_status'].description === "Queued" %}
+    {% if juror.pendingJurorStatus.description === "Queued" %}
       {% if pendingLink %}
-        {% set status = "<a class='govuk-link' href=" + pendingLink + juror['juror_number'] + ">Pending approval</a>" %}
+        {% set status = "<a class='govuk-link' href=" + pendingLink + juror.jurorNumber + ">Pending approval</a>" %}
       {% else %}
         {% set status = "Pending approval" %}
       {% endif %}
     {% else %}
-      {% if juror['pending_juror_status'].description === "Authorised" %}
+      {% if juror.pendingJurorStatus.description === "Authorised" %}
         {% set status = "Approved" %}
       {% else %}
-        {% set status = juror['pending_juror_status'].description | capitalizeFully %}
+        {% set status = juror.pendingJurorStatus.description | capitalizeFully %}
       {% endif%}
     {% endif %}
 
     {% set jurorRows = (jurorRows.push(
       [
         {
-          text: juror['juror_number']
+          text: juror.jurorNumber
         },
         {
-          text: juror['first_name'] | capitalizeFully
+          text: juror.firstName | capitalizeFully
         },
         {
-          text: juror['last_name'] | capitalizeFully
+          text: juror.lastName | capitalizeFully
         },
         {
           html: notes
@@ -49,7 +49,7 @@
         },
         {
           html: status,
-          classes: 'not-pending-table-cell' if juror['pending_juror_status'].description != "Queued" else ''
+          classes: 'not-pending-table-cell' if juror.pendingJurorStatus.description != "Queued" else ''
         }
       ]
     ), jurorRows) %}

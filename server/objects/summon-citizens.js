@@ -1,6 +1,7 @@
 const { DAO } = require('./dataAccessObject');
 const { dateFilter } = require('../components/filters');
 const urljoin = require('url-join');
+const { mapCamelToSnake } = require('../lib/mod-utils');
 
 module.exports.summonCitizensDAO = new DAO('moj/pool-create', {
   post: function(_body, endpoint) {
@@ -19,6 +20,9 @@ module.exports.summonCitizensDAO = new DAO('moj/pool-create', {
       body.postcodes = [_body.postcodes];
     }
 
-    return { uri, body };
+    return {
+      uri,
+      body: mapCamelToSnake(body),
+    };
   },
 });

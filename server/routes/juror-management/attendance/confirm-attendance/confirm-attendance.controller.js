@@ -188,8 +188,8 @@
       let notCheckedOutJNs = [];
 
       jurorsNotCheckedOut.forEach((juror) => {
-        notCheckedOutJNs.push(juror.juror_number);
-        let checkInTime = convertAmPmToLong(timeArrayToString(juror.check_in_time));
+        notCheckedOutJNs.push(juror.jurorNumber);
+        let checkInTime = convertAmPmToLong(timeArrayToString(juror.checkInTime));
 
         if (checkOutTime <= checkInTime){
           checkOutTooEarly = true;
@@ -222,14 +222,14 @@
           singleJuror: false,
         },
         juror: notCheckedOutJNs,
-        juror_in_waiting: true
+        jurorInWaiting: true
       };
 
       promiseArray.push(updateJurorAttendanceDAO.patch(req, payload));
 
       const panelledJurors = jurorsNotCheckedOut.reduce((prev, juror) => {
-        if (getJurorStatus(juror.juror_status) === 'Panel') {
-          prev.push(juror.juror_number);
+        if (getJurorStatus(juror.jurorStatus) === 'Panel') {
+          prev.push(juror.jurorNumber);
         }
         return prev;
       }, []);
@@ -262,5 +262,4 @@
   };
 
 })();
-
 

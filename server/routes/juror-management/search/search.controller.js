@@ -23,18 +23,18 @@ module.exports.getSearch = function(app) {
       try {
         const response = await searchJurorRecordDAO.post(req, payload);
 
-        if (response.total_items === 1 && response.data.length === 1 && req.session.isJurorSearchResult) {
+        if (response.totalItems === 1 && response.data.length === 1 && req.session.isJurorSearchResult) {
           const jurorRecord = response.data[0];
           const jurorRecordUrl = urljoin(app.namedRoutes.build('juror-record.select.get'),
-            '?jurorNumber=' + jurorRecord.juror_number,
-            '&locCode=' + jurorRecord.loc_code);
+            '?jurorNumber=' + jurorRecord.jurorNumber,
+            '&locCode=' + jurorRecord.locCode);
 
           delete req.session.isJurorSearchResult;
 
           return res.redirect(jurorRecordUrl);
         }
 
-        totalResults = response.total_items;
+        totalResults = response.totalItems;
         jurorRecords = transformResults(response.data, app.namedRoutes, isBureauUser(req));
 
         pagination = paginationBuilder(totalResults, req.query.page || 1, req.url);
@@ -140,23 +140,23 @@ function buildSearchPayload({ jurorNumber, jurorName, postcode, poolNumber, page
   };
 
   const payload = {
-    'sort_method': sortOrder === 'ascending' ? 'ASC' : 'DESC',
-    'sort_field': sortByMapper(),
-    'page_limit': constants.PAGE_SIZE,
-    'page_number': page || 1,
+    sortMethod: sortOrder === 'ascending' ? 'ASC' : 'DESC',
+    sortField: sortByMapper(),
+    pageLimit: constants.PAGE_SIZE,
+    pageNumber: page || 1,
   };
 
   if (jurorNumber) {
-    payload['juror_number'] = jurorNumber;
+    payload.jurorNumber = jurorNumber;
   }
   if (jurorName) {
-    payload['juror_name'] = jurorName;
+    payload.jurorName = jurorName;
   }
   if (postcode) {
-    payload['postcode'] = postcode;
+    payload.postcode = postcode;
   }
   if (poolNumber) {
-    payload['pool_number'] = poolNumber;
+    payload.poolNumber = poolNumber;
   }
 
   return payload;
@@ -193,24 +193,24 @@ function transformResults(jurorRecords, namedRoutes, bureauUser) {
 
   jurorRecords.forEach(function(jurorRecord) {
     const url = urljoin(namedRoutes.build('juror-record.select.get'),
-      '?jurorNumber=' + jurorRecord.juror_number,
-      '&locCode=' + jurorRecord.loc_code);
+      '?jurorNumber=' + jurorRecord.jurorNumber,
+      '&locCode=' + jurorRecord.locCode);
 
       listItem = [];
 
       listItem.push(
         {
-          html: '<a href="'+ url +'" class="govuk-link">' + jurorRecord.juror_number + '</a>',
+          html: '<a href="'+ url +'" class="govuk-link">' + jurorRecord.jurorNumber + '</a>',
         },
         {
-          text: capitalizeFully(jurorRecord.juror_name),
+          text: capitalizeFully(jurorRecord.jurorName),
         }
       );
 
       if (bureauUser) {
         listItem.push(
           {
-            text: (jurorRecord.h_email || '-')
+            text: (jurorRecord.hEmail || '-')
           }
         );
       }
@@ -220,10 +220,10 @@ function transformResults(jurorRecords, namedRoutes, bureauUser) {
           text: jurorRecord.postcode,
         },
         {
-          text: jurorRecord.pool_number,
+          text: jurorRecord.poolNumber,
         },
         {
-          text: capitalizeFully(jurorRecord.court_name),
+          text: capitalizeFully(jurorRecord.courtName),
         },
         {
           text: jurorRecord.status,

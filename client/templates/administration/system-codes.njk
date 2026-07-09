@@ -27,7 +27,7 @@
           text: code.description | toSentenceCase
         },
         {
-          text: "Yes" if code.is_active else "No"
+          text: "Yes" if code.isActive else "No"
         } if showActiveColumn
       ]
     ), codeRows) %}

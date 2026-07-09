@@ -1,4 +1,4 @@
-const { mapCamelToSnake, camelToSnake } = require('../../lib/mod-utils');
+const { camelToSnake } = require('../../lib/mod-utils');
 const { capitalise, dateFilter, makeDate } = require('../../components/filters');
 const { trialsListDAO } = require('../../objects');
 const { generateDocument } = require('../../lib/reports/single-generator');
@@ -8,7 +8,7 @@ module.exports.getPrintTrials = (app) => {
     const { isActive, sortBy, sortOrder, trialNumber } = req.query;
 
     const opts = {
-      active: isActive || 'true',
+      isActive: isActive || 'true',
       pageNumber: 1,
       pageLimit: 500,
       sortField: capitalise(camelToSnake(sortBy || 'startDate')),
@@ -19,7 +19,7 @@ module.exports.getPrintTrials = (app) => {
     let response;
 
     try {
-      response = await trialsListDAO.post(req, mapCamelToSnake(opts));
+      response = await trialsListDAO.post(req, opts);
     } catch (err) {
       app.logger.crit('Failed to get trials list', {
         auth: req.session.authentication,
@@ -30,7 +30,7 @@ module.exports.getPrintTrials = (app) => {
       return res.render('_errors/generic', { err });
     }
 
-    const documentContent = buildPdfTable(response.data, response.total_items, isActive === 'false');
+    const documentContent = buildPdfTable(response.data, response.totalItems, isActive === 'false');
 
     let document;
     try {
@@ -52,13 +52,13 @@ module.exports.getPrintTrials = (app) => {
 function buildPdfTable(data, amount, includeInactive) {
   const body = data.map((trial) => {
     return [
-      { text: trial.trial_number },
-      { text: trial.parties },
-      { text: trial.trial_type },
-      { text: trial.court },
+      { text: trial.trialNumber },
+      { text: trial.defendants },
+      { text: trial.trialType },
+      { text: trial.courtLocationName },
       { text: trial.courtroom },
       { text: trial.judge },
-      { text: dateFilter(makeDate(trial.start_date), 'YYYY,MM,DD', 'ddd DD MMM YYYY') },
+      { text: dateFilter(makeDate(trial.startDate), 'YYYY,MM,DD', 'ddd DD MMM YYYY') },
     ];
   });
 

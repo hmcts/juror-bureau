@@ -2,6 +2,7 @@
   'use strict';
 
   const { DAO } = require('./dataAccessObject');
+  const { mapSnakeToCamel } = require('../lib/mod-utils');
 
   module.exports.poolSearchObject = new DAO('moj/pool-search', {
     post: function(searchParams) {
@@ -58,6 +59,10 @@
         return {
           uri: this.resource,
           body: tmpBody,
+          transform: (data) => {
+            delete data._headers;
+            return mapSnakeToCamel(data);
+          },
         }
     }
   });

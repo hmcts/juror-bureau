@@ -1,25 +1,74 @@
 (function() {
   'use strict';
 
-  const { axiosClient } = require('./axios-instance');
+  const _ = require('lodash');
   const { DAO } = require('./dataAccessObject');
+  const { mapCamelToSnake, mapSnakeToCamel } = require('../lib/mod-utils');
   const urljoin = require('url-join');
 
   module.exports.reissueLetterDAO = {
     getList: function(req, body) {
-      return axiosClient('post', 'moj/letter/reissue-letter-list', req.session.authToken, { body });
+      const dao = new DAO('moj/letter/reissue-letter-list', {
+        post: function(body) {
+          return {
+            body: mapCamelToSnake(_.cloneDeep(body)),
+            transform: (data) => {
+              delete data['_headers'];
+              return mapSnakeToCamel(data);
+            },
+          };
+        },
+      });
+
+      return dao.post(req, body);
     },
 
     getListCourt: function(req, body) {
-      return axiosClient('post', 'moj/letter/court-letter-list', req.session.authToken, { body });
+      const dao = new DAO('moj/letter/court-letter-list', {
+        post: function(body) {
+          return {
+            body: mapCamelToSnake(_.cloneDeep(body)),
+            transform: (data) => {
+              delete data['_headers'];
+              return mapSnakeToCamel(data);
+            },
+          };
+        },
+      });
+
+      return dao.post(req, body);
     },
 
     getDuringServiceList: function(req, letterType, includePrinted) {
-      return axiosClient('get', urljoin('moj/letter/court-letter-list', letterType, includePrinted), req.session.authToken);
+      const dao = new DAO('moj/letter/court-letter-list', {
+        get: function(letterType, includePrinted) {
+          return {
+            uri: urljoin(this.resource, letterType, includePrinted),
+            transform: (data) => {
+              delete data['_headers'];
+              return mapSnakeToCamel(data);
+            },
+          };
+        },
+      });
+
+      return dao.get(req, letterType, includePrinted);
     },
 
     postList: function(req, body) {
-      return axiosClient('post', 'moj/letter/reissue-letter', req.session.authToken, { body });
+      const dao = new DAO('moj/letter/reissue-letter', {
+        post: function(body) {
+          return {
+            body: _.cloneDeep(body),
+            transform: (data) => {
+              delete data['_headers'];
+              return mapSnakeToCamel(data);
+            },
+          };
+        },
+      });
+
+      return dao.post(req, body);
     },
 
     printCourtLetters: function(req, body) {
@@ -27,8 +76,11 @@
         post: function(body) {
           return {
             uri: this.resource,
-            body,
-            transform: (data) => { delete data['_headers']; return Object.values(data) },
+            body: mapCamelToSnake(_.cloneDeep(body)),
+            transform: (data) => {
+              delete data['_headers'];
+              return Object.values(mapSnakeToCamel(data));
+            },
           };
         },
       });
@@ -37,11 +89,28 @@
     },
 
     deletePending: function(req, body) {
-      return axiosClient('delete', 'moj/letter/delete-pending-letter', req.session.authToken, { body });
+      const dao = new DAO('moj/letter/delete-pending-letter', {
+        delete: function(body) {
+          return {
+            body: _.cloneDeep(body),
+          };
+        },
+      });
+
+      return dao.delete(req, body);
     },
 
     getJurorInfo: function(req, body) {
-      return axiosClient('post', 'moj/letter/request-information', req.session.authToken, { body });
+      const dao = new DAO('moj/letter/request-information', {
+        post: function(body) {
+          return {
+            body,
+            transform: mapSnakeToCamel,
+          };
+        },
+      });
+
+      return dao.post(req, body);
     },
   };
 
@@ -51,7 +120,7 @@
         get: function(courtLocationCode) {
           return {
             uri: `${this.resource}?court_location=${courtLocationCode}`,
-            transform: (data) => { delete data['_headers']; return Object.values(data) },
+            transform: (data) => { delete data['_headers']; return Object.values(mapSnakeToCamel(data)); },
           };
         },
       });
@@ -63,7 +132,10 @@
         get: function(caseNumber, courtLocationCode) {
           return {
             uri: `${this.resource}?case_number=${caseNumber}&court_location=${courtLocationCode}`,
-            transform: (data) => { delete data['_headers']; return Object.values(data) },
+            transform: (data) => {
+              delete data['_headers'];
+              return Object.values(mapSnakeToCamel(data));
+            },
           };
         },
       });
@@ -75,8 +147,11 @@
         post: function(body) {
           return {
             uri: this.resource,
-            body,
-            transform: (data) => { delete data['_headers']; return Object.values(data) },
+            body: mapCamelToSnake(_.cloneDeep(body)),
+            transform: (data) => {
+              delete data['_headers'];
+              return Object.values(mapSnakeToCamel(data));
+            },
           };
         },
       });

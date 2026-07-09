@@ -93,9 +93,9 @@
             sort: sortBy === 'poolCapacity' ? order : 'none',
           } :
           {
-            id: 'jurorsRequested',
+            id: 'requestedFromBureau',
             value: 'Jurors requested',
-            sort: sortBy === 'jurorsRequested' ? order : 'none',
+            sort: sortBy === 'requestedFromBureau' ? order : 'none',
           } : {
           id: 'numberRequested',
           value: 'Jurors requested',
@@ -122,9 +122,9 @@
     if (status === 'created') {
       table.head.splice(2, 0, {
         ...((tab === 'bureau') ? {
-          id: 'jurorsConfirmed',
+          id: 'confirmedFromBureau',
           value: 'Jurors confirmed',
-          sort: sortBy === 'jurorsConfirmed' ? order : 'none',
+          sort: sortBy === 'confirmedFromBureau' ? order : 'none',
         } : {
           id: 'jurorsInPool',
           value: 'Jurors in pool',
@@ -147,10 +147,12 @@
           if (tab === 'court') {
             return pool.poolCapacity;
           }
-          return (pool.numberRequested !== undefined) ? pool.numberRequested : pool.jurorsRequested;
+          return (pool.numberRequested !== undefined)
+            ? pool.numberRequested
+            : pool.requestedFromBureau;
         }
         , getNumberConfirmed = function() {
-          return (tab === 'bureau') ? pool.confirmedJurors : pool.jurorsInPool;
+          return (tab === 'bureau') ? pool.confirmedFromBureau : pool.jurorsInPool;
         }
         , getNumberResponded = function() {
           return (pool.respondedJurors !== undefined) ? pool.respondedJurors : pool.responded_jurors || 0;
@@ -260,15 +262,15 @@
         sortable: false,
       },
       {
-        id: 'jurorsRequested',
+        id: 'requestedFromBureau',
         value: 'Requested',
-        sort: sortBy === 'jurorsRequested' ? order : 'none',
+        sort: sortBy === 'requestedFromBureau' ? order : 'none',
         sortable: false,
       },
       {
-        id: 'confirmedJurors',
+        id: 'confirmedFromBureau',
         value: 'Confirmed',
-        sort: sortBy === 'confirmedJurors' ? order : 'none',
+        sort: sortBy === 'confirmedFromBureau' ? order : 'none',
         sortable: false,
       },
       {
@@ -284,10 +286,10 @@
     pools.forEach(function(pool) {
       var item = []
         , getNumberRequested = function() {
-          return (pool.jurorsRequested !== undefined) ? pool.jurorsRequested : 0;
+          return (pool.requestedFromBureau !== undefined) ? pool.requestedFromBureau : 0;
         }
         , getNumberConfirmed = function() {
-          return (pool.confirmedJurors !== undefined) ? pool.confirmedJurors : 0;
+          return (pool.confirmedFromBureau !== undefined) ? pool.confirmedFromBureau : 0;
         }
          , getNumberRequired = function() {
           return (pool.required !== undefined) ? pool.required : 0;
@@ -349,19 +351,19 @@
             html:
               '<div class="govuk-radios govuk-radios--small" data-module="govuk-radios">' +
                 '<div class="govuk-radios__item">' +
-                  '<input class="govuk-radios__input" id="' + trial.case_number + '" name="exemptionCaseNumber" ' +
-                    'type="radio" value="' + trial.case_number + '">' +
-                  '<label class="govuk-label govuk-radios__label" for="' + trial.case_number + '">' + trial.case_number + '</label>' +
+                  '<input class="govuk-radios__input" id="' + trial.trialNumber + '" name="exemptionCaseNumber" ' +
+                    'type="radio" value="' + trial.trialNumber + '">' +
+                  '<label class="govuk-label govuk-radios__label" for="' + trial.trialNumber + '">' + trial.trialNumber + '</label>' +
                 '</div>' +
               '</div>',
             attributes: {
-              'data-sort-value': trial.case_number,
+              'data-sort-value': trial.trialNumber,
             },
           },
           {
-            text: trial.parties,
+            text: trial.defendants,
             attributes: {
-              'data-sort-value': trial.parties,
+              'data-sort-value': trial.defendants,
             },
             classes: 'jd-middle-align',
           },
@@ -373,16 +375,16 @@
             classes: 'jd-middle-align',
           },
           {
-            text: dateFilter(trial.start_date, 'YYYY,MM,DD', 'ddd DD MMM YYYY'),
+            text: dateFilter(trial.startDate, 'YYYY,MM,DD', 'ddd DD MMM YYYY'),
             attributes: {
-              'data-sort-value': makeDate(trial.start_date),
+              'data-sort-value': makeDate(trial.startDate),
             },
             classes: 'jd-middle-align',
           },
           {
-            text: trial.end_date ? dateFilter(trial.end_date, 'YYYY,MM,DD', 'ddd DD MMM YYYY') : '-',
+            text: trial.endDate ? dateFilter(trial.endDate, 'YYYY,MM,DD', 'ddd DD MMM YYYY') : '-',
             attributes: {
-              'data-sort-value': trial.end_date ? trial.end_date : '-',
+              'data-sort-value': trial.endDate ? trial.endDate : '-',
             },
             classes: 'jd-middle-align',
           },
@@ -584,39 +586,39 @@
 
     completedJurors.forEach((juror) => {
       let item = [];
-      let checked = checkedJurors.some(j => j.juror_number === juror.juror_number) ? 'checked' : '';
+      let checked = checkedJurors.some(j => j.jurorNumber === juror.jurorNumber) ? 'checked' : '';
 
       item.push(
         {
           html: '<div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">'
             + '<input type="checkbox" class="govuk-checkboxes__input select-check juror-select-check" id="select-'
-            + juror.juror_number +'" '
-            + 'name="selectedJurors"' + checked + ' value="' + juror.juror_number + '">'
-            + '<label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="select-'+ juror.juror_number +'">'
-            + '<span class="govuk-visually-hidden">Select '+ juror.juror_number +'</span> </label> </div>',
+            + juror.jurorNumber +'" '
+            + 'name="selectedJurors"' + checked + ' value="' + juror.jurorNumber + '">'
+            + '<label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="select-'+ juror.jurorNumber +'">'
+            + '<span class="govuk-visually-hidden">Select '+ juror.jurorNumber +'</span> </label> </div>',
           attributes: {
-            'data-sort-value': juror.juror_number,
+            'data-sort-value': juror.jurorNumber,
           },
           classes: 'jd-middle-align',
         },
         {
-          html: `<a href="${getJurorUrl(juror.juror_number)}" class="govuk-link jd-middle-align">${juror.juror_number}</a>`,
+          html: `<a href="${getJurorUrl(juror.jurorNumber)}" class="govuk-link jd-middle-align">${juror.jurorNumber}</a>`,
           attributes: {
-            'data-sort-value': juror.juror_number,
+            'data-sort-value': juror.jurorNumber,
           },
           classes: 'jd-middle-align',
         },
         {
-          text: capitalizeFully(juror.first_name),
+          text: capitalizeFully(juror.firstName),
           attributes: {
-            'data-sort-value': juror.first_name,
+            'data-sort-value': juror.firstName,
           },
           classes: 'jd-middle-align',
         },
         {
-          text: capitalizeFully(juror.last_name),
+          text: capitalizeFully(juror.lastName),
           attributes: {
-            'data-sort-value': juror.last_name,
+            'data-sort-value': juror.lastName,
           },
           classes: 'jd-middle-align',
         },
@@ -631,9 +633,9 @@
 
       if (task === 'uncomplete-service') {
         item.push({
-          text: dateFilter(juror.completion_date, null, 'ddd DD MMM YYYY'),
+          text: dateFilter(juror.completionDate, null, 'ddd DD MMM YYYY'),
           attributes: {
-            'data-sort-value': juror.completion_date,
+            'data-sort-value': juror.completionDate,
           },
           classes: 'jd-middle-align',
         });
@@ -699,10 +701,10 @@
             '<div class="govuk-radios govuk-radios--small" data-module="govuk-radios">' +
               '<div class="govuk-radios__item">' +
                 '<input class="govuk-radios__input" id="' + trial.trialNumber + '" name="selectedTrial" ' +
-                  'type="radio" value="' + trial.trialNumber + (includeLocCodeValue ? `-${trial.courtLocation}` : '') + '">' +
+                  'type="radio" value="' + trial.trialNumber + (includeLocCodeValue ? `-${trial.courtLocationCode}` : '') + '">' +
                 '<label class="govuk-label govuk-radios__label">' +
                   '<a href="/trial-management/trials/' + encodeURIComponent(trial.trialNumber) + '/'
-                  + trial.courtLocation + '/detail'+ '" ' +
+                  + trial.courtLocationCode + '/detail'+ '" ' +
                   'class="govuk-link">' + trial.trialNumber + '</a></label>' +
               '</div>' +
             '</div>',
@@ -711,9 +713,9 @@
           },
         },
         {
-          text: trial.parties,
+          text: trial.defendants,
           attributes: {
-            'data-sort-value': trial.parties,
+            'data-sort-value': trial.defendants,
           },
           classes: 'jd-middle-align',
         },
@@ -725,9 +727,9 @@
           classes: 'jd-middle-align',
         },
         {
-          text: capitalizeFully(trial.court),
+          text: capitalizeFully(trial.courtLocationName),
           attributes: {
-            'data-sort-value': trial.court,
+            'data-sort-value': trial.courtLocationName,
           },
           classes: 'jd-middle-align',
         },
@@ -1373,7 +1375,21 @@
 
   const snakeToCamel = (item) => item.split('_').reduce((prev, curr) => prev + curr[0].toUpperCase() + curr.slice(1));
 
-  const mapSnakeToCamel = (object) => replaceAllObjKeys(object, snakeToCamel);
+  const mapSnakeToCamel = (object) => {
+    if (typeof object !== 'object' || object === null || Array.isArray(object)) {
+      return object;
+    }
+    const headers = object['_headers'];
+    const transformed = replaceAllObjKeys(_.omit(object, ['_headers']), snakeToCamel);
+    if (headers) {
+      return {
+        '_headers': headers,
+        ...transformed,
+      };
+    } else {
+      return transformed;
+    }
+  };
 
   module.exports.snakeToCamel = snakeToCamel;
   module.exports.mapSnakeToCamel = mapSnakeToCamel;
@@ -1490,16 +1506,6 @@
   }
 
   module.exports.extractDataAndHeadersFromResponse = (responseName = 'response') => (data) => { 
-    const headers = data._headers;
-    delete data._headers
-
-    return {
-      headers,
-      [responseName]: data,
-    }; 
-  }
-
-  module.exports.extractDataAndHeadersFromResponse2 = (responseName = 'response') => (data) => { 
     const headers = data._headers;
     delete data._headers
 

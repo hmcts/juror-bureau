@@ -142,23 +142,6 @@
       activeKey = 'data';
     }
 
-    // If object has key then return the given key
-    if (typeof object === 'object' && Object.prototype.hasOwnProperty.call(object, activeKey)) {
-      return object[activeKey];
-    }
-
-    // Otherwise return the object as-is.
-    return object;
-  };
-
-  module.exports.basicDataTransform2 = function(object, key) {
-    var activeKey = key;
-
-    // Ensure key has a default value
-    if (typeof activeKey !== 'string') {
-      activeKey = 'data';
-    }
-
     delete object['_headers'];
 
     // If object has key then return the given key

@@ -265,7 +265,7 @@ const { poolRequestsDAO } = require('../../objects/pool-list');
         , trialNumber = req.query['trialNumber'];
       let pagination;
       const opts = {
-        active: false,
+        isActive: false,
         pageNumber: currentPage,
         pageLimit: modUtils.constants.PAGE_SIZE,
         sortField: capitalise(modUtils.camelToSnake(sortBy)),
@@ -287,9 +287,7 @@ const { poolRequestsDAO } = require('../../objects/pool-list');
       }
 
       try {
-        let data = await trialsListDAO.post(req, modUtils.mapCamelToSnake(opts));
-
-        data = modUtils.replaceAllObjKeys(data, _.camelCase);
+        let data = await trialsListDAO.post(req, opts);
 
         app.logger.info('Fetched list of all trials', {
           data: {

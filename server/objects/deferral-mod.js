@@ -2,7 +2,7 @@
   'use strict';
 
   const { DAO } = require('./dataAccessObject');
-  const { basicDataTransform, basicDataTransform2 } = require('../lib/utils');
+  const { basicDataTransform } = require('../lib/utils');
   const urljoin = require('url-join');
 
 
@@ -15,7 +15,7 @@
       return {
         uri,
         body,
-        transform: basicDataTransform2,
+        transform: basicDataTransform,
       }
     },
     post: function(jurorNumber, poolNumber, deferralDate, deferralReason, replyMethod) {
@@ -41,7 +41,7 @@
       return {
         uri: urljoin('moj/deferral-maintenance/juror/defer', jurorNumber),
         body,
-        transform: basicDataTransform2,
+        transform: basicDataTransform,
       }
     }
   });
@@ -55,7 +55,7 @@
           poolNumber,
           excusalReasonCode,
         },
-        transform: basicDataTransform2,
+        transform: basicDataTransform,
       }
     }
   });

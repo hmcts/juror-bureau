@@ -4,7 +4,7 @@
   const { axiosClient } = require('./axios-instance');
   const _ = require('lodash');
   const { replaceAllObjKeys } = require('../lib/mod-utils');
-  const { basicDataTransform2 } = require('../lib/utils');
+  const { basicDataTransform } = require('../lib/utils');
 
   const deferralExcusalStats = {
     resource: 'bureau/dashboard/deferral-Excusal',
@@ -18,7 +18,7 @@
         'Content-type': 'application/vnd.api+json',
         'Accept': 'application/json'
       }
-      options.transform = basicDataTransform2;
+      options.transform = basicDataTransform;
 
       return axiosClient('post', url , jwtToken, options);
     },
