@@ -568,7 +568,7 @@
       receivingCourtLocCode: validationPayload.receivingCourtLocCode,
       sourceCourtLocCode: validationPayload.sendingCourtLocCode,
       sourcePoolNumber: validationPayload.sourcePoolNumber,
-      'from_summons_reply': fromSummonsReply,
+      fromSummonsReply,
     };
 
     if (validationPayload.receivingPoolNumber) {
