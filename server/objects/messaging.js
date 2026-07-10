@@ -79,7 +79,7 @@
       return {
         uri: this.resource,
         body: mapCamelToSnake(body),
-        transform: (data) => basicDataTransform2(data),
+        transform: (data) => basicDataTransform(data),
       };
     }
   });
