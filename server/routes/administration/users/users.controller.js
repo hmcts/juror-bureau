@@ -341,15 +341,15 @@
             sort: sortBy === 'manager' ? order : 'none',
           },
         );
-        if (isCourtManager(req, res)) {
-          table.head.push(
-            {
-              id: 'seniorJurorOfficer',
-              value: 'SJO',
-              sort: sortBy === 'seniorJurorOfficer' ? order : 'none',
-            },
-          );
-        }
+      }
+      if (isSystemAdministrator(req, res) || isCourtManager(req, res)) {
+        table.head.push(
+          {
+            id: 'seniorJurorOfficer',
+            value: 'SJO',
+            sort: sortBy === 'seniorJurorOfficer' ? order : 'none',
+          },
+        );
       }
 
       table.head.push(
@@ -404,13 +404,15 @@
               text: user.roles.includes('MANAGER') ? 'Yes' : 'No',
             },
           );
-          if (isCourtManager(req, res)) {
-            item.push(
-              {
-                text: user.roles.includes('SENIOR_JUROR_OFFICER') ? 'Yes' : 'No',
-              },
-            );
-          }
+        }
+        if (isSystemAdministrator(req, res) || isCourtManager(req, res)) {
+          item.push(
+            {
+              text: user.userType === 'COURT' || user.userType === 'ADMINISTRATOR'
+                ? (user.roles.includes('SENIOR_JUROR_OFFICER') ? 'Yes' : 'No') 
+                : '-',
+            },
+          );
         }
 
         item.push(
