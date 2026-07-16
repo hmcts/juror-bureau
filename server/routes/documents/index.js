@@ -22,6 +22,7 @@
   module.exports = function(app) {
 
     require('./exemption')(app);
+    require('./we-are-group')(app);
 
     app.get('/documents',
       'documents.get',

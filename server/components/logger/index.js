@@ -57,12 +57,14 @@
         app.logger = Logger.instance;
       }
 
-      // attempt to attach sanitiser wrapper to app.logger and Logger.instance
-      try {
-        sanitiseLog(Logger.instance, levels, app);
-        sanitiseLog(Logger.instance, levels);
-      } catch (e) {
-        console.error('Logger sanitisation not applied:', e && e.message ? e.message : e);
+      if (!this.config.logSanitisationDisabled) {
+        // attempt to attach sanitiser wrapper to app.logger and Logger.instance
+        try {
+          sanitiseLog(Logger.instance, levels, app);
+          sanitiseLog(Logger.instance, levels);
+        } catch (e) {
+          console.error('Logger sanitisation not applied:', e && e.message ? e.message : e);
+        }
       }
     }
   };
