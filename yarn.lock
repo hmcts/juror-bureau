@@ -4122,28 +4122,28 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pdfkit@npm:^0.18.0":
-  version: 0.18.0
-  resolution: "pdfkit@npm:0.18.0"
+"pdfkit@npm:^0.19.1":
+  version: 0.19.1
+  resolution: "pdfkit@npm:0.19.1"
   dependencies:
     "@noble/ciphers": "npm:^1.0.0"
     "@noble/hashes": "npm:^1.6.0"
     fontkit: "npm:^2.0.4"
     js-md5: "npm:^0.8.3"
     linebreak: "npm:^1.1.0"
-    png-js: "npm:^1.0.0"
-  checksum: 10/98314d98685b9640dd0848cc0709ca80ac66a9fc2e6d38919b1e990e750bea9e9c0f556137f0ca112beb863274da945f309724d99513ccc881ea4c7a869dad20
+    png-js: "npm:^1.1.0"
+  checksum: 10/cb03683307128973fd52c05dfb85741c7020ffd27548fc3167a665057832fd516756d4558393de9df91cca77257dd55fe58b78a9737bebf9d765adc9fcf5fc0b
   languageName: node
   linkType: hard
 
 "pdfmake@npm:^0.3.8":
-  version: 0.3.8
-  resolution: "pdfmake@npm:0.3.8"
+  version: 0.3.11
+  resolution: "pdfmake@npm:0.3.11"
   dependencies:
     linebreak: "npm:^1.1.0"
-    pdfkit: "npm:^0.18.0"
+    pdfkit: "npm:^0.19.1"
     xmldoc: "npm:^2.0.3"
-  checksum: 10/97cafdfdac07b2be9ee720fe4acd65dd4425c3b833ff3783f4c24b559d6577c9a0517412176c5681a237dfe0f4b9079d58ca18ac2c084364639779c48a6660b3
+  checksum: 10/5db16a98dfaf7cc315df6774f02960e154ef56479fc0f77c8abac4ac448dab6536766f31c84336bc8adb8d061a168bcbbc28dac69a912b2e38dce295b93f7efb
   languageName: node
   linkType: hard
 
@@ -4177,7 +4177,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"png-js@npm:^1.0.0":
+"png-js@npm:^1.1.0":
   version: 1.1.0
   resolution: "png-js@npm:1.1.0"
   dependencies:
