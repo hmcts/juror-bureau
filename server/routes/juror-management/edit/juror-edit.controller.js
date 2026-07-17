@@ -20,6 +20,7 @@
   const { resolveCatchmentResponse } = require('../../summons-management/summons-management.controller');
   const courtNameOrLocationValidator = require('../../../config/validation/request-pool').courtNameOrLocation;
   const { resolveJurorStatus, cacheJurorCommonDetails } = require('../juror-record/juror-record.controller');
+  const config = require('../../../config/environment')();
 
   module.exports.getEditDeferral = (app) => {
     return (req, res) => {
@@ -785,6 +786,12 @@
       auth: req.session.authentication,
       data: { jurorNumber: req.params['jurorNumber'] },
     });
+
+
+    if (req.session[`editJurorDetails-${jurorNumber}`].communicationPreference === 'Digital' && requestBody.communicationPreference === 'Paper') {
+      console.log(`\n\nCHANGING TO PAPER\n\n`);
+      req.session[`sendFullPaperSummons-${jurorNumber}`] = true;
+    }
 
     delete req.session[`editJurorEtag-${jurorNumber}`];
     delete req.session[`editJurorDetails-${jurorNumber}`];
