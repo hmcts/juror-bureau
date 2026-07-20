@@ -21,6 +21,7 @@
     require('./expenses/index')(app);
     require('./approve-expenses/index')(app);
     require('./jurors-on-trial/index')(app);
+    require('./send-paper-summons/index')(app);
 
     app.get('/juror-management/attendance/:status?',
       'juror-management.attendance.get',

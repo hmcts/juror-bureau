@@ -173,7 +173,15 @@
               },
               value: {
                 text: juror.commonDetails.dbdPreference | capitalizeFully
-              }
+              },
+              actions: {
+                items: [
+                  {
+                    href: url('juror-management.send-paper-summons.get', { jurorNumber: juror.commonDetails.jurorNumber }),
+                    text: "Send summons pack"
+                  }
+                ]
+              } if juror.commonDetails.dbdPreference == "Paper"
             } if featureFlags.digitalByDefault and juror.commonDetails.digitalByDefault
           ]
         }) }}

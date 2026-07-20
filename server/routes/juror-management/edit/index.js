@@ -101,5 +101,14 @@
       'juror-record.details-edit.reassign.ineligible-age.get',
       auth.verify,
       jurorUpdateController.getIneligibleAge(app));
+
+    app.get('/juror-management/record/:jurorNumber/details/edit/communication-changed',
+      'juror-record.details-edit.communication-changed.get',
+      auth.verify,
+      controller.getCommunicationChanged(app));
+    app.post('/juror-management/record/:jurorNumber/details/edit/communication-changed',
+      'juror-record.details-edit.communication-changed.post',
+      auth.verify,
+      controller.postCommunicationChanged(app));
   };
 })();
