@@ -528,6 +528,7 @@
           delete req.session.poolJurorsReassign;
         }
 
+        if (config.featureFlags.digitalByDefault) {
           if (req.url.includes('details/edit/reassign/select-pool') && req.session[`sendFullPaperSummons-${req.params['jurorNumber']}`]) {
             return jurorRecordObject.get(
               req,
