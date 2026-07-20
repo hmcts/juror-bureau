@@ -789,9 +789,11 @@
     });
 
 
-    if (req.session[`editJurorDetails-${jurorNumber}`].commonDetails.dbdPreference === 'Digital' && requestBody.dbdPreference === 'Paper') {
-      console.log(`\n\nCHANGING TO PAPER\n\n`);
-      req.session[`sendFullPaperSummons-${jurorNumber}`] = true;
+    if (config.featureFlags.digitalByDefault) {
+      if (req.session[`editJurorDetails-${jurorNumber}`].commonDetails.dbdPreference === 'Digital' && requestBody.dbdPreference === 'Paper') {
+        console.log(`\n\nCHANGING TO PAPER\n\n`);
+        req.session[`sendFullPaperSummons-${jurorNumber}`] = true;
+      }
     }
 
     delete req.session[`editJurorEtag-${jurorNumber}`];
@@ -1194,6 +1196,12 @@
         if (req.body.selectCourt === req.session[`editJurorDetails-${jurorNumber}-reassign`].catchmentAreas.currentLocationCode) {
           delete req.session[`editJurorDetails-${jurorNumber}-reassign`];
 
+          if (req.session[`sendFullPaperSummons-${jurorNumber}`]) {
+            return res.redirect(app.namedRoutes.build('juror-record.details-edit.communication-changed.get', {
+              jurorNumber
+            }));
+          }
+
           return res.redirect(app.namedRoutes.build('juror-record.details.get', {
             jurorNumber
           }));
@@ -1233,18 +1241,20 @@
   module.exports.getCommunicationChanged = (app) => {
     return (req, res) => {
       const { jurorNumber } = req.params;
+      const { loc_code } = req.query;
       return res.render('juror-management/edit/communication-changed', {
         jurorNumber,
         processUrl: app.namedRoutes.build('juror-record.details-edit.communication-changed.post', {
           jurorNumber,
-        }),
+        }) + (loc_code ? '?loc_code=' + loc_code : ''),
       });
     };
   };
 
-   module.exports.postCommunicationChanged = (app) => {
+  module.exports.postCommunicationChanged = (app) => {
     return async (req, res) => {
       const { jurorNumber } = req.params;
+      const { loc_code } = req.query;
 
       delete req.session[`sendFullPaperSummons-${jurorNumber}`];
 
@@ -1271,7 +1281,7 @@
       
       return res.redirect(app.namedRoutes.build('juror-record.details.get', {
         jurorNumber,
-      }));
+      }) + (loc_code ? '?loc_code=' + loc_code : ''));
     };
   };
 
