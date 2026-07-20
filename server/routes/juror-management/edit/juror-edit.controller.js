@@ -791,7 +791,6 @@
 
     if (config.featureFlags.digitalByDefault) {
       if (req.session[`editJurorDetails-${jurorNumber}`].commonDetails.dbdPreference === 'Digital' && requestBody.dbdPreference === 'Paper') {
-        console.log(`\n\nCHANGING TO PAPER\n\n`);
         req.session[`sendFullPaperSummons-${jurorNumber}`] = true;
       }
     }
