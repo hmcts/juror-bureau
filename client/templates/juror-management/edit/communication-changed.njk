@@ -1,0 +1,50 @@
+{% extends "layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "includes/csrf.njk" import csrfProtection %}
+
+{% block page_title %}{{ serviceName }} - Communication preferences changed{% endblock %}
+{% block page_identifier %}Communication preferences changed{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">Communication preferences have been changed to paper</h1>
+      <form method="post" action="{{ processUrl }}" id="changedCommunicationPreferencesForm">
+          {{ govukRadios({
+            classes: "govuk-radios--inline",
+            name: "sendPaperSummons",
+            fieldset: {
+              legend: {
+                text: "Do you want to send a paper summons pack to the juror?",
+                classes: "govuk-fieldset__legend--m"
+              }
+            },
+            hint: {
+              text: "This action will not send another summons letter."
+            },
+            items: [
+              {
+                value: "yes",
+                text: "Yes",
+                checked: true
+              },
+              {
+                value: "no",
+                text: "No"
+              }
+            ]
+          }) }}
+
+          {{ govukButton({
+            text: "Continue",
+            name: "submit",
+            value: "submit"
+          }) }}
+
+          {{ csrfProtection(csrftoken) }}
+      </form>
+    </div>
+  </div>
+{% endblock %}

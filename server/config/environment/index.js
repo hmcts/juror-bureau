@@ -61,6 +61,10 @@ const all = {
     max: process.env.RATE_LIMIT_MAX ? Number(process.env.RATE_LIMIT_MAX) : 1000000, // max number of requests per time (in ms above)
     message: 'Too many requests, please try again later. Thank you.',
   },
+
+  featureFlags: {
+    digitalByDefault: process.env.DIGITAL_BY_DEFAULT === 'true',
+  },
 };
 
 module.exports = function() {

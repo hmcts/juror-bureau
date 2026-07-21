@@ -25,7 +25,14 @@
       return { 
         uri,
         headers,
-        transform: extractDataAndHeadersFromResponse('data')
+        transform: (data) => {
+          const transformed = extractDataAndHeadersFromResponse('data')(data);
+          // transformed.data.commonDetails.digitalByDefault = true;
+          // if (tab === 'detail') {
+          //   transformed.data.communicationPreference = 'digital';
+          // }
+          return transformed;
+        }
       };
     }
   });
