@@ -20,6 +20,8 @@
   const { resolveCatchmentResponse } = require('../../summons-management/summons-management.controller');
   const courtNameOrLocationValidator = require('../../../config/validation/request-pool').courtNameOrLocation;
   const { resolveJurorStatus, cacheJurorCommonDetails } = require('../juror-record/juror-record.controller');
+  const config = require('../../../config/environment')();
+  const { sendPaperSummonsPackDAO } = require('../../../objects/documents');
 
   module.exports.getEditDeferral = (app) => {
     return (req, res) => {
@@ -786,6 +788,13 @@
       data: { jurorNumber: req.params['jurorNumber'] },
     });
 
+
+    if (config.featureFlags.digitalByDefault) {
+      if (req.session[`editJurorDetails-${jurorNumber}`].commonDetails.dbdPreference === 'Digital' && requestBody.dbdPreference === 'Paper') {
+        req.session[`sendFullPaperSummons-${jurorNumber}`] = true;
+      }
+    }
+
     delete req.session[`editJurorEtag-${jurorNumber}`];
     delete req.session[`editJurorDetails-${jurorNumber}`];
     delete req.session.dateMax;
@@ -842,6 +851,12 @@
         });
         return res.render('_errors/generic');
       }
+    }
+
+    if (req.session[`sendFullPaperSummons-${jurorNumber}`]) {
+      return res.redirect(app.namedRoutes.build('juror-record.details-edit.communication-changed.get', {
+        jurorNumber
+      }));
     }
 
     return res.redirect(successUrl);
@@ -1180,6 +1195,12 @@
         if (req.body.selectCourt === req.session[`editJurorDetails-${jurorNumber}-reassign`].catchmentAreas.currentLocationCode) {
           delete req.session[`editJurorDetails-${jurorNumber}-reassign`];
 
+          if (req.session[`sendFullPaperSummons-${jurorNumber}`]) {
+            return res.redirect(app.namedRoutes.build('juror-record.details-edit.communication-changed.get', {
+              jurorNumber
+            }));
+          }
+
           return res.redirect(app.namedRoutes.build('juror-record.details.get', {
             jurorNumber
           }));
@@ -1213,6 +1234,53 @@
       return res.redirect(app.namedRoutes.build('juror-record.details-edit.reassign.select-pool.get', {
         jurorNumber,
       }));
+    };
+  };
+
+  module.exports.getCommunicationChanged = (app) => {
+    return (req, res) => {
+      const { jurorNumber } = req.params;
+      const { loc_code } = req.query;
+      return res.render('juror-management/edit/communication-changed', {
+        jurorNumber,
+        processUrl: app.namedRoutes.build('juror-record.details-edit.communication-changed.post', {
+          jurorNumber,
+        }) + (loc_code ? '?loc_code=' + loc_code : ''),
+      });
+    };
+  };
+
+  module.exports.postCommunicationChanged = (app) => {
+    return async (req, res) => {
+      const { jurorNumber } = req.params;
+      const { loc_code } = req.query;
+
+      delete req.session[`sendFullPaperSummons-${jurorNumber}`];
+
+      if (req.body.sendPaperSummons === 'yes'){ 
+        try {
+          await sendPaperSummonsPackDAO.post(req, jurorNumber);
+
+          app.logger.info('Sent paper summons pack to juror: ', {
+            auth: req.session.authentication,
+            data: { jurorNumber },
+          });
+
+          req.session.bannerMessage = 'Paper summons sent';
+        } catch (err) {
+          app.logger.crit('Failed to send paper summons pack to juror: ', {
+            auth: req.session.authentication,
+            data: { jurorNumber },
+            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+          });
+
+          return res.render('_errors/generic', { err });
+        }
+      }
+      
+      return res.redirect(app.namedRoutes.build('juror-record.details.get', {
+        jurorNumber,
+      }) + (loc_code ? '?loc_code=' + loc_code : ''));
     };
   };
 

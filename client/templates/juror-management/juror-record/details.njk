@@ -147,19 +147,47 @@
             value: {
               text: juror.dateOfBirth | dateFilter(null, "DD MMM YYYY") if juror.dateOfBirth else "-"
             }
-          },
-          {
-            key: {
-              text: "Welsh language"
-            },
-            value: {
-              text: "Yes" if juror.welsh else "No"
-            }
-          } if juror.commonDetails.isWelshCourt
+          }
         ]
       }) }}
     </div>
   </div>
+
+  {% if juror.commonDetails.isWelshCourt or (featureFlags.digitalByDefault and juror.commonDetails.digitalByDefault) %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <h2 id="jurorPreferencesLabel" class="govuk-heading-m">Additional requirements</h2>
+        {{ govukSummaryList({
+          rows: [
+            {
+              key: {
+                text: "Welsh language"
+              },
+              value: {
+                text: "Yes" if juror.welsh else "No"
+              }
+            } if juror.commonDetails.isWelshCourt,
+            {
+              key: {
+                text: "Communication preference"
+              },
+              value: {
+                text: juror.commonDetails.dbdPreference | capitalizeFully
+              },
+              actions: {
+                items: [
+                  {
+                    href: url('juror-management.send-paper-summons.get', { jurorNumber: juror.commonDetails.jurorNumber }),
+                    text: "Send summons pack"
+                  }
+                ]
+              } if juror.commonDetails.dbdPreference == "Paper"
+            } if featureFlags.digitalByDefault and juror.commonDetails.digitalByDefault
+          ]
+        }) }}
+      </div>
+    </div>
+  {% endif %}
 
   {% if juror.thirdParty %}
     {% include "../_partials/third-party-details.njk" %}
