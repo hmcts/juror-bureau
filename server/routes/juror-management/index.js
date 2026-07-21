@@ -2,6 +2,7 @@
   'use strict';
 
   const auth = require('../../components/auth');
+  const config = require('../../config/environment')();
   const controller = require('./juror-management.controller');
 
   module.exports = function(app) {
@@ -21,6 +22,9 @@
     require('./expenses/index')(app);
     require('./approve-expenses/index')(app);
     require('./jurors-on-trial/index')(app);
+    if (config.featureFlags.digitalByDefault) {
+      require('./send-paper-summons/index')(app);
+    }
 
     app.get('/juror-management/attendance/:status?',
       'juror-management.attendance.get',

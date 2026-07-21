@@ -16,6 +16,8 @@
       fetchAndMergeIneligibleJurorDetails,
       removeAgeDisqualifiedJurorsFromMovementData,
     } = require('../../../lib/age-disqualification-functions');
+  const { record: jurorRecordObject } = require('../../../objects/juror-record');
+  const config = require('../../../config/environment')();
 
   module.exports.getReassignJuror = function(app) {
     return async function(req, res) {
@@ -524,6 +526,33 @@
         
         if (req.session.poolJurorsReassign) {
           delete req.session.poolJurorsReassign;
+        }
+
+        if (config.featureFlags.digitalByDefault) {
+          if (req.url.includes('details/edit/reassign/select-pool') && req.session[`sendFullPaperSummons-${req.params['jurorNumber']}`]) {
+            return jurorRecordObject.get(
+              req,
+              'overview',
+              req.params['jurorNumber'],
+              tmpLocCode
+            ).then((jurorDetails) => {
+              if (jurorDetails.data.commonDetails.digitalByDefault) {
+                return res.redirect(app.namedRoutes.build('juror-record.details-edit.communication-changed.get', {
+                  jurorNumber: req.params['jurorNumber'],
+                }) + (tmpLocCode ? '?loc_code=' + tmpLocCode : ''));
+              }
+
+              return res.redirect(returnUrl);
+            }).catch((err) => {
+              app.logger.crit('Failed to fetch juror details for reassign return url', {
+                auth: req.session.authentication,
+                locationCode: req.session.locCode,
+                error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+              });
+
+              return res.redirect(returnUrl);
+            });
+          }
         }
 
         return res.redirect(returnUrl);
