@@ -408,9 +408,7 @@
         if (isSystemAdministrator(req, res) || isCourtManager(req, res)) {
           item.push(
             {
-              text: user.userType === 'COURT' || user.userType === 'ADMINISTRATOR'
-                ? (user.roles.includes('SENIOR_JUROR_OFFICER') ? 'Yes' : 'No') 
-                : '-',
+              text: user.roles.includes('SENIOR_JUROR_OFFICER') ? 'Yes' : 'No',
             },
           );
         }
