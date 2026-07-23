@@ -6,6 +6,7 @@
 {% from "govuk/components/details/macro.njk" import govukDetails %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/pagination/macro.njk" import govukPagination %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
 {% from "custom-components/sortable-table/macro.njk" import modSortableTable %}
 {% from "custom-components/autocomplete/macro.njk" import modAutocomplete %}
 {% from "includes/csrf.njk" import csrfProtection %}
@@ -58,6 +59,28 @@
     ],
     value: searchOpts.userType
   }) }}
+
+  {{ govukCheckboxes({
+    name: "roles",
+    classes: "govuk-checkboxes--small",
+    fieldset: {
+      legend: {
+        text: "User roles",
+        classes: "govuk-fieldset__legend--m"
+      }
+    },
+    items: [
+      {
+        value: "MANAGER",
+        text: "Manager"
+      },
+      {
+        value: "SENIOR_JUROR_OFFICER",
+        text: "Senior Jury Officer"
+      }
+    ],
+    values: searchOpts.roles
+  }) }}
 {% endset %}
 
 {% include "includes/errors.njk" %}  
@@ -91,7 +114,7 @@
         {{ govukDetails({
           summaryText: "Advanced search",
           html: advancedSearchHtml,
-          open: searchOpts.court or searchOpts.userType
+          open: searchOpts.court or searchOpts.userType or searchOpts.roles
         }) }}
         {{ govukButton({
           text: "Search",
