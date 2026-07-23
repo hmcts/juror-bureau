@@ -170,7 +170,9 @@
         }
 
         if (!_.isEmpty(req.query)) {
-          queryString = '?' + new URLSearchParams(req.query).toString();
+          const queryParams = new URLSearchParams(req.query);
+          queryParams.delete('page');
+          queryString = '?' + queryParams.toString();
         }
         return app.namedRoutes.build('administration.users.get') + queryString;
       };

@@ -194,11 +194,11 @@
   <script type="application/javascript" nonce="{{ nonce }}">
     $(document).ready(() => {
       $('#activeUsersRadio').on('click', function() {
-        window.location.href = '{{ radioUrls.activeUrl }}';
+        window.location.href = '{{ radioUrls.activeUrl | safe }}';
       });
 
       $('#allUsersRadio').on('click', function() {
-        window.location.href = '{{ radioUrls.allUrl }}';
+        window.location.href = '{{ radioUrls.allUrl | safe }}';
       });
     });
   </script>
