@@ -100,6 +100,12 @@
           searchOpts['userType'] = req.query.userType;
           sortUrlPrefix = `${sortUrlPrefix}&userType=${req.query.userType}`;
         };
+        if (req.query.roles) {
+          payload['roles'] = req.query.roles.split(',');
+          searchOpts['roles'] = req.query.roles;
+          sortUrlPrefix = `${sortUrlPrefix}&roles=${req.query.roles}`;
+        }
+
 
         const users = await usersDAO.post(req, payload);
 
@@ -147,7 +153,7 @@
 
   module.exports.postSearchUsers = function(app) {
     return async function(req, res) {
-      const builUrl = function(body) {
+      const buildUrl = function(body) {
         let queryString = '';
 
         if (body.userName) {
@@ -159,9 +165,14 @@
         if (body.userType) {
           req.query['userType'] = body.userType;
         }
+        if (body.roles) {
+          req.query['roles'] = body.roles;
+        }
 
         if (!_.isEmpty(req.query)) {
-          queryString = '?' + new URLSearchParams(req.query).toString();
+          const queryParams = new URLSearchParams(req.query);
+          queryParams.delete('page');
+          queryString = '?' + queryParams.toString();
         }
         return app.namedRoutes.build('administration.users.get') + queryString;
       };
@@ -169,19 +180,22 @@
       delete req.query.userName;
       delete req.query.court;
       delete req.query.userType;
+      delete req.query.roles
 
       matchUserCourt(req.session.adminCourts, {courtNameOrLocation: req.body.courtSearch})
         .then(function(court) {
-          return res.redirect(builUrl({
+          return res.redirect(buildUrl({
             userName: req.body.userNameSearch,
             locationCode: court.locationCode,
             userType: req.body.userTypeSearch,
+            roles: req.body.roles,
           }));
         })
         .catch(function() {
-          return res.redirect(builUrl({
+          return res.redirect(buildUrl({
             userName: req.body.userNameSearch,
             userType: req.body.userTypeSearch,
+            roles: req.body.roles,
           }));
         });
     };
@@ -341,15 +355,15 @@
             sort: sortBy === 'manager' ? order : 'none',
           },
         );
-        if (isCourtManager(req, res)) {
-          table.head.push(
-            {
-              id: 'seniorJurorOfficer',
-              value: 'SJO',
-              sort: sortBy === 'seniorJurorOfficer' ? order : 'none',
-            },
-          );
-        }
+      }
+      if (isSystemAdministrator(req, res) || isCourtManager(req, res)) {
+        table.head.push(
+          {
+            id: 'seniorJurorOfficer',
+            value: 'SJO',
+            sort: sortBy === 'seniorJurorOfficer' ? order : 'none',
+          },
+        );
       }
 
       table.head.push(
@@ -404,13 +418,13 @@
               text: user.roles.includes('MANAGER') ? 'Yes' : 'No',
             },
           );
-          if (isCourtManager(req, res)) {
-            item.push(
-              {
-                text: user.roles.includes('SENIOR_JUROR_OFFICER') ? 'Yes' : 'No',
-              },
-            );
-          }
+        }
+        if (isSystemAdministrator(req, res) || isCourtManager(req, res)) {
+          item.push(
+            {
+              text: user.roles.includes('SENIOR_JUROR_OFFICER') ? 'Yes' : 'No',
+            },
+          );
         }
 
         item.push(

@@ -17,6 +17,16 @@
   }) }}
 {% endif %}
 
+{% if featureFlags.digitalByDefault %}
+  {% if juror.commonDetails.digitalByDefault %}
+    {{ mojAlert({
+      variant: "information",
+      dismissible: false,
+      text: "Juror is part of the digital by default pilot"
+    }) }}
+  {% endif %}
+{% endif %}
+
 <div class="mod-juror-record--header">
   <div class="mod-juror-record--header__tag-row">
     {{ govukTag({

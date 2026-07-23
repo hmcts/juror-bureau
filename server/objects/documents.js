@@ -3,6 +3,7 @@
 
   const _ = require('lodash');
   const { DAO } = require('./dataAccessObject');
+  const { basicDataTransform } = require('../lib/mod-utils');
   const { mapCamelToSnake, mapSnakeToCamel } = require('../lib/mod-utils');
   const urljoin = require('url-join');
 
@@ -160,5 +161,14 @@
     },
 
   };
+
+  module.exports.sendPaperSummonsPackDAO = new DAO('moj/juror-record/send-paper-summons', {
+    post: function(jurorNumber) {
+      return {
+        uri: urljoin(this.resource, jurorNumber),
+        transform: basicDataTransform,
+      };
+    },
+  });
 
 })();

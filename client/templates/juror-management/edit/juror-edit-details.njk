@@ -500,6 +500,28 @@
               }
             ]
           }) }}
+          {% if featureFlags.digitalByDefault and juror.commonDetails.digitalByDefault %}
+            {{ govukRadios({
+              name: "dbdPreference",
+              fieldset: {
+                legend: {
+                  text: "Communication preference",
+                  classes: "govuk-fieldset__legend--m"
+                }
+              },
+              value: juror.commonDetails.dbdPreference,
+              items: [
+                {
+                  value: "Digital",
+                  text: "Digital"
+                },
+                {
+                  value: "Paper",
+                  text: "Paper"
+                }
+              ]
+            }) }}
+          {% endif %}
           {% if juror.commonDetails.isWelshCourt %}
             {{ govukCheckboxes({
               name: "welsh",
