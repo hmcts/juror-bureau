@@ -100,6 +100,12 @@
           searchOpts['userType'] = req.query.userType;
           sortUrlPrefix = `${sortUrlPrefix}&userType=${req.query.userType}`;
         };
+        if (req.query.roles) {
+          payload['roles'] = req.query.roles.split(',');
+          searchOpts['roles'] = req.query.roles;
+          sortUrlPrefix = `${sortUrlPrefix}&roles=${req.query.roles}`;
+        }
+
 
         const users = await usersDAO.post(req, payload);
 
@@ -147,7 +153,7 @@
 
   module.exports.postSearchUsers = function(app) {
     return async function(req, res) {
-      const builUrl = function(body) {
+      const buildUrl = function(body) {
         let queryString = '';
 
         if (body.userName) {
@@ -159,6 +165,9 @@
         if (body.userType) {
           req.query['userType'] = body.userType;
         }
+        if (body.roles) {
+          req.query['roles'] = body.roles;
+        }
 
         if (!_.isEmpty(req.query)) {
           queryString = '?' + new URLSearchParams(req.query).toString();
@@ -169,19 +178,22 @@
       delete req.query.userName;
       delete req.query.court;
       delete req.query.userType;
+      delete req.query.roles
 
       matchUserCourt(req.session.adminCourts, {courtNameOrLocation: req.body.courtSearch})
         .then(function(court) {
-          return res.redirect(builUrl({
+          return res.redirect(buildUrl({
             userName: req.body.userNameSearch,
             locationCode: court.locationCode,
             userType: req.body.userTypeSearch,
+            roles: req.body.roles,
           }));
         })
         .catch(function() {
-          return res.redirect(builUrl({
+          return res.redirect(buildUrl({
             userName: req.body.userNameSearch,
             userType: req.body.userTypeSearch,
+            roles: req.body.roles,
           }));
         });
     };
