@@ -2,8 +2,7 @@
   'use strict';
 
   const _ = require('lodash');
-  const validate = require('validate.js');
-  const validator = require('../../../config/validation/empanel-jury');
+  const validator = require('../../../config/joi-validation/empanel-jury');
   const { empanelJurorsDAO, requestPanelDAO } = require('../../../objects/panel');
   const { trialDetailsObject } = require('../../../objects/create-trial');
   const { makeManualError } = require('../../../lib/mod-utils');
@@ -61,7 +60,7 @@
         req.body.numberOfJurors
       ).then(resp => {
         const noOfJurors = resp.empanelList.length;
-        const validatorResult = validate(req.body, validator.numberOfJurors(noOfJurors));
+        const validatorResult = validator.numberOfJurors(noOfJurors)(req.body);
 
         if (typeof validatorResult !== 'undefined') {
           req.session.errors = validatorResult;
