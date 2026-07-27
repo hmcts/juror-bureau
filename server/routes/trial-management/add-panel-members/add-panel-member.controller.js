@@ -2,10 +2,9 @@
   'use strict';
 
   const  _ = require('lodash');
-  const addPanelMembersValidator = require('../../../config/validation/add-panel-members');
+  const addPanelMembersValidator = require('../../../config/joi-validation/add-panel-members');
   const { addPanelMembersDAO, availableJurorsDAO } = require('../../../objects');
-  const poolsValidator = require('../../../config/validation/generate-panel-pools');
-  const validate = require('validate.js');
+  const poolsValidator = require('../../../config/joi-validation/generate-panel-pools');
   const { makeManualError } = require('../../../lib/mod-utils');
   const countErrors = (tmpErrors) => typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0;
 
@@ -39,7 +38,7 @@
   module.exports.postAddPanelMember = function(app) {
     return function(req, res) {
       const { trialNumber, locationCode } = req.params;
-      const validatorResult = validate(req.body, addPanelMembersValidator());
+      const validatorResult = addPanelMembersValidator(req.body);
 
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
@@ -150,7 +149,7 @@
     return function(req, res) {
       const { trialNumber, locationCode } = req.params;
       let selectedPools;
-      const validatorResult = validate(req.body, poolsValidator());
+      const validatorResult = poolsValidator(req.body);
 
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;

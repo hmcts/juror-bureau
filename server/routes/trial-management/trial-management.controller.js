@@ -8,8 +8,8 @@
   const { getReturnedJurors } = require('../../objects/reinstate-jury');
   const { trialDetailsObject, trialsListDAO } = require('../../objects/create-trial');
   const { endTrialObject } = require('../../objects/end-trial');
-  const { dateFilter, capitalizeFully, makeDate, capitalise } = require('../../components/filters');
-  const endTrialDateValidator = require('../../config/validation/end-trial');
+  const { dateFilter, capitalizeFully, capitalise } = require('../../components/filters');
+  const endTrialDateValidator = require('../../config/joi-validation/end-trial');
   const moment = require('moment');
   const messagingValidator = require('../../config/validation/messaging');
 
@@ -331,7 +331,7 @@
           req.params.trialNumber,
           req.params.locationCode,
         );
-        const validateEndTrialDate = validate(req.body, endTrialDateValidator(makeDate(trialDetails.trialStartDate)));
+        const validateEndTrialDate = endTrialDateValidator(trialDetails.trialStartDate)(req.body);
 
         if (typeof validateEndTrialDate !== 'undefined') {
           req.session.errors = validateEndTrialDate;
