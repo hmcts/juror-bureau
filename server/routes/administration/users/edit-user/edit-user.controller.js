@@ -2,9 +2,8 @@
   'use strict';
 
   const _ = require('lodash');
-  const { validate } = require('validate.js');
   const { isSJOUser, isManager } = require('../../../../components/auth/user-type');
-  const validator = require('../../../../config/validation/create-users');
+  const validator = require('../../../../config/joi-validation/create-users');
   const { usersDAO, userRecordDAO } = require('../../../../objects/users');
   const { replaceAllObjKeys, makeManualError } = require('../../../../lib/mod-utils');
   const { capitalise } = require('../../../../components/filters');
@@ -93,7 +92,7 @@
       const { username } = req.params;
       const { userType } = req.session[`editUser-${username}`].orignalDetails;
 
-      const validatorResult = validate(req.body, validator.userDetails(res, userType.toUpperCase()));
+      const validatorResult = validator.userDetails(req.body, res, userType.toUpperCase());
 
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;

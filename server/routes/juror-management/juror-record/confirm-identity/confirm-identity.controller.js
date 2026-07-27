@@ -1,8 +1,7 @@
 /* eslint-disable strict */
 
 const _ = require('lodash');
-const validate = require('validate.js');
-const idTypeValidator = require('../../../../config/validation/confirm-identity');
+const idTypeValidator = require('../../../../config/joi-validation/confirm-identity');
 const { systemCodesDAO, confirmIdentityDAO } = require('../../../../objects');
 const { Logger } = require('../../../../components/logger');
 
@@ -55,7 +54,7 @@ module.exports.postConfirmIdentity = function(app) {
   return async function(req, res) {
     const { jurorNumber } = req.params;
 
-    const validationErrors = validate(req.body, idTypeValidator());
+    const validationErrors = idTypeValidator(req.body);
 
     if (validationErrors) {
       req.session.errors = validationErrors;

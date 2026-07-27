@@ -2,8 +2,7 @@
   'use strict';
 
   const _ = require('lodash');
-  const { validate } = require('validate.js');
-  const validator = require('../../../../config/validation/create-users');
+  const validator = require('../../../../config/joi-validation/create-users');
   const { usersDAO, userRecordDAO } = require('../../../../objects/users');
   const { capitalise } = require('../../../../components/filters');
   const roles = require('../users.controller').roles;
@@ -41,7 +40,7 @@
 
   module.exports.postUserType = function(app) {
     return async function(req, res) {
-      const validatorResult = validate(req.body, validator.userType());
+      const validatorResult = validator.userType(req.body);
       let errorUrl = app.namedRoutes.build('administration.users.create.type.get');
       let redirectUrl = app.namedRoutes.build('administration.users.create.details.get', {
         userType: req.body.userType || 'bureau',
@@ -154,7 +153,7 @@
           : req.body.roles;
       }
 
-      const validatorResult = validate(req.body, validator.userDetails(res, userType.toUpperCase()));
+      const validatorResult = validator.userDetails(req.body, res, userType.toUpperCase());
 
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
