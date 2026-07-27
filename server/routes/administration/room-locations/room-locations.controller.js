@@ -1,9 +1,8 @@
 (function() {
   'use strict';
   const _ = require('lodash');
-  const { validate } = require('validate.js');
   const { courtroomsDAO, courtroomDetailsDAO } = require('../../../objects/administration');
-  const validator = require('../../../config/validation/create-courtroom');
+  const validator = require('../../../config/joi-validation/create-courtroom');
   const { replaceAllObjKeys } = require('../../../lib/mod-utils');
 
   module.exports.getRoomLocations = function(app) {
@@ -90,7 +89,7 @@
   module.exports.postEditCourtroom = function(app) {
     return async(req, res) => {
       const { locationCode, id } = req.params;
-      const validatorResult = validate(req.body, validator.roomDetails());
+      const validatorResult = validator(req.body);
 
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
@@ -186,7 +185,7 @@
   module.exports.postAddCourtroom = function(app) {
     return async(req, res) => {
       const { locationCode } = req.params;
-      const validatorResult = validate(req.body, validator.roomDetails());
+      const validatorResult = validator(req.body);
 
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
