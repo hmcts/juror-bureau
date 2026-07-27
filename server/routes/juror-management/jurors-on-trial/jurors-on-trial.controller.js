@@ -7,7 +7,7 @@ const { panelListDAO } = require('../../../objects/panel');
 const { Logger } = require('../../../components/logger');
 const { setPreviousWorkingDay, makeManualError } = require('../../../lib/mod-utils');
 const validate = require('validate.js');
-const { jurorsOnTrial: jurorsOnTrialValidator } = require('../../../config/validation/jurors-on-trial');
+  const { jurorsOnTrial: jurorsOnTrialValidator } = require('../../../config/joi-validation/jurors-on-trial');
 const { changeAttendanceTimes } = require('../../../config/validation/change-attendance-times');
 
 module.exports.getJurorsOnTrial = function(app) {
@@ -207,7 +207,7 @@ function validatePostConfirm(req) {
   const checkOutTimeMinute = req.body.checkOutTimeMinute;
   const checkOutTimePeriod = req.body.checkOutTimePeriod;
 
-  const validatorResult = validate(req.body, jurorsOnTrialValidator(req.body));
+  const validatorResult = jurorsOnTrialValidator(req.body);
   const timeValidatorResult = validate({
     checkInTime: {
       hour: checkInTimeHour,
