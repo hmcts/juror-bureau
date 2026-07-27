@@ -2,8 +2,7 @@
   'use strict';
 
   const _ = require('lodash');
-  const { validate } = require('validate.js');
-  const validator = require('../../../../config/validation/assign-courts');
+  const validator = require('../../../../config/joi-validation/assign-courts');
   const { userRecordDAO, assignCourtsDAO } = require('../../../../objects/users');
   const { courtsDAO } = require('../../../../objects/administration');
   const { replaceAllObjKeys } = require('../../../../lib/mod-utils');
@@ -101,7 +100,7 @@
     return async function(req, res) {
       const { username } = req.params;
 
-      const validatorResult = validate(req.body, validator.assignCourts());
+      const validatorResult = validator(req.body);
 
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;

@@ -2,8 +2,7 @@
   'use strict';
 
   const _ = require('lodash')
-    , validate = require('validate.js')
-    , validator = require('../../../config/validation/add-non-sitting-day')
+    , validator = require('../../../config/joi-validation/add-non-sitting-day')
     , { bankHolidaysDAO, nonSittingDayDAO } = require('../../../objects/administration')
     , fetchAllCourts = require('../../../objects/request-pool').fetchAllCourts
     , { dateFilter } = require('../../../components/filters')
@@ -107,7 +106,7 @@
     return async function(req, res) {
       var validatorResult;
 
-      validatorResult = validate(req.body, validator());
+      validatorResult = validator(req.body);
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
         req.session.formFields = req.body;

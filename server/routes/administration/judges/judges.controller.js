@@ -4,8 +4,7 @@
   const _ = require('lodash');
   const { judgesDAO, judgeDetailsDAO } = require('../../../objects/administration');
   const { makeManualError } = require('../../../lib/mod-utils');
-  const { validate } = require('validate.js');
-  const editJudgeValidator = require('../../../config/validation/edit-judge');
+  const editJudgeValidator = require('../../../config/joi-validation/edit-judge');
 
   module.exports.getJudges = function(app) {
     return async function(req, res) {
@@ -100,7 +99,7 @@
       const { judgeId } = req.params;
 
       const formData = _.clone(req.body);
-      const validatorResult = validate(req.body, editJudgeValidator());
+      const validatorResult = editJudgeValidator(req.body);
 
       if (typeof validatorResult !== 'undefined') {
         req.session.formFields = req.body;
@@ -256,7 +255,7 @@
     return async function(req, res) {
 
       const formData = _.clone(req.body);
-      const validatorResult = validate(req.body, editJudgeValidator());
+      const validatorResult = editJudgeValidator(req.body);
 
       if (typeof validatorResult !== 'undefined') {
         req.session.formFields = req.body;
