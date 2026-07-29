@@ -13,6 +13,7 @@
     emailAddress: 'Enter a valid email address',
     thirdPartyEmailAddress: 'Enter a valid third party email address',
   };
+  const { stripPrefixes } = require('../../lib/mod-utils');
 
   require('./common-email-address');
   require('./date-picker');
@@ -545,27 +546,6 @@
     }
 
     return null;
-  };
-
-  function stripPrefixes(phoneNumber) {
-    let strippedPhoneNumber = phoneNumber;
-
-    if (strippedPhoneNumber.slice(0, 2) === '44') {
-      strippedPhoneNumber = strippedPhoneNumber.slice(2);
-    } else if (strippedPhoneNumber.slice(0, 3) === '+44') {
-      strippedPhoneNumber = strippedPhoneNumber.slice(3);
-    } else if (strippedPhoneNumber.slice(0, 4) === '0044') {
-      strippedPhoneNumber = strippedPhoneNumber.slice(4);
-    }
-
-    strippedPhoneNumber = strippedPhoneNumber.replace(/\s/g, '').replace(/[()-]/g, '');
-
-    if (strippedPhoneNumber.slice(0, 1) !== '0') {
-      strippedPhoneNumber = '0' + strippedPhoneNumber;
-    }
-
-    return strippedPhoneNumber;
-
   };
 
   validate.validators.nameFieldValidator = function(value, options, key, attributes) {

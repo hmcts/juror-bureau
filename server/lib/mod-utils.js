@@ -1549,4 +1549,34 @@
     return months;
   };
 
+  const stripPrefixes = (phoneNumber) => {
+    let strippedPhoneNumber = phoneNumber;
+
+    if (strippedPhoneNumber.slice(0, 2) === '44') {
+      strippedPhoneNumber = strippedPhoneNumber.slice(2);
+    } else if (strippedPhoneNumber.slice(0, 3) === '+44') {
+      strippedPhoneNumber = strippedPhoneNumber.slice(3);
+    } else if (strippedPhoneNumber.slice(0, 4) === '0044') {
+      strippedPhoneNumber = strippedPhoneNumber.slice(4);
+    }
+
+    strippedPhoneNumber = strippedPhoneNumber.replace(/\s/g, '').replace(/[()-]/g, '');
+
+    if (strippedPhoneNumber.slice(0, 1) !== '0') {
+      strippedPhoneNumber = '0' + strippedPhoneNumber;
+    }
+
+    return strippedPhoneNumber;
+  };
+
+  module.exports.stripPrefixes = stripPrefixes;
+
+  module.exports.stripSpacesFromPhoneNumbersInBody = (req) => {
+    Object.keys(req.body).forEach((key) => {
+      if (key.toLowerCase().includes('phone') && typeof req.body[key] === 'string' && req.body[key] !== '' && req.body[key] !== null) {
+        req.body[key] = stripPrefixes(req.body[key]);
+      }
+    });
+  }
+
 })();
