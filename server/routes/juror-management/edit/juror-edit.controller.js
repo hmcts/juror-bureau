@@ -587,6 +587,8 @@
       const { jurorNumber } = req.params;
       let validatorResult = validate(req.body, overviewDetailsValidator());
 
+      modUtils.stripSpacesFromPhoneNumbersInBody(req);
+
       if (!req.session[`editJurorDetails-${jurorNumber}`]) {
         return res.render('_errors/generic', { err });
       }
