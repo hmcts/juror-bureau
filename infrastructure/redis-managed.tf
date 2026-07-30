@@ -24,6 +24,7 @@ module "managed_redis" {
   env         = var.env
   location    = var.location
   common_tags = var.common_tags
+  existing_resource_group_name = local.resourceName
 
   sku_name = "Balanced_B0"
 
