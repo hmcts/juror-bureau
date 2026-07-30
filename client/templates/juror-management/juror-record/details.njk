@@ -181,7 +181,7 @@
                     text: "Send summons pack"
                   }
                 ]
-              } if juror.commonDetails.dbdPreference == "Paper"
+              } if juror.commonDetails.dbdPreference == "Paper" and juror.commonDetails.jurorStatus === "Summoned"
             } if featureFlags.digitalByDefault and juror.commonDetails.digitalByDefault
           ]
         }) }}

@@ -792,7 +792,11 @@
 
 
     if (config.featureFlags.digitalByDefault) {
-      if (req.session[`editJurorDetails-${jurorNumber}`].commonDetails.dbdPreference === 'Digital' && requestBody.dbdPreference === 'Paper') {
+      if (
+        req.session[`editJurorDetails-${jurorNumber}`].commonDetails.dbdPreference === 'Digital' 
+        && requestBody.dbdPreference === 'Paper'
+        && req.session[`editJurorDetails-${jurorNumber}`].commonDetails.jurorStatus === 'Summoned'
+      ) {
         req.session[`sendFullPaperSummons-${jurorNumber}`] = true;
       }
     }
