@@ -204,7 +204,6 @@
             req.session.errors = makeManualError('empanel error', '1 or more jurors have not been checked in today');
           } else if (err.error?.code === 'PANEL_MEMBER_ALREADY_PROCESSED') {
             req.session.errors = makeManualError('empanel error', '1 or more panel members have already been processed');
-          }
           } else {
             req.session.errors = makeManualError('empanel error', err.error?.message || 'Unable to empanel jurors');
           }
