@@ -4,7 +4,7 @@
   const _ = require('lodash');
   const validate = require('validate.js');
   const { isCourtUser, isManager } = require('../../../components/auth/user-type');
-  const jurorUpdateValidator = require('../../../config/validation/juror-record-update');
+  const jurorUpdateValidator = require('../../../config/joi-validation/juror-record-update');
   const jurorRecordObject = require('../../../objects/juror-record');
   const deferralObject = require('../../../objects/deferral-mod').deferralObject;
   const { jurorDeceasedObject } = require('../../../objects/juror-deceased');
@@ -124,7 +124,7 @@
         responded: 'juror.update.responded.get',
       };
 
-      validatorResult = validate(req.body, jurorUpdateValidator.updateOptions());
+      validatorResult = jurorUpdateValidator.updateOptions(req.body);
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
 
@@ -694,7 +694,7 @@
   };
 
   function postDeceased(req, res, app) {
-    const validatorResult = validate(req.body, jurorUpdateValidator.deceasedComment());
+    const validatorResult = jurorUpdateValidator.deceasedComment(req.body);
     
     if (typeof validatorResult !== 'undefined') {
       req.session.errors = validatorResult;
