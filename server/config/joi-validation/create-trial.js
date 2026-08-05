@@ -1,7 +1,7 @@
 const Joi = require('joi');
 const moment = require('moment');
 const { validateJoiSchema } = require('./index');
-const { parseDate } = require('./date-picker');
+const { buildDatePickerSchema } = require('./date-validation');
 
 const trialNumberRequiredMessage = 'Enter a trial number';
 const trialNumberUppercaseMessage = 'Enter a trial number using uppercase letters only';
@@ -135,33 +135,13 @@ const courtroomSchema = (courtsList) => Joi.string()
     'courtroom.select': courtroomSelectMessage,
   });
 
-const startDateSchema = Joi.string()
-  .required()
-  .custom((value, helpers) => {
-    if (/[^0-9/]+/.test(value)) {
-      return helpers.error('startDate.numbers');
-    }
-
-    const dateInitial = parseDate(value);
-
-    if (!moment(dateInitial.dateAsDate).isValid() || value.length > 10) {
-      return helpers.error('startDate.format');
-    }
-
-    if (!dateInitial.isMonthAndDayValid) {
-      return helpers.error('startDate.realDate');
-    }
-
-    return value;
-  }, 'trial start date validation')
-  .messages({
-    'any.required': startDateRequiredMessage,
-    'string.base': startDateRequiredMessage,
-    'string.empty': startDateRequiredMessage,
-    'startDate.numbers': startDateNumbersMessage,
-    'startDate.format': startDateFormatMessage,
-    'startDate.realDate': startDateRealDateMessage,
-  });
+const startDateSchema = buildDatePickerSchema({
+  field: 'startDate',
+  requiredMessage: startDateRequiredMessage,
+  invalidCharsMessage: startDateNumbersMessage,
+  invalidFormatMessage: startDateFormatMessage,
+  realDateMessage: startDateRealDateMessage,
+});
 
 module.exports.trialDetails = function(courtsList, judgesList, isEdit = false) {
   const schema = Joi.object({

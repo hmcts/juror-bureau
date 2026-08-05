@@ -1,6 +1,7 @@
 const Joi = require('joi');
 const moment = require('moment');
 const { validateJoiSchema } = require('./index');
+const { buildDatePickerSchema } = require('./date-validation');
 
 const endTrialMessage = 'Select whether you want to end this trial or not';
 const endTrialDateRequiredMessage = 'Enter a trial end date';
@@ -20,39 +21,25 @@ module.exports = (trialStartDate) => {
       }),
     endTrialDate: Joi.when('endTrial', {
       is: 'true',
-      then: Joi.string()
-        .required()
-        .custom((value, helpers) => {
-          const formatRegex = /^([0-9][0-9])(\/)([0-9][0-9])(\/)\d{4}$/;
-          const charRegex = /[^0-9\/]+/;
+      then: buildDatePickerSchema({
+        field: 'endTrialDate',
+        requiredMessage: endTrialDateRequiredMessage,
+        invalidCharsMessage: endTrialDateCharsMessage,
+        invalidFormatMessage: endTrialDateFormatMessage,
+        realDateMessage: endTrialDateRealDateMessage,
+        extraMessages: {
+          'datePicker.beforeStart': endTrialDateBeforeStartMessage,
+        },
+        extraValidators: [
+          (value) => {
+            if (moment(value, 'DD/MM/YYYY').isBefore(trialStartDate)) {
+              return 'datePicker.beforeStart';
+            }
 
-          if (charRegex.test(value)) {
-            return helpers.error('endTrialDate.chars');
-          }
-
-          if (!formatRegex.test(value)) {
-            return helpers.error('endTrialDate.format');
-          }
-
-          if (!moment(value, 'DD/MM/YYYY', true).isValid()) {
-            return helpers.error('endTrialDate.realDate');
-          }
-
-          if (moment(value, 'DD/MM/YYYY').isBefore(trialStartDate)) {
-            return helpers.error('endTrialDate.beforeStart');
-          }
-
-          return value;
-        }, 'end trial date validation')
-        .messages({
-          'any.required': endTrialDateRequiredMessage,
-          'string.base': endTrialDateRequiredMessage,
-          'string.empty': endTrialDateRequiredMessage,
-          'endTrialDate.chars': endTrialDateCharsMessage,
-          'endTrialDate.format': endTrialDateFormatMessage,
-          'endTrialDate.realDate': endTrialDateRealDateMessage,
-          'endTrialDate.beforeStart': endTrialDateBeforeStartMessage,
-        }),
+            return undefined;
+          },
+        ],
+      }),
       otherwise: Joi.any().optional(),
     }),
   });

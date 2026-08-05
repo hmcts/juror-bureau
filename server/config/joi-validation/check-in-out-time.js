@@ -1,6 +1,11 @@
 const Joi = require('joi');
-const { convertAmPmToLong } = require('../../components/filters');
 const { validateJoiSchema } = require('./index');
+const {
+  buildTimeFieldSchema,
+  buildTimeGroupSchema,
+  buildTimeComparisonValidator,
+  normaliseTimeBody,
+} = require('./time-validation');
 
 const timeMessageMapping = {
   checkOut: {
@@ -69,172 +74,108 @@ const timeMessageMapping = {
   },
 };
 
-const isBlank = (value) => value === '' || typeof value === 'undefined' || value === null;
-
-const normaliseTimeBody = (body, prefix) => ({
-  [`${prefix}Hour`]: body[`${prefix}Hour`] ?? body[prefix]?.hour ?? '',
-  [`${prefix}Minute`]: body[`${prefix}Minute`] ?? body[prefix]?.minute ?? '',
-  [`${prefix}Period`]: body[`${prefix}Period`] ?? body[prefix]?.period ?? '',
-  [prefix]: body[prefix] ?? {},
-});
-
-const isWholeTimeBlank = (body, prefix) => isBlank(body[`${prefix}Hour`]) && isBlank(body[`${prefix}Minute`]);
-
-const isCompleteTime = (body, prefix) => !isBlank(body[`${prefix}Hour`])
-  && !isBlank(body[`${prefix}Minute`])
-  && !isBlank(body[`${prefix}Period`]);
-
-const isNumeric = (value) => !isNaN(value);
-
-function timeMessage(part, prefix, kind) {
-  const scope = prefix === 'checkInTime' ? 'checkIn' : 'checkOut';
-
-  if (part === 'Period' && kind === 'missing') {
-    return timeMessageMapping[scope].missingPeriod;
-  }
-
-  if (part === 'Hour') {
-    if (kind === 'missing') {
-      return timeMessageMapping[scope].missingHour;
-    }
-
-    if (kind === 'invalidChars') {
-      return timeMessageMapping[scope].invalidChars;
-    }
-
-    return timeMessageMapping[scope].invalidHour;
-  }
-
-  if (kind === 'missing') {
-    return timeMessageMapping[scope].missingMinutes;
-  }
-
-  if (kind === 'invalidChars') {
-    return timeMessageMapping[scope].invalidChars;
-  }
-
-  return timeMessageMapping[scope].invalidMinutes;
-}
-
-const buildTimeFieldSchema = (prefix, part, { min, max, label }) => Joi.any()
-  .custom((value, helpers) => {
-    const body = helpers.state.ancestors[0] || {};
-
-    if (isWholeTimeBlank(body, prefix)) {
-      return value;
-    }
-
-    if (part === 'Period') {
-      if (isBlank(value)) {
-        return helpers.error(`${prefix}.${part}.missing`);
-      }
-
-      return value;
-    }
-
-    if (isBlank(value)) {
-      return helpers.error(`${prefix}.${part}.missing`);
-    }
-
-    if (!isNumeric(value)) {
-      return helpers.error(`${prefix}.${part}.invalidChars`);
-    }
-
-    const numberValue = Number(value);
-
-    if (numberValue < min || numberValue > max) {
-      return helpers.error(`${prefix}.${part}.invalidRange`);
-    }
-
-    return value;
-  }, `${label} validation`)
-  .messages({
-    [`${prefix}.${part}.missing`]: timeMessage(part, prefix, 'missing').summary,
-    [`${prefix}.${part}.invalidChars`]: timeMessage(part, prefix, 'invalidChars').summary,
-    [`${prefix}.${part}.invalidRange`]: timeMessage(part, prefix, 'invalidRange').summary,
-  });
-
 const buildCheckInSchema = () => Joi.object({
-  checkInTime: Joi.any()
-    .custom((value, helpers) => {
-      const body = helpers.state.ancestors[0] || {};
-
-      if (isWholeTimeBlank(body, 'checkInTime')) {
-        return helpers.error('checkInTime.missingWholeTime');
-      }
-
-      return value;
-    }, 'check in time validation')
-    .messages({
-      'checkInTime.missingWholeTime': timeMessageMapping.checkIn.missingWholeTime.summary,
-    }),
-  checkInTimeHour: buildTimeFieldSchema('checkInTime', 'Hour', {
+  checkInTime: buildTimeGroupSchema({
+    prefix: 'checkInTime',
+    message: timeMessageMapping.checkIn.missingWholeTime.summary,
+  }),
+  checkInTimeHour: buildTimeFieldSchema({
+    prefix: 'checkInTime',
+    part: 'Hour',
     min: 1,
     max: 12,
-    label: 'check in hour',
+    messages: {
+      missing: timeMessageMapping.checkIn.missingHour.summary,
+      invalidChars: timeMessageMapping.checkIn.invalidChars.summary,
+      invalidRange: timeMessageMapping.checkIn.invalidHour.summary,
+    },
   }),
-  checkInTimeMinute: buildTimeFieldSchema('checkInTime', 'Minute', {
+  checkInTimeMinute: buildTimeFieldSchema({
+    prefix: 'checkInTime',
+    part: 'Minute',
     min: 0,
     max: 59,
-    label: 'check in minute',
+    messages: {
+      missing: timeMessageMapping.checkIn.missingMinutes.summary,
+      invalidChars: timeMessageMapping.checkIn.invalidChars.summary,
+      invalidRange: timeMessageMapping.checkIn.invalidMinutes.summary,
+    },
   }),
-  checkInTimePeriod: buildTimeFieldSchema('checkInTime', 'Period', {
-    label: 'check in period',
+  checkInTimePeriod: buildTimeFieldSchema({
+    prefix: 'checkInTime',
+    part: 'Period',
+    messages: {
+      missing: timeMessageMapping.checkIn.missingPeriod.summary,
+    },
   }),
 });
 
 const buildCheckOutSchema = () => Joi.object({
-  checkInTime: Joi.any()
-    .custom((value, helpers) => {
-      const body = helpers.state.ancestors[0] || {};
-
-      if (isWholeTimeBlank(body, 'checkInTime')) {
-        return helpers.error('checkInTime.missingWholeTime');
-      }
-
-      return value;
-    }, 'check in time validation')
-    .messages({
-      'checkInTime.missingWholeTime': timeMessageMapping.checkIn.missingWholeTime.summary,
-    }),
-  checkInTimeHour: buildTimeFieldSchema('checkInTime', 'Hour', {
+  checkInTime: buildTimeGroupSchema({
+    prefix: 'checkInTime',
+    message: timeMessageMapping.checkIn.missingWholeTime.summary,
+  }),
+  checkInTimeHour: buildTimeFieldSchema({
+    prefix: 'checkInTime',
+    part: 'Hour',
     min: 1,
     max: 12,
-    label: 'check in hour',
+    messages: {
+      missing: timeMessageMapping.checkIn.missingHour.summary,
+      invalidChars: timeMessageMapping.checkIn.invalidChars.summary,
+      invalidRange: timeMessageMapping.checkIn.invalidHour.summary,
+    },
   }),
-  checkInTimeMinute: buildTimeFieldSchema('checkInTime', 'Minute', {
+  checkInTimeMinute: buildTimeFieldSchema({
+    prefix: 'checkInTime',
+    part: 'Minute',
     min: 0,
     max: 59,
-    label: 'check in minute',
+    messages: {
+      missing: timeMessageMapping.checkIn.missingMinutes.summary,
+      invalidChars: timeMessageMapping.checkIn.invalidChars.summary,
+      invalidRange: timeMessageMapping.checkIn.invalidMinutes.summary,
+    },
   }),
-  checkInTimePeriod: buildTimeFieldSchema('checkInTime', 'Period', {
-    label: 'check in period',
+  checkInTimePeriod: buildTimeFieldSchema({
+    prefix: 'checkInTime',
+    part: 'Period',
+    messages: {
+      missing: timeMessageMapping.checkIn.missingPeriod.summary,
+    },
   }),
-  checkOutTime: Joi.any()
-    .custom((value, helpers) => {
-      const body = helpers.state.ancestors[0] || {};
-
-      if (isWholeTimeBlank(body, 'checkOutTime')) {
-        return helpers.error('checkOutTime.missingWholeTime');
-      }
-
-      return value;
-    }, 'check out time validation')
-    .messages({
-      'checkOutTime.missingWholeTime': timeMessageMapping.checkOut.missingWholeTime.summary,
-    }),
-  checkOutTimeHour: buildTimeFieldSchema('checkOutTime', 'Hour', {
+  checkOutTime: buildTimeGroupSchema({
+    prefix: 'checkOutTime',
+    message: timeMessageMapping.checkOut.missingWholeTime.summary,
+  }),
+  checkOutTimeHour: buildTimeFieldSchema({
+    prefix: 'checkOutTime',
+    part: 'Hour',
     min: 1,
     max: 12,
-    label: 'check out hour',
+    messages: {
+      missing: timeMessageMapping.checkOut.missingHour.summary,
+      invalidChars: timeMessageMapping.checkOut.invalidChars.summary,
+      invalidRange: timeMessageMapping.checkOut.invalidHour.summary,
+    },
   }),
-  checkOutTimeMinute: buildTimeFieldSchema('checkOutTime', 'Minute', {
+  checkOutTimeMinute: buildTimeFieldSchema({
+    prefix: 'checkOutTime',
+    part: 'Minute',
     min: 0,
     max: 59,
-    label: 'check out minute',
+    messages: {
+      missing: timeMessageMapping.checkOut.missingMinutes.summary,
+      invalidChars: timeMessageMapping.checkOut.invalidChars.summary,
+      invalidRange: timeMessageMapping.checkOut.invalidMinutes.summary,
+    },
   }),
-  checkOutTimePeriod: buildTimeFieldSchema('checkOutTime', 'Period', {
-    label: 'check out period',
+  checkOutTimePeriod: buildTimeFieldSchema({
+    prefix: 'checkOutTime',
+    part: 'Period',
+    messages: {
+      missing: timeMessageMapping.checkOut.missingPeriod.summary,
+    },
   }),
 });
 
@@ -247,6 +188,12 @@ const validateSchema = (schema, body) => {
 
   return undefined;
 };
+
+const compareCheckOutTimes = buildTimeComparisonValidator({
+  earlierPrefix: 'checkInTime',
+  laterPrefix: 'checkOutTime',
+  message: timeMessageMapping.checkOut.beforeCheckIn.summary,
+});
 
 module.exports.timeMessageMapping = timeMessageMapping;
 
@@ -266,22 +213,5 @@ module.exports.validateCheckOutTime = (body) => {
     return validationResult;
   }
 
-  const checkInTime = normalisedBody.checkInTime;
-  const checkOutTime = normalisedBody.checkOutTime;
-
-  if (
-    isCompleteTime(normalisedBody, 'checkInTime')
-    && isCompleteTime(normalisedBody, 'checkOutTime')
-    && convertAmPmToLong(`${checkOutTime.hour}:${checkOutTime.minute}${checkOutTime.period}`)
-      <= convertAmPmToLong(`${checkInTime.hour}:${checkInTime.minute}${checkInTime.period}`)
-  ) {
-    return {
-      checkOutTime: [{
-        summary: timeMessageMapping.checkOut.beforeCheckIn.summary,
-        details: timeMessageMapping.checkOut.beforeCheckIn.details,
-      }],
-    };
-  }
-
-  return undefined;
+  return compareCheckOutTimes(normalisedBody);
 };
