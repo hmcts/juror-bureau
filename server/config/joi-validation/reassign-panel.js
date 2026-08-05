@@ -1,7 +1,9 @@
 const Joi = require('joi');
 const { validateJoiSchema } = require('./index');
 
-const selectedJurorsMessage = 'Select at least one panel member to reassign';
+const reassignPanelMessageMapping = {
+  selectedJurors: 'Select at least one panel member to reassign',
+};
 
 const schema = Joi.object({
   selectedJurors: Joi.alternatives()
@@ -11,13 +13,13 @@ const schema = Joi.object({
     )
     .required()
     .messages({
-      'any.required': selectedJurorsMessage,
-      'alternatives.types': selectedJurorsMessage,
-      'array.base': selectedJurorsMessage,
-      'array.min': selectedJurorsMessage,
-      'string.base': selectedJurorsMessage,
-      'string.empty': selectedJurorsMessage,
-      'string.min': selectedJurorsMessage,
+      'any.required': reassignPanelMessageMapping.selectedJurors,
+      'alternatives.types': reassignPanelMessageMapping.selectedJurors,
+      'array.base': reassignPanelMessageMapping.selectedJurors,
+      'array.min': reassignPanelMessageMapping.selectedJurors,
+      'string.base': reassignPanelMessageMapping.selectedJurors,
+      'string.empty': reassignPanelMessageMapping.selectedJurors,
+      'string.min': reassignPanelMessageMapping.selectedJurors,
     }),
 });
 

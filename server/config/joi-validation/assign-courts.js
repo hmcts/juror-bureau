@@ -1,7 +1,9 @@
 const Joi = require('joi');
 const { validateJoiSchema } = require('./index');
 
-const selectCourtsMessage = 'Select one or more courts';
+const assignCourtsMessageMapping = {
+  selectCourts: 'Select one or more courts',
+};
 
 const schema = Joi.object({
   selectedCourts: Joi.alternatives()
@@ -11,10 +13,10 @@ const schema = Joi.object({
     )
     .required()
     .messages({
-      'any.required': selectCourtsMessage,
-      'alternatives.types': selectCourtsMessage,
-      'string.empty': selectCourtsMessage,
-      'array.min': selectCourtsMessage,
+      'any.required': assignCourtsMessageMapping.selectCourts,
+      'alternatives.types': assignCourtsMessageMapping.selectCourts,
+      'string.empty': assignCourtsMessageMapping.selectCourts,
+      'array.min': assignCourtsMessageMapping.selectCourts,
     }),
 });
 

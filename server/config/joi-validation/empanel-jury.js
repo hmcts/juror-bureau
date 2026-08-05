@@ -1,9 +1,11 @@
 const Joi = require('joi');
 const { validateJoiSchema } = require('./index');
 
-const numberRequiredMessage = 'Enter how many jurors you want to empanel';
-const numberFormatMessage = 'Enter how many jurors you want to empanel as a number - you cannot enter letters or special characters';
-const numberRangeMessage = (maxVal) => `You must select a number between 1 and ${maxVal}`;
+const empanelJuryMessageMapping = {
+  numberRequired: 'Enter how many jurors you want to empanel',
+  numberFormat: 'Enter how many jurors you want to empanel as a number - you cannot enter letters or special characters',
+  numberRange: (maxVal) => `You must select a number between 1 and ${maxVal}`,
+};
 
 const buildSchema = (maxVal) => Joi.object({
   numberOfJurors: Joi.number()
@@ -12,10 +14,10 @@ const buildSchema = (maxVal) => Joi.object({
     .min(1)
     .max(maxVal)
     .messages({
-      'any.required': numberRequiredMessage,
-      'number.base': numberFormatMessage,
-      'number.min': numberRangeMessage(maxVal),
-      'number.max': numberRangeMessage(maxVal),
+      'any.required': empanelJuryMessageMapping.numberRequired,
+      'number.base': empanelJuryMessageMapping.numberFormat,
+      'number.min': empanelJuryMessageMapping.numberRange(maxVal),
+      'number.max': empanelJuryMessageMapping.numberRange(maxVal),
     }),
 });
 

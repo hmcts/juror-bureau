@@ -3,23 +3,25 @@ const moment = require('moment');
 const { validateJoiSchema } = require('./index');
 const { buildDatePickerSchema } = require('./date-validation');
 
-const trialNumberRequiredMessage = 'Enter a trial number';
-const trialNumberUppercaseMessage = 'Enter a trial number using uppercase letters only';
-const trialNumberLengthMessage = 'Trial number must be 16 characters or less';
-const trialTypeMessage = 'Select whether this is a criminal or civil trial';
-const defendantsRequiredMessage = 'Enter defendants';
-const defendantsLengthMessage = 'Defendant name must be 50 characters or less';
-const respondentsRequiredMessage = 'Enter respondents';
-const respondentsLengthMessage = 'Respondent name must be 50 characters or less';
-const judgeRequiredMessage = 'Enter the judge’s name';
-const judgeSelectMessage = 'Select a judge from provided list';
-const courtSelectMessage = 'Select a court where this trial will take place';
-const courtroomRequiredMessage = 'Enter courtroom';
-const courtroomSelectMessage = 'Select courtroom from provided list';
-const startDateRequiredMessage = 'Enter a start date for this trial';
-const startDateNumbersMessage = 'Trial start date must only include numbers';
-const startDateFormatMessage = 'Enter a trial start date in the correct format, for example, 31/01/2023';
-const startDateRealDateMessage = 'Enter a date in the correct format, for example, 31/01/2023';
+const createTrialMessageMapping = {
+  trialNumberRequired: 'Enter a trial number',
+  trialNumberUppercase: 'Enter a trial number using uppercase letters only',
+  trialNumberLength: 'Trial number must be 16 characters or less',
+  trialType: 'Select whether this is a criminal or civil trial',
+  defendantsRequired: 'Enter defendants',
+  defendantsLength: 'Defendant name must be 50 characters or less',
+  respondentsRequired: 'Enter respondents',
+  respondentsLength: 'Respondent name must be 50 characters or less',
+  judgeRequired: 'Enter the judge’s name',
+  judgeSelect: 'Select a judge from provided list',
+  courtSelect: 'Select a court where this trial will take place',
+  courtroomRequired: 'Enter courtroom',
+  courtroomSelect: 'Select courtroom from provided list',
+  startDateRequired: 'Enter a start date for this trial',
+  startDateNumbers: 'Trial start date must only include numbers',
+  startDateFormat: 'Enter a trial start date in the correct format, for example, 31/01/2023',
+  startDateRealDate: 'Enter a date in the correct format, for example, 31/01/2023',
+};
 
 const trialNumberSchema = (isEdit) => {
   if (isEdit) {
@@ -31,20 +33,20 @@ const trialNumberSchema = (isEdit) => {
     .pattern(/^[A-Z0-9]*$/)
     .max(16)
     .messages({
-      'any.required': trialNumberRequiredMessage,
-      'string.base': trialNumberRequiredMessage,
-      'string.empty': trialNumberRequiredMessage,
-      'string.pattern.base': trialNumberUppercaseMessage,
-      'string.max': trialNumberLengthMessage,
+      'any.required': createTrialMessageMapping.trialNumberRequired,
+      'string.base': createTrialMessageMapping.trialNumberRequired,
+      'string.empty': createTrialMessageMapping.trialNumberRequired,
+      'string.pattern.base': createTrialMessageMapping.trialNumberUppercase,
+      'string.max': createTrialMessageMapping.trialNumberLength,
     });
 };
 
 const trialTypeSchema = Joi.string()
   .required()
   .messages({
-    'any.required': trialTypeMessage,
-    'string.base': trialTypeMessage,
-    'string.empty': trialTypeMessage,
+    'any.required': createTrialMessageMapping.trialType,
+    'string.base': createTrialMessageMapping.trialType,
+    'string.empty': createTrialMessageMapping.trialType,
   });
 
 const defendantsSchema = Joi.when('trialType', {
@@ -53,10 +55,10 @@ const defendantsSchema = Joi.when('trialType', {
     .required()
     .max(50)
     .messages({
-      'any.required': defendantsRequiredMessage,
-      'string.base': defendantsRequiredMessage,
-      'string.empty': defendantsRequiredMessage,
-      'string.max': defendantsLengthMessage,
+      'any.required': createTrialMessageMapping.defendantsRequired,
+      'string.base': createTrialMessageMapping.defendantsRequired,
+      'string.empty': createTrialMessageMapping.defendantsRequired,
+      'string.max': createTrialMessageMapping.defendantsLength,
     }),
   otherwise: Joi.any().optional(),
 });
@@ -67,10 +69,10 @@ const respondentsSchema = Joi.when('trialType', {
     .required()
     .max(50)
     .messages({
-      'any.required': respondentsRequiredMessage,
-      'string.base': respondentsRequiredMessage,
-      'string.empty': respondentsRequiredMessage,
-      'string.max': respondentsLengthMessage,
+      'any.required': createTrialMessageMapping.respondentsRequired,
+      'string.base': createTrialMessageMapping.respondentsRequired,
+      'string.empty': createTrialMessageMapping.respondentsRequired,
+      'string.max': createTrialMessageMapping.respondentsLength,
     }),
   otherwise: Joi.any().optional(),
 });
@@ -89,11 +91,11 @@ const judgeSchema = (judgesList) => Joi.string()
     return value;
   }, 'judge validation')
   .messages({
-    'any.required': judgeRequiredMessage,
-    'string.base': judgeRequiredMessage,
-    'string.empty': judgeRequiredMessage,
-    'judge.required': judgeRequiredMessage,
-    'judge.select': judgeSelectMessage,
+    'any.required': createTrialMessageMapping.judgeRequired,
+    'string.base': createTrialMessageMapping.judgeRequired,
+    'string.empty': createTrialMessageMapping.judgeRequired,
+    'judge.required': createTrialMessageMapping.judgeRequired,
+    'judge.select': createTrialMessageMapping.judgeSelect,
   });
 
 const courtSchema = (courtsList) => Joi.any()
@@ -105,7 +107,7 @@ const courtSchema = (courtsList) => Joi.any()
     return value;
   }, 'court validation')
   .messages({
-    'court.select': courtSelectMessage,
+    'court.select': createTrialMessageMapping.courtSelect,
   });
 
 const courtroomSchema = (courtsList) => Joi.string()
@@ -131,16 +133,16 @@ const courtroomSchema = (courtsList) => Joi.string()
     return value;
   }, 'courtroom validation')
   .messages({
-    'courtroom.required': courtroomRequiredMessage,
-    'courtroom.select': courtroomSelectMessage,
+    'courtroom.required': createTrialMessageMapping.courtroomRequired,
+    'courtroom.select': createTrialMessageMapping.courtroomSelect,
   });
 
 const startDateSchema = buildDatePickerSchema({
   field: 'startDate',
-  requiredMessage: startDateRequiredMessage,
-  invalidCharsMessage: startDateNumbersMessage,
-  invalidFormatMessage: startDateFormatMessage,
-  realDateMessage: startDateRealDateMessage,
+  requiredMessage: createTrialMessageMapping.startDateRequired,
+  invalidCharsMessage: createTrialMessageMapping.startDateNumbers,
+  invalidFormatMessage: createTrialMessageMapping.startDateFormat,
+  realDateMessage: createTrialMessageMapping.startDateRealDate,
 });
 
 module.exports.trialDetails = function(courtsList, judgesList, isEdit = false) {

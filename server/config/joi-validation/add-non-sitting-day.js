@@ -2,10 +2,12 @@ const Joi = require('joi');
 const moment = require('moment');
 const { validateJoiSchema } = require('./index');
 
-const requiredDateMessage = 'Enter a date for the non-sitting day';
-const invalidCharsMessage = 'Non-sitting day can only include numbers and forward slashes';
-const realDateMessage = 'Enter a real date';
-const requiredDescriptionMessage = 'Enter a description for the non-sitting day';
+const addNonSittingDayMessageMapping = {
+  requiredDate: 'Enter a date for the non-sitting day',
+  invalidChars: 'Non-sitting day can only include numbers and forward slashes',
+  realDate: 'Enter a real date',
+  requiredDescription: 'Enter a description for the non-sitting day',
+};
 
 const schema = Joi.object({
   nonSittingDate: Joi.string()
@@ -27,15 +29,15 @@ const schema = Joi.object({
       return value;
     }, 'non-sitting day date validation')
     .messages({
-      'any.required': requiredDateMessage,
-      'nonSittingDate.invalidChars': invalidCharsMessage,
-      'nonSittingDate.invalidDate': realDateMessage,
+      'any.required': addNonSittingDayMessageMapping.requiredDate,
+      'nonSittingDate.invalidChars': addNonSittingDayMessageMapping.invalidChars,
+      'nonSittingDate.invalidDate': addNonSittingDayMessageMapping.realDate,
     }),
   decriptionNonSittingDay: Joi.string()
     .required()
     .messages({
-      'any.required': requiredDescriptionMessage,
-      'string.empty': requiredDescriptionMessage,
+      'any.required': addNonSittingDayMessageMapping.requiredDescription,
+      'string.empty': addNonSittingDayMessageMapping.requiredDescription,
     }),
 });
 

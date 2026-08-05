@@ -3,16 +3,18 @@ const { Logger } = require('../../components/logger');
 const { validateJoiSchema } = require('./index');
 const { buildDatePickerSchema } = require('./date-validation');
 
-const dateNextDueMessage = 'Date next due at court can only include numbers and forward slashes';
-const attendanceDateMessage = 'Enter a date they’re next due at court in the correct format, for example, 31/01/2023';
-const realDateMessage = 'Enter a real date';
-const dateInPastMessage = 'Date cannot be in the past';
-const defaultAttendanceDateMessage = 'Enter when the juror is next due at court or put the juror on call';
-const onCallAttendanceDateMessage = 'Enter when the juror is next due at court';
-const bulkAttendanceDateMessage = 'Enter date when they’re next due at court';
-const noJurorsMessage = 'You need to select at least one juror before you can change the date they’re next due at court';
-const incorrectStatusSingleMessage = '1 juror is in an incorrect status to change next due at court date';
-const incorrectStatusMultipleMessage = '{{#count}} jurors are in an incorrect status to change next due at court date';
+const changeAttendanceDateMessageMapping = {
+  dateNextDue: 'Date next due at court can only include numbers and forward slashes',
+  attendanceDate: 'Enter a date they’re next due at court in the correct format, for example, 31/01/2023',
+  realDate: 'Enter a real date',
+  dateInPast: 'Date cannot be in the past',
+  defaultAttendanceDate: 'Enter when the juror is next due at court or put the juror on call',
+  onCallAttendanceDate: 'Enter when the juror is next due at court',
+  bulkAttendanceDate: 'Enter date when they’re next due at court',
+  noJurors: 'You need to select at least one juror before you can change the date they’re next due at court',
+  incorrectStatusSingle: '1 juror is in an incorrect status to change next due at court date',
+  incorrectStatusMultiple: '{{#count}} jurors are in an incorrect status to change next due at court date',
+};
 
 const buildAttendanceDateSchema = ({
   message,
@@ -21,10 +23,10 @@ const buildAttendanceDateSchema = ({
   const attendanceDateSchema = buildDatePickerSchema({
     field: 'attendanceDate',
     requiredMessage: message,
-    invalidCharsMessage: dateNextDueMessage,
-    invalidFormatMessage: attendanceDateMessage,
-    realDateMessage,
-    notBeforeDateMessage: dateInPastMessage,
+    invalidCharsMessage: changeAttendanceDateMessageMapping.dateNextDue,
+    invalidFormatMessage: changeAttendanceDateMessageMapping.attendanceDate,
+    realDateMessage: changeAttendanceDateMessageMapping.realDate,
+    notBeforeDateMessage: changeAttendanceDateMessageMapping.dateInPast,
     notBeforeDateField: 'originalNextDate',
     notBeforeDateFormat: 'YYYY, MM, DD',
   });
@@ -49,14 +51,14 @@ const buildJurorSelectSchema = (membersList) => Joi.object({
     )
     .required()
     .messages({
-      'any.required': noJurorsMessage,
-      'alternatives.any': noJurorsMessage,
-      'alternatives.types': noJurorsMessage,
-      'array.base': noJurorsMessage,
-      'array.min': noJurorsMessage,
-      'string.base': noJurorsMessage,
-      'string.empty': noJurorsMessage,
-      'string.min': noJurorsMessage,
+      'any.required': changeAttendanceDateMessageMapping.noJurors,
+      'alternatives.any': changeAttendanceDateMessageMapping.noJurors,
+      'alternatives.types': changeAttendanceDateMessageMapping.noJurors,
+      'array.base': changeAttendanceDateMessageMapping.noJurors,
+      'array.min': changeAttendanceDateMessageMapping.noJurors,
+      'string.base': changeAttendanceDateMessageMapping.noJurors,
+      'string.empty': changeAttendanceDateMessageMapping.noJurors,
+      'string.min': changeAttendanceDateMessageMapping.noJurors,
     })
     .custom((value, helpers) => {
       const selectedJurors = Array.isArray(value) ? value : [value];
@@ -93,15 +95,15 @@ const buildJurorSelectSchema = (membersList) => Joi.object({
       return value;
     }, 'juror status validation')
     .messages({
-      'selectedJurors.incorrectStatusSingle': incorrectStatusSingleMessage,
-      'selectedJurors.incorrectStatusMultiple': incorrectStatusMultipleMessage,
+      'selectedJurors.incorrectStatusSingle': changeAttendanceDateMessageMapping.incorrectStatusSingle,
+      'selectedJurors.incorrectStatusMultiple': changeAttendanceDateMessageMapping.incorrectStatusMultiple,
     }),
 });
 
 module.exports.attendanceDate = function(options) {
   return (body) => validateJoiSchema(
     buildAttendanceDateSchema({
-      message: options && options.onCall ? onCallAttendanceDateMessage : defaultAttendanceDateMessage,
+      message: options && options.onCall ? changeAttendanceDateMessageMapping.onCallAttendanceDate : changeAttendanceDateMessageMapping.defaultAttendanceDate,
       skipWhenOnCall: true,
     }),
     body
@@ -111,7 +113,7 @@ module.exports.attendanceDate = function(options) {
 module.exports.bulkAttendanceDate = function() {
   return (body) => validateJoiSchema(
     buildAttendanceDateSchema({
-      message: bulkAttendanceDateMessage,
+      message: changeAttendanceDateMessageMapping.bulkAttendanceDate,
     }),
     body
   );

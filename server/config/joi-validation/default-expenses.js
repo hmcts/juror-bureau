@@ -1,34 +1,36 @@
 const Joi = require('joi');
 const { validateJoiSchema } = require('./index');
 
-const financialLossNumericMessage = 'Loss of earnings or benefits per day can only include numbers and a decimal point';
-const financialLossMaxMessage = 'Loss of earnings or benefits per day must be less than £1,000,000';
-const financialLossMinMessage = 'Loss of earnings or benefits per day must not be negative';
-const smartcardNumberLengthMessage = 'Smartcard number must be 20 characters or fewer';
-const milesNumericMessage = 'Miles travelled can only include numbers';
-const milesWholeNumberMessage = 'Miles travelled must be a whole number';
-const milesMinMessage = 'Miles travelled must not be negative';
-const milesMaxMessage = 'Miles travelled must be less than 1,000,000';
-const travelTimeNumericMessage = 'Total travel time can only include numbers';
-const travelTimeNegativeHourMessage = 'Hours entered cannot be negative';
-const travelTimeMinuteRangeMessage = 'Enter minutes between 0 and 59';
-const travelTimeDayLimitMessage = 'Travel time should not be greater than a day';
+const defaultExpensesMessageMapping = {
+  financialLossNumeric: 'Loss of earnings or benefits per day can only include numbers and a decimal point',
+  financialLossMax: 'Loss of earnings or benefits per day must be less than £1,000,000',
+  financialLossMin: 'Loss of earnings or benefits per day must not be negative',
+  smartcardNumberLength: 'Smartcard number must be 20 characters or fewer',
+  milesNumeric: 'Miles travelled can only include numbers',
+  milesWholeNumber: 'Miles travelled must be a whole number',
+  milesMin: 'Miles travelled must not be negative',
+  milesMax: 'Miles travelled must be less than 1,000,000',
+  travelTimeNumeric: 'Total travel time can only include numbers',
+  travelTimeNegativeHour: 'Hours entered cannot be negative',
+  travelTimeMinuteRange: 'Enter minutes between 0 and 59',
+  travelTimeDayLimit: 'Travel time should not be greater than a day',
+};
 
 const buildFinancialLossSchema = () => Joi.number()
   .empty('')
   .min(0)
   .less(1000000)
   .messages({
-    'number.base': financialLossNumericMessage,
-    'number.min': financialLossMinMessage,
-    'number.less': financialLossMaxMessage,
+    'number.base': defaultExpensesMessageMapping.financialLossNumeric,
+    'number.min': defaultExpensesMessageMapping.financialLossMin,
+    'number.less': defaultExpensesMessageMapping.financialLossMax,
   });
 
 const buildSmartcardNumberSchema = () => Joi.string()
   .allow('')
   .max(20)
   .messages({
-    'string.max': smartcardNumberLengthMessage,
+    'string.max': defaultExpensesMessageMapping.smartcardNumberLength,
   });
 
 const buildDistanceTraveledMilesSchema = () => Joi.number()
@@ -43,10 +45,10 @@ const buildDistanceTraveledMilesSchema = () => Joi.number()
   .min(0)
   .less(1000000)
   .messages({
-    'number.base': milesNumericMessage,
-    'distanceTraveledMiles.whole': milesWholeNumberMessage,
-    'number.min': milesMinMessage,
-    'number.less': milesMaxMessage,
+    'number.base': defaultExpensesMessageMapping.milesNumeric,
+    'distanceTraveledMiles.whole': defaultExpensesMessageMapping.milesWholeNumber,
+    'number.min': defaultExpensesMessageMapping.milesMin,
+    'number.less': defaultExpensesMessageMapping.milesMax,
   });
 
 const buildTravelTimeSchema = () => Joi.any()
@@ -82,10 +84,10 @@ const buildTravelTimeSchema = () => Joi.any()
     return value;
   }, 'travel time validation')
   .messages({
-    'travelTime.numeric': travelTimeNumericMessage,
-    'travelTime.negativeHour': travelTimeNegativeHourMessage,
-    'travelTime.minuteRange': travelTimeMinuteRangeMessage,
-    'travelTime.dayLimit': travelTimeDayLimitMessage,
+    'travelTime.numeric': defaultExpensesMessageMapping.travelTimeNumeric,
+    'travelTime.negativeHour': defaultExpensesMessageMapping.travelTimeNegativeHour,
+    'travelTime.minuteRange': defaultExpensesMessageMapping.travelTimeMinuteRange,
+    'travelTime.dayLimit': defaultExpensesMessageMapping.travelTimeDayLimit,
   });
 
 const schema = Joi.object({
