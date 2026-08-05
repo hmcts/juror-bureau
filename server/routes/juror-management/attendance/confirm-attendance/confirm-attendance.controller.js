@@ -2,8 +2,7 @@
   'use strict';
 
   const _ = require('lodash')
-    , validate = require('validate.js')
-    , checkInOutTimeValidator = require('../../../../config/validation/check-in-out-time')
+    , checkInOutTimeValidator = require('../../../../config/joi-validation/check-in-out-time')
     , { convertAmPmToLong, timeArrayToString, convert12to24 } = require('../../../../components/filters')
     , { jurorAttendanceDao, updateJurorAttendanceDAO } = require('../../../../objects/juror-attendance');
     const { getJurorStatus } = require('../../../../lib/mod-utils');
@@ -157,12 +156,13 @@
         , checkOutTimePeriod = req.body.checkOutTimePeriod;
 
 
-      // Check if full time is missing
-      validatorResult = validate({checkOutTime: {
-        hour: checkOutTimeHour,
-        minute: checkOutTimeMinute,
-        period: checkOutTimePeriod,
-      }}, checkInOutTimeValidator.checkOutTimeEmpty());
+      validatorResult = checkInOutTimeValidator.checkOutTimeEmpty({
+        checkOutTime: {
+          hour: checkOutTimeHour,
+          minute: checkOutTimeMinute,
+          period: checkOutTimePeriod,
+        },
+      });
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
         req.session.formFields = req.body;
@@ -171,7 +171,7 @@
         ));
       }
       // If a time is entered in both fields then validate the seperate inputs
-      validatorResult = validate(req.body, checkInOutTimeValidator.checkOutTime());
+      validatorResult = checkInOutTimeValidator.checkOutTime(req.body);
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
         req.session.formFields = req.body;
@@ -262,4 +262,3 @@
   };
 
 })();
-
