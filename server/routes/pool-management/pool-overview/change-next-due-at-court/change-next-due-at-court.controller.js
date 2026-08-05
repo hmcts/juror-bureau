@@ -2,9 +2,8 @@
   'use strict';
 
   const _ = require('lodash');
-  const validate = require('validate.js');
-  const jurorSelectValidator = require('../../../../config/validation/change-attendance-date').jurorSelect;
-  const attendanceDateValidator = require('../../../../config/validation/change-attendance-date').bulkAttendanceDate;
+  const jurorSelectValidator = require('../../../../config/joi-validation/change-attendance-date').jurorSelect;
+  const attendanceDateValidator = require('../../../../config/joi-validation/change-attendance-date').bulkAttendanceDate;
   const { dateFilter } = require('../../../../components/filters');
   const { changeNextDueAtCourtDAO } = require('../../../../objects/juror-attendance');
   const { poolMembersDAO } = require('../../../../objects');
@@ -43,7 +42,7 @@
       const membersToCheck = req.session.membersList
         .filter(member => req.session.selectedJurors.includes(member.jurorNumber));
 
-      validatorResult = validate(req.body, jurorSelectValidator(membersToCheck));
+      validatorResult = jurorSelectValidator(membersToCheck)(req.body);
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
         req.session.noJurorSelect = true;
@@ -96,10 +95,10 @@
     return function(req, res) {
       const { poolNumber } = req.params;
 
-      const validatorResult = validate({
+      const validatorResult = attendanceDateValidator()({
         ...req.body,
         originalNextDate: dateFilter(new Date(), null, 'YYYY, MM, DD'),
-      }, attendanceDateValidator());
+      });
 
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
