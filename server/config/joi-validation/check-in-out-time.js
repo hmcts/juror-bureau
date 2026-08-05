@@ -82,8 +82,6 @@ const buildCheckInSchema = () => Joi.object({
   checkInTimeHour: buildTimeFieldSchema({
     prefix: 'checkInTime',
     part: 'Hour',
-    min: 1,
-    max: 12,
     messages: {
       missing: timeMessageMapping.checkIn.missingHour.summary,
       invalidChars: timeMessageMapping.checkIn.invalidChars.summary,
@@ -93,8 +91,6 @@ const buildCheckInSchema = () => Joi.object({
   checkInTimeMinute: buildTimeFieldSchema({
     prefix: 'checkInTime',
     part: 'Minute',
-    min: 0,
-    max: 59,
     messages: {
       missing: timeMessageMapping.checkIn.missingMinutes.summary,
       invalidChars: timeMessageMapping.checkIn.invalidChars.summary,
@@ -118,8 +114,6 @@ const buildCheckOutSchema = () => Joi.object({
   checkInTimeHour: buildTimeFieldSchema({
     prefix: 'checkInTime',
     part: 'Hour',
-    min: 1,
-    max: 12,
     messages: {
       missing: timeMessageMapping.checkIn.missingHour.summary,
       invalidChars: timeMessageMapping.checkIn.invalidChars.summary,
@@ -129,8 +123,6 @@ const buildCheckOutSchema = () => Joi.object({
   checkInTimeMinute: buildTimeFieldSchema({
     prefix: 'checkInTime',
     part: 'Minute',
-    min: 0,
-    max: 59,
     messages: {
       missing: timeMessageMapping.checkIn.missingMinutes.summary,
       invalidChars: timeMessageMapping.checkIn.invalidChars.summary,
@@ -151,8 +143,6 @@ const buildCheckOutSchema = () => Joi.object({
   checkOutTimeHour: buildTimeFieldSchema({
     prefix: 'checkOutTime',
     part: 'Hour',
-    min: 1,
-    max: 12,
     messages: {
       missing: timeMessageMapping.checkOut.missingHour.summary,
       invalidChars: timeMessageMapping.checkOut.invalidChars.summary,
@@ -162,8 +152,6 @@ const buildCheckOutSchema = () => Joi.object({
   checkOutTimeMinute: buildTimeFieldSchema({
     prefix: 'checkOutTime',
     part: 'Minute',
-    min: 0,
-    max: 59,
     messages: {
       missing: timeMessageMapping.checkOut.missingMinutes.summary,
       invalidChars: timeMessageMapping.checkOut.invalidChars.summary,
