@@ -3,9 +3,8 @@
 
   const _ = require('lodash')
     , modUtils = require('../../../lib/mod-utils')
-    , validate = require('validate.js')
     , { defaultExpensesDAO } = require('../../../objects/expenses')
-    , defaultExpensesValidator = require('../../../config/validation/default-expenses');
+    , defaultExpensesValidator = require('../../../config/joi-validation/default-expenses');
 
   module.exports.getDefaultExpenses = (app) => {
     return async function(req, res) {
@@ -110,7 +109,7 @@
         hour: req.body['travelTime-hour'],
         minute: req.body['travelTime-minute'],
       };
-      const validatorResult = validate(req.body, defaultExpensesValidator());
+      const validatorResult = defaultExpensesValidator(req.body);
 
       if (typeof validatorResult !== 'undefined') {
         req.session.tmpBody = req.body;

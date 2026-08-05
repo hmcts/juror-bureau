@@ -2,8 +2,7 @@
   'use strict';
 
   const _ = require('lodash');
-  const validate = require('validate.js');
-  const nonAttendanceDayValidator = require('../../../../config/validation/non-attendance-day');
+  const nonAttendanceDayValidator = require('../../../../config/joi-validation/non-attendance-day');
   const { jurorNonAttendanceDao, bulkJurorNonAttendanceDao } = require('../../../../objects/juror-attendance');
   const { dateFilter } = require('../../../../components/filters');
   const { makeManualError } = require('../../../../lib/mod-utils');
@@ -63,7 +62,7 @@
 
       const { errorUrl, successUrl } = buildUrls(app, req, { jurorNumber, poolNumber, locCode, status });
 
-      const validatorResult = validate(req.body, nonAttendanceDayValidator());
+      const validatorResult = nonAttendanceDayValidator(req.body);
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
         req.session.formFields = req.body;
@@ -98,7 +97,7 @@
 
       const { postUrl: errorUrl, cancelUrl: successUrl } = buildUrls(app, req, { poolNumber, trialNumber, locCode });
 
-      const validatorResult = validate(req.body, nonAttendanceDayValidator());
+      const validatorResult = nonAttendanceDayValidator(req.body);
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
         req.session.formFields = req.body;
