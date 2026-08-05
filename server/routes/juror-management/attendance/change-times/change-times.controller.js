@@ -2,8 +2,7 @@
   'use strict';
 
   const _ = require('lodash')
-    , validate = require('validate.js')
-    , changeTimesValidator = require('../../../../config/validation/change-attendance-times').changeAttendanceTimes
+    , changeTimesValidator = require('../../../../config/joi-validation/change-attendance-times')
     , { jurorAttendanceDao, updateJurorAttendanceDAO } = require('../../../../objects/juror-attendance')
     , { convert12to24, convert24to12, timeArrayToString } = require('../../../../components/filters')
     , { replaceAllObjKeys, makeManualError } = require('../../../../lib/mod-utils');
@@ -154,7 +153,7 @@
         }) + '?date=' + attendanceDate;
       }
 
-      let validatorResult = validate({
+      let validatorResult = changeTimesValidator()({
         checkInTime: {
           hour: checkInTimeHour,
           minute: checkInTimeMinute,
@@ -165,23 +164,10 @@
           minute: checkOutTimeMinute,
           period: checkOutTimePeriod,
         },
-      }, changeTimesValidator());
-
-      let completeValidatorResult = {};
+      });
 
       if (typeof validatorResult !== 'undefined') {
-        // Validator returns nested result therefore is resturctured
-        if (typeof validatorResult.checkInTime !== 'undefined') {
-          completeValidatorResult = validatorResult.checkInTime[0];
-        }
-
-        if (typeof validatorResult.checkOutTime !== 'undefined') {
-          completeValidatorResult = Object.assign(completeValidatorResult, validatorResult.checkOutTime[0]);
-        }
-      }
-
-      if (!_.isEmpty(completeValidatorResult)) {
-        req.session.errors = completeValidatorResult;
+        req.session.errors = validatorResult;
         req.session.formFields = req.body;
         return res.redirect(invalidUrl);
       }
