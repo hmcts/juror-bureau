@@ -1,17 +1,28 @@
 const Joi = require('joi');
 const { validateJoiSchema } = require('./index');
 
-const totalTravelTimeMessage = 'Total travel time can only include numbers';
-const milesMessage = 'Miles travelled can only include numbers';
-const milesWholeNumberMessage = 'Miles travelled must be a whole number';
-const milesNegativeMessage = 'Miles travelled must not be negative';
-const milesMaxMessage = 'Miles travelled must be less than 1,000,000';
-const financialLossMessage = 'Loss of earnings or benefits per day can only include numbers and a decimal point';
-const financialLossNegativeMessage = 'Loss of earnings or benefits per day must not be negative';
-const financialLossMaxMessage = 'Loss of earnings or benefits per day must be less than £1,000,000';
-const priceMessage = (label) => `${label} can only include numbers and a decimal point`;
-const descriptionMessage = 'Description of other costs must be [x] characters or fewer';
-const travelMinutesMessage = 'Enter minutes between 0 and 59';
+const enterExpensesMessageMapping = {
+  totalTravelTime: 'Total travel time can only include numbers',
+  miles: 'Miles travelled can only include numbers',
+  milesWholeNumber: 'Miles travelled must be a whole number',
+  milesNegative: 'Miles travelled must not be negative',
+  milesMax: 'Miles travelled must be less than 1,000,000',
+  financialLoss: 'Loss of earnings or benefits per day can only include numbers and a decimal point',
+  financialLossNegative: 'Loss of earnings or benefits per day must not be negative',
+  financialLossMax: 'Loss of earnings or benefits per day must be less than £1,000,000',
+  price: (label) => `${label} can only include numbers and a decimal point`,
+  description: 'Description of other costs must be [x] characters or fewer',
+  travelMinutes: 'Enter minutes between 0 and 59',
+  passengers: 'Number of other jurors taken as passengers can only include numbers',
+  travelTimeDayLimit: 'Travel time should not be greater than a day',
+  parking: 'Parking amount can only include numbers and a decimal point',
+  publicTransport: 'Public transport amount can only include numbers and a decimal point',
+  taxi: 'Taxi amount can only include numbers and a decimal point',
+  extraCareCosts: 'Extra care costs can only include numbers and a decimal point',
+  otherCosts: 'Other costs can only include numbers and a decimal point',
+  smartcardSpend: 'Amount spent on smartcard can only include numbers and a decimal point',
+  nonAttendanceLossOfEarnings: 'Loss of earnings or benefits can only include numbers and a decimal point',
+};
 
 const priceRegex = /^[0-9]*(\.[0-9]{1,2})?$/;
 const digitsRegex = /^[0-9]*$/;
@@ -45,8 +56,8 @@ const travelTimeHourSchema = Joi.string()
     return value;
   }, 'travel time hour validation')
   .messages({
-    'string.pattern.base': totalTravelTimeMessage,
-    'travelTime.hourLimit': 'Travel time should not be greater than a day',
+    'string.pattern.base': enterExpensesMessageMapping.totalTravelTime,
+    'travelTime.hourLimit': enterExpensesMessageMapping.travelTimeDayLimit,
   });
 
 const travelTimeMinuteSchema = Joi.string()
@@ -64,8 +75,8 @@ const travelTimeMinuteSchema = Joi.string()
     return value;
   }, 'travel time minute validation')
   .messages({
-    'string.pattern.base': totalTravelTimeMessage,
-    'travelTime.minuteRange': travelMinutesMessage,
+    'string.pattern.base': enterExpensesMessageMapping.totalTravelTime,
+    'travelTime.minuteRange': enterExpensesMessageMapping.travelMinutes,
   });
 
 const financialLossSchema = Joi.number()
@@ -73,9 +84,9 @@ const financialLossSchema = Joi.number()
   .min(0)
   .less(1000000)
   .messages({
-    'number.base': financialLossMessage,
-    'number.min': financialLossNegativeMessage,
-    'number.less': financialLossMaxMessage,
+    'number.base': enterExpensesMessageMapping.financialLoss,
+    'number.min': enterExpensesMessageMapping.financialLossNegative,
+    'number.less': enterExpensesMessageMapping.financialLossMax,
   });
 
 const mileageSchema = Joi.number()
@@ -84,42 +95,42 @@ const mileageSchema = Joi.number()
   .min(0)
   .less(1000000)
   .messages({
-    'number.base': milesMessage,
-    'number.integer': milesWholeNumberMessage,
-    'number.min': milesNegativeMessage,
-    'number.less': milesMaxMessage,
+    'number.base': enterExpensesMessageMapping.miles,
+    'number.integer': enterExpensesMessageMapping.milesWholeNumber,
+    'number.min': enterExpensesMessageMapping.milesNegative,
+    'number.less': enterExpensesMessageMapping.milesMax,
   });
 
 const buildAttendanceDaySchema = () => Joi.object({
   'totalTravelTime-hour': travelTimeHourSchema,
   'totalTravelTime-minute': travelTimeMinuteSchema,
-  carPassengers: digitsSchema('Number of other jurors taken as passengers can only include numbers'),
-  motoPassengers: digitsSchema('Number of other jurors taken as passengers can only include numbers'),
+  carPassengers: digitsSchema(enterExpensesMessageMapping.passengers),
+  motoPassengers: digitsSchema(enterExpensesMessageMapping.passengers),
   milesTravelled: mileageSchema,
-  parking: priceSchema('Parking amount can only include numbers and a decimal point'),
-  publicTransport: priceSchema('Public transport amount can only include numbers and a decimal point'),
-  taxi: priceSchema('Taxi amount can only include numbers and a decimal point'),
+  parking: priceSchema(enterExpensesMessageMapping.parking),
+  publicTransport: priceSchema(enterExpensesMessageMapping.publicTransport),
+  taxi: priceSchema(enterExpensesMessageMapping.taxi),
   lossOfEarnings: financialLossSchema,
-  extraCareCosts: priceSchema('Extra care costs can only include numbers and a decimal point'),
-  otherCosts: priceSchema('Other costs can only include numbers and a decimal point'),
+  extraCareCosts: priceSchema(enterExpensesMessageMapping.extraCareCosts),
+  otherCosts: priceSchema(enterExpensesMessageMapping.otherCosts),
   otherCostsDescription: Joi.string()
     .allow('')
     .max(50)
     .messages({
-      'string.max': descriptionMessage,
+      'string.max': enterExpensesMessageMapping.description,
     }),
-  smartcardSpend: priceSchema('Amount spent on smartcard can only include numbers and a decimal point'),
+  smartcardSpend: priceSchema(enterExpensesMessageMapping.smartcardSpend),
 });
 
 const buildNonAttendanceDaySchema = () => Joi.object({
-  lossOfEarnings: priceSchema('Loss of earnings or benefits can only include numbers and a decimal point'),
-  extraCareCosts: priceSchema('Extra care costs can only include numbers and a decimal point'),
-  otherCosts: priceSchema('Other costs can only include numbers and a decimal point'),
+  lossOfEarnings: priceSchema(enterExpensesMessageMapping.nonAttendanceLossOfEarnings),
+  extraCareCosts: priceSchema(enterExpensesMessageMapping.extraCareCosts),
+  otherCosts: priceSchema(enterExpensesMessageMapping.otherCosts),
   otherCostsDescription: Joi.string()
     .allow('')
     .max(50)
     .messages({
-      'string.max': descriptionMessage,
+      'string.max': enterExpensesMessageMapping.description,
     }),
 });
 

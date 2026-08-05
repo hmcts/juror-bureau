@@ -5,10 +5,9 @@ const { buildDatePickerSchema } = require('./date-validation');
 const commonEmailAddress = require('./common-email-address');
 const commonPhoneNumber = require('./common-phone-number');
 
-const phoneNumberMessage = 'Telephone number cannot contain letters or special characters apart from hyphens, dashes, brackets or a plus sign.';
-const emailAddressMessage = 'Enter the email address in the correct format, like name@example.com';
-
 const overviewDetailsMessageMapping = {
+  phoneNumber: 'Telephone number cannot contain letters or special characters apart from hyphens, dashes, brackets or a plus sign.',
+  emailAddress: 'Enter the email address in the correct format, like name@example.com',
   requiredDateOfBirth: 'Date of birth cannot be empty',
   invalidDateOfBirthChars: 'Dates must only include numbers and forward slashes',
   invalidDateOfBirthFormat: 'Enter a date to defer to in the correct format, for example, 31/01/2023',
@@ -41,14 +40,14 @@ const buildOverviewDetailsSchema = () => Joi.object({
     notAfterDate: moment().subtract(1, 'day').toDate(),
   }),
   primaryPhone: commonPhoneNumber({
-    invalidCharMessage: phoneNumberMessage,
+    invalidCharMessage: overviewDetailsMessageMapping.phoneNumber,
   }),
   secondaryPhone: commonPhoneNumber({
-    invalidCharMessage: phoneNumberMessage,
+    invalidCharMessage: overviewDetailsMessageMapping.phoneNumber,
   }),
   emailAddress: commonEmailAddress({
     required: false,
-    message: emailAddressMessage,
+    message: overviewDetailsMessageMapping.emailAddress,
   }),
 });
 
@@ -101,14 +100,14 @@ const buildThirdPartySchema = () => Joi.object({
     .allow('')
     .optional(),
   'thirdParty-mainPhone': commonPhoneNumber({
-    invalidCharMessage: phoneNumberMessage,
+    invalidCharMessage: overviewDetailsMessageMapping.phoneNumber,
   }),
   'thirdParty-secPhone': commonPhoneNumber({
-    invalidCharMessage: phoneNumberMessage,
+    invalidCharMessage: overviewDetailsMessageMapping.phoneNumber,
   }),
   'thirdParty-email': commonEmailAddress({
     required: false,
-    message: emailAddressMessage,
+    message: overviewDetailsMessageMapping.emailAddress,
   }),
   'thirdParty-reason': Joi.string()
     .max(1000)

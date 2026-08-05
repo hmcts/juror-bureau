@@ -1,10 +1,12 @@
 const Joi = require('joi');
 const { validateJoiSchema } = require('./index');
 
-const publicTransportRequiredMessage = 'Enter the Public transport daily limit';
-const publicTransportInvalidMessage = 'Public transport daily limit can only include numbers and a decimal point';
-const taxiRequiredMessage = 'Enter the Taxi daily limit for transport';
-const taxiInvalidMessage = 'Taxi daily limit can only include numbers and a decimal point';
+const updateExpenseTransportLimitsMessageMapping = {
+  publicTransportRequired: 'Enter the Public transport daily limit',
+  publicTransportInvalid: 'Public transport daily limit can only include numbers and a decimal point',
+  taxiRequired: 'Enter the Taxi daily limit for transport',
+  taxiInvalid: 'Taxi daily limit can only include numbers and a decimal point',
+};
 
 const priceRegex = /^\d{1,}\.{0,1}\d{0,}$/;
 
@@ -19,12 +21,12 @@ const buildRequiredPriceSchema = (requiredMessage, invalidMessage) => Joi.string
 
 const schema = Joi.object({
   publicTransportDailyLimit: buildRequiredPriceSchema(
-    publicTransportRequiredMessage,
-    publicTransportInvalidMessage,
+    updateExpenseTransportLimitsMessageMapping.publicTransportRequired,
+    updateExpenseTransportLimitsMessageMapping.publicTransportInvalid,
   ),
   taxiDailyLimit: buildRequiredPriceSchema(
-    taxiRequiredMessage,
-    taxiInvalidMessage,
+    updateExpenseTransportLimitsMessageMapping.taxiRequired,
+    updateExpenseTransportLimitsMessageMapping.taxiInvalid,
   ),
 });
 

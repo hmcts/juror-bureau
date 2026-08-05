@@ -1,27 +1,29 @@
 const Joi = require('joi');
 const { validateJoiSchema } = require('./index');
 
-const judgeCodeMessage = 'Enter a code for this judge';
-const judgeCodeLengthMessage = 'Judge code must be 4 characters or less';
-const judgeNameMessage = 'Enter judge name';
-const judgeNameLengthMessage = 'Judge name must be 30 characters or less';
+const editJudgeMessageMapping = {
+  judgeCode: 'Enter a code for this judge',
+  judgeCodeLength: 'Judge code must be 4 characters or less',
+  judgeName: 'Enter judge name',
+  judgeNameLength: 'Judge name must be 30 characters or less',
+};
 
 const schema = Joi.object({
   judgeCode: Joi.string()
     .required()
     .max(4)
     .messages({
-      'any.required': judgeCodeMessage,
-      'string.empty': judgeCodeMessage,
-      'string.max': judgeCodeLengthMessage,
+      'any.required': editJudgeMessageMapping.judgeCode,
+      'string.empty': editJudgeMessageMapping.judgeCode,
+      'string.max': editJudgeMessageMapping.judgeCodeLength,
     }),
   judgeName: Joi.string()
     .required()
     .max(30)
     .messages({
-      'any.required': judgeNameMessage,
-      'string.empty': judgeNameMessage,
-      'string.max': judgeNameLengthMessage,
+      'any.required': editJudgeMessageMapping.judgeName,
+      'string.empty': editJudgeMessageMapping.judgeName,
+      'string.max': editJudgeMessageMapping.judgeNameLength,
     }),
 });
 

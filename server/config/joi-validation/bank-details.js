@@ -1,16 +1,18 @@
 const Joi = require('joi');
 const { validateJoiSchema } = require('./index');
 
-const bankDetailsBlankMessage = 'Bank details cannot be blank, enter the jurors bank details before saving';
-const accountNumberRequiredMessage = 'Enter an account number';
-const accountNumberLengthMessage = 'Account number must be 8 numbers';
-const accountNumberNumericMessage = 'Account number can only include numbers';
-const sortCodeRequiredMessage = 'Enter an sort code';
-const sortCodeLengthMessage = 'Sort code must be 6 digits';
-const sortCodeNumericMessage = 'Sort code can only include numbers and hyphens';
-const accountHolderNameRequiredMessage = 'Enter the account holder\'s name';
-const accountHolderNameLengthMessage = 'Account holder\'s name must be 18 characters or fewer';
-const accountHolderNameInvalidCharsMessage = 'Invalid character used in the account holder\'s name';
+const bankDetailsMessageMapping = {
+  bankDetailsBlank: 'Bank details cannot be blank, enter the jurors bank details before saving',
+  accountNumberRequired: 'Enter an account number',
+  accountNumberLength: 'Account number must be 8 numbers',
+  accountNumberNumeric: 'Account number can only include numbers',
+  sortCodeRequired: 'Enter an sort code',
+  sortCodeLength: 'Sort code must be 6 digits',
+  sortCodeNumeric: 'Sort code can only include numbers and hyphens',
+  accountHolderNameRequired: 'Enter the account holder\'s name',
+  accountHolderNameLength: 'Account holder\'s name must be 18 characters or fewer',
+  accountHolderNameInvalidChars: 'Invalid character used in the account holder\'s name',
+};
 
 const isBlank = (value) => value === '';
 
@@ -46,9 +48,9 @@ const buildAccountNumberSchema = () => Joi.string()
     return value;
   }, 'account number validation')
   .messages({
-    'accountNumber.required': accountNumberRequiredMessage,
-    'accountNumber.length': accountNumberLengthMessage,
-    'accountNumber.numeric': accountNumberNumericMessage,
+    'accountNumber.required': bankDetailsMessageMapping.accountNumberRequired,
+    'accountNumber.length': bankDetailsMessageMapping.accountNumberLength,
+    'accountNumber.numeric': bankDetailsMessageMapping.accountNumberNumeric,
   });
 
 const buildSortCodeSchema = () => Joi.string()
@@ -76,9 +78,9 @@ const buildSortCodeSchema = () => Joi.string()
     return value;
   }, 'sort code validation')
   .messages({
-    'sortCode.required': sortCodeRequiredMessage,
-    'sortCode.length': sortCodeLengthMessage,
-    'sortCode.numeric': sortCodeNumericMessage,
+    'sortCode.required': bankDetailsMessageMapping.sortCodeRequired,
+    'sortCode.length': bankDetailsMessageMapping.sortCodeLength,
+    'sortCode.numeric': bankDetailsMessageMapping.sortCodeNumeric,
   });
 
 const buildAccountHolderNameSchema = () => Joi.string()
@@ -105,9 +107,9 @@ const buildAccountHolderNameSchema = () => Joi.string()
     return value;
   }, 'account holder name validation')
   .messages({
-    'accountHolderName.required': accountHolderNameRequiredMessage,
-    'accountHolderName.length': accountHolderNameLengthMessage,
-    'accountHolderName.invalidChars': accountHolderNameInvalidCharsMessage,
+    'accountHolderName.required': bankDetailsMessageMapping.accountHolderNameRequired,
+    'accountHolderName.length': bankDetailsMessageMapping.accountHolderNameLength,
+    'accountHolderName.invalidChars': bankDetailsMessageMapping.accountHolderNameInvalidChars,
   });
 
 const schema = Joi.object({
@@ -121,7 +123,7 @@ const schema = Joi.object({
     return value;
   }, 'bank details blank validation')
     .messages({
-      'bankDetails.blank': bankDetailsBlankMessage,
+      'bankDetails.blank': bankDetailsMessageMapping.bankDetailsBlank,
     }),
   accountNumber: buildAccountNumberSchema(),
   sortCode: buildSortCodeSchema(),

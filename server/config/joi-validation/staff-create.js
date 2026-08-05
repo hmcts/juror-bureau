@@ -1,37 +1,39 @@
 const Joi = require('joi');
 const { validateJoiSchema } = require('./index');
 
-const nameRequiredMessage = 'Please provide a name for the new staff member';
-const nameSummaryMessage = 'Please check the new staff member name';
-const teamLeaderRequiredMessage = 'Please state if the new staff member is a Team leader or not';
-const loginRequiredMessage = 'Please enter the staff member Juror application user name';
-const nameLengthMessage = 'Please check the name for the new staff member';
+const staffCreateMessageMapping = {
+  nameRequired: 'Please provide a name for the new staff member',
+  nameSummary: 'Please check the new staff member name',
+  teamLeaderRequired: 'Please state if the new staff member is a Team leader or not',
+  loginRequired: 'Please enter the staff member Juror application user name',
+  nameLength: 'Please check the name for the new staff member',
+};
 
 const schema = Joi.object({
   name: Joi.string()
     .required()
     .max(30)
     .messages({
-      'any.required': nameRequiredMessage,
-      'string.empty': nameRequiredMessage,
-      'string.max': nameLengthMessage,
+      'any.required': staffCreateMessageMapping.nameRequired,
+      'string.empty': staffCreateMessageMapping.nameRequired,
+      'string.max': staffCreateMessageMapping.nameLength,
     }),
   teamLeader: Joi.string()
     .required()
     .messages({
-      'any.required': teamLeaderRequiredMessage,
-      'string.empty': teamLeaderRequiredMessage,
+      'any.required': staffCreateMessageMapping.teamLeaderRequired,
+      'string.empty': staffCreateMessageMapping.teamLeaderRequired,
     }),
   login: Joi.string()
     .required()
     .messages({
-      'any.required': loginRequiredMessage,
-      'string.empty': loginRequiredMessage,
+      'any.required': staffCreateMessageMapping.loginRequired,
+      'string.empty': staffCreateMessageMapping.loginRequired,
   }),
 });
 
 module.exports = (body) => validateJoiSchema(schema, body, {
   errorMessageSummary: {
-    name: nameSummaryMessage,
+    name: staffCreateMessageMapping.nameSummary,
   },
 });

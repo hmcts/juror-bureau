@@ -1,23 +1,25 @@
 const Joi = require('joi');
 const { validateJoiSchema } = require('./index');
 
-const userIdMessage = 'Enter your username';
-const passwordMessage = 'Enter your password';
+const loginMessageMapping = {
+  userId: 'Enter your username',
+  password: 'Enter your password',
+};
 
 const schema = Joi.object({
   userID: Joi.string()
     .required()
     .messages({
-      'any.required': userIdMessage,
-      'string.base': userIdMessage,
-      'string.empty': userIdMessage,
+      'any.required': loginMessageMapping.userId,
+      'string.base': loginMessageMapping.userId,
+      'string.empty': loginMessageMapping.userId,
     }),
   password: Joi.string()
     .required()
     .messages({
-      'any.required': passwordMessage,
-      'string.base': passwordMessage,
-      'string.empty': passwordMessage,
+      'any.required': loginMessageMapping.password,
+      'string.base': loginMessageMapping.password,
+      'string.empty': loginMessageMapping.password,
     }),
 });
 
