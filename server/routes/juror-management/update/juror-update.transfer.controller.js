@@ -4,7 +4,7 @@
   var _ = require('lodash'),
     validate = require('validate.js'),
     filters = require('../../../components/filters'),
-    jurorTransferValidator = require('../../../config/validation/juror-transfer'),
+    jurorTransferValidator = require('../../../config/joi-validation/juror-transfer'),
     jurorBulkTransferValidator = require('../../../config/joi-validation/juror-bulk-transfer'),
     modUtils = require('../../../lib/mod-utils'),
     { dateFilter } = require('../../../components/filters'),
@@ -133,7 +133,7 @@
           jurorNumber: req.params.jurorNumber,
         });
         req.body.jurorDetails = req.session.jurorUpdate;
-        validatorResult = validate(req.body, jurorTransferValidator());
+        validatorResult = jurorTransferValidator(req.body);
         req.body.selectedJurors = [req.params.jurorNumber];
         movementValidateRoute = 'pool-management/movement/individual-validate.njk';
       } else {
