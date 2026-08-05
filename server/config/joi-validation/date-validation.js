@@ -8,6 +8,7 @@ const datePickerErrorKeys = {
   invalidChars: 'datePicker.invalidChars',
   invalidFormat: 'datePicker.invalidFormat',
   realDate: 'datePicker.realDate',
+  yearLength: 'datePicker.yearLength',
   notBeforeDate: 'datePicker.notBeforeDate',
   notAfterDate: 'datePicker.notAfterDate',
 };
@@ -54,12 +55,25 @@ const buildNotAfterDateValidator = (referenceDate, referenceDateFormat) => {
   };
 };
 
+const resolveReferenceDate = ({ referenceDate, referenceDateField, helpers }) => {
+  if (typeof referenceDateField !== 'undefined') {
+    return helpers.state.ancestors[0]?.[referenceDateField];
+  }
+
+  if (typeof referenceDate === 'function') {
+    return referenceDate(helpers.state.ancestors[0], helpers);
+  }
+
+  return referenceDate;
+};
+
 const buildDatePickerSchema = ({
   field,
   requiredMessage,
   invalidCharsMessage,
   invalidFormatMessage,
   realDateMessage,
+  yearLengthMessage,
   notBeforeDateMessage,
   notAfterDateMessage,
   notBeforeDate,
@@ -73,6 +87,7 @@ const buildDatePickerSchema = ({
   invalidCharsErrorKey = datePickerErrorKeys.invalidChars,
   invalidFormatErrorKey = datePickerErrorKeys.invalidFormat,
   realDateErrorKey = datePickerErrorKeys.realDate,
+  yearLengthErrorKey = datePickerErrorKeys.yearLength,
   notBeforeDateErrorKey = datePickerErrorKeys.notBeforeDate,
   notAfterDateErrorKey = datePickerErrorKeys.notAfterDate,
   required = true,
@@ -105,6 +120,10 @@ const buildDatePickerSchema = ({
       }
     }
 
+    if (typeof yearLengthMessage !== 'undefined' && dateInitial.dateAsDate.getFullYear() < 1000) {
+      return helpers.error(yearLengthErrorKey);
+    }
+
     for (const validator of extraValidators) {
       const errorKey = validator(value, dateInitial, helpers);
 
@@ -115,9 +134,11 @@ const buildDatePickerSchema = ({
 
     if (typeof notBeforeDateMessage !== 'undefined') {
       const notBeforeDateValidator = buildNotBeforeDateValidator(
-        typeof notBeforeDateField !== 'undefined'
-          ? helpers.state.ancestors[0]?.[notBeforeDateField]
-          : (typeof notBeforeDate === 'undefined' ? new Date() : notBeforeDate),
+        resolveReferenceDate({
+          referenceDate: typeof notBeforeDate === 'undefined' ? new Date() : notBeforeDate,
+          referenceDateField: notBeforeDateField,
+          helpers,
+        }),
         notBeforeDateFormat,
       );
 
@@ -132,9 +153,11 @@ const buildDatePickerSchema = ({
 
     if (typeof notAfterDateMessage !== 'undefined') {
       const notAfterDateValidator = buildNotAfterDateValidator(
-        typeof notAfterDateField !== 'undefined'
-          ? helpers.state.ancestors[0]?.[notAfterDateField]
-          : (typeof notAfterDate === 'undefined' ? new Date() : notAfterDate),
+        resolveReferenceDate({
+          referenceDate: typeof notAfterDate === 'undefined' ? new Date() : notAfterDate,
+          referenceDateField: notAfterDateField,
+          helpers,
+        }),
         notAfterDateFormat,
       );
 
@@ -154,6 +177,7 @@ const buildDatePickerSchema = ({
     ...(typeof invalidCharsMessage !== 'undefined' ? { [invalidCharsErrorKey]: invalidCharsMessage } : {}),
     ...(typeof invalidFormatMessage !== 'undefined' ? { [invalidFormatErrorKey]: invalidFormatMessage } : {}),
     ...(typeof realDateMessage !== 'undefined' ? { [realDateErrorKey]: realDateMessage } : {}),
+    ...(typeof yearLengthMessage !== 'undefined' ? { [yearLengthErrorKey]: yearLengthMessage } : {}),
     ...(typeof notBeforeDateMessage !== 'undefined' ? { [notBeforeDateErrorKey]: notBeforeDateMessage } : {}),
     ...(typeof notAfterDateMessage !== 'undefined' ? { [notAfterDateErrorKey]: notAfterDateMessage } : {}),
     ...extraMessages,

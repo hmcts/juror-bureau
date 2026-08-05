@@ -1,7 +1,6 @@
 const _ = require('lodash');
-const validate = require('validate.js');
 const urljoin = require('url-join');
-const uncompleteValidator = require('../../config/validation/uncomplete-service');
+const uncompleteValidator = require('../../config/joi-validation/uncomplete-service');
 const modUtils = require('../../lib/mod-utils');
 const { sjoTasksSearchDAO } = require('../../objects');
 
@@ -75,7 +74,7 @@ module.exports.postSJOTasksSearch = function(app, { continueRoute, redirectBackR
       break;
     }
 
-    validatorResult = validate(req.body, uncompleteValidator.searchOptions());
+    validatorResult = uncompleteValidator.searchOptions(req.body);
     if (typeof validatorResult !== 'undefined') {
       req.session.errors = validatorResult;
       req.session.formFields = req.body;
@@ -84,7 +83,7 @@ module.exports.postSJOTasksSearch = function(app, { continueRoute, redirectBackR
     };
     if (req.body.searchCompletedJurors === 'juror') {
 
-      validatorResult = validate(req.body, uncompleteValidator.searchByJuror());
+      validatorResult = uncompleteValidator.searchByJuror(req.body);
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
         req.session.formFields = req.body;
@@ -94,7 +93,7 @@ module.exports.postSJOTasksSearch = function(app, { continueRoute, redirectBackR
     };
     if (req.body.searchCompletedJurors === 'name') {
 
-      validatorResult = validate(req.body, uncompleteValidator.searchByJurorName());
+      validatorResult = uncompleteValidator.searchByJurorName(req.body);
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
         req.session.formFields = req.body;
@@ -104,7 +103,7 @@ module.exports.postSJOTasksSearch = function(app, { continueRoute, redirectBackR
     };
     if (req.body.searchCompletedJurors === 'pool') {
 
-      validatorResult = validate(req.body, uncompleteValidator.searchByPool());
+      validatorResult = uncompleteValidator.searchByPool(req.body);
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
         req.session.formFields = req.body;
