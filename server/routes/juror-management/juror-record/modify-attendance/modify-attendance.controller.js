@@ -5,7 +5,7 @@
   const { convert12to24 } = require('../../../../components/filters');
   const validate = require('validate.js');
   const modifyAttendanceValidator = require('../../../../config/validation/modify-jurors-attendance');
-  const attendanceTimeValidator = require('../../../../config/validation/add-attendance').attendanceTime;
+  const attendanceTimeValidator = require('../../../../config/joi-validation/add-attendance');
   const { makeManualError, padTimeForApi, mapCamelToSnake } = require('../../../../lib/mod-utils');
   const { modifyJurorAttendance } = require('../../../../objects');
   const moment = require('moment');
@@ -103,7 +103,7 @@
       }
 
       if (req.body.attendanceType === 'ATTENDANCE') {
-        validatorResult = validate(req.body, attendanceTimeValidator());
+        validatorResult = attendanceTimeValidator(req.body);
       }
 
       if (typeof validatorResult !== 'undefined') {
