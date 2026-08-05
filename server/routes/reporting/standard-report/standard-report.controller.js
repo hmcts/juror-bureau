@@ -22,7 +22,7 @@
   const { standardReportPrint } = require('./standard-report-print');
   const { fetchCourtsDAO, trialsListDAO } = require('../../../objects');
   const searchValidator = require('../../../config/validation/report-search-by');
-  const jurorSearchValidator = require('../../../config/validation/juror-search');
+  const jurorSearchValidator = require('../../../config/joi-validation/juror-search');
   const moment = require('moment')
   const { dateFilter, capitalizeFully, capitalise, timeToDuration, toSentenceCase } = require('../../../components/filters');
   const { reportExport } = require('./report-export');
@@ -135,7 +135,7 @@
         }
 
         if (filter) {
-          _errors = validate({ jurorNumber: filter }, jurorSearchValidator.jurorNumberSearched());
+          _errors = jurorSearchValidator.jurorNumberSearched({ jurorNumber: filter });
         }
 
         if (typeof _errors === 'undefined') {
