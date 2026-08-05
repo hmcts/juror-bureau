@@ -5,7 +5,7 @@ const _ = require('lodash');
 const moment = require('moment');
 const validate = require('validate.js');
 const { jurorsToDismiss, completeService } = require('../../../config/validation/dismiss-jurors');
-const { checkOutTime } = require('../../../config/validation/check-in-out-time');
+const { checkOutTime } = require('../../../config/joi-validation/check-in-out-time');
 const modUtils = require('../../../lib/mod-utils');
 const { getDismissablePools, getJurorsObject, dismissJurorsObject } = require('../../../objects/dismiss-jurors');
 const { convertAmPmToLong, dateFilter, timeArrayToString, convert12to24, fullCourtType } = require('../../../components/filters');
@@ -369,7 +369,7 @@ module.exports.postCheckOutJurors = function(app) {
       period: checkOutTimePeriod,
     };
 
-    const validatorResult = validate(req.body, checkOutTime());
+    const validatorResult = checkOutTime(req.body);
 
     if (validatorResult) {
       req.session.errors = validatorResult;
