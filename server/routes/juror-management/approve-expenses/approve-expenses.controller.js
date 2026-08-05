@@ -2,9 +2,8 @@
   'use strict';
 
   const _ = require('lodash'),
-    validate = require('validate.js'),
     urljoin = require('url-join'),
-    approveExpensesFilterValidation = require('../../../config/validation/approve-expenses'),
+    approveExpensesFilterValidation = require('../../../config/joi-validation/approve-expenses'),
     { approveExpensesDAO } = require('../../../objects/expenses'),
     { dateFilter } = require('../../../components/filters'),
     { replaceAllObjKeys, makeManualError } = require('../../../lib/mod-utils');
@@ -203,7 +202,7 @@
 
   module.exports.postFilterByDate = function(app) {
     return function(req, res) {
-      const validateFilter = validate(req.body, approveExpensesFilterValidation());
+      const validateFilter = approveExpensesFilterValidation(req.body);
 
       if (typeof validateFilter !== 'undefined') {
         req.session.fromFields = _.cloneDeep(req.body);
