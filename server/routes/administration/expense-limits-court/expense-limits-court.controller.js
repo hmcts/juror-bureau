@@ -6,8 +6,7 @@ const { replaceAllObjKeys } = require('../../../lib/mod-utils');
   const _ = require('lodash');
   const { courtRatesFromLocation } = require('../../../objects/court-location');
   const { transportRatesDAO } = require('../../../objects/administration');
-  const { validate } = require('validate.js');
-  const updateExpenseLimits = require('../../../config/validation/update-expense-transport-limits');
+  const updateExpenseLimits = require('../../../config/joi-validation/update-expense-transport-limits');
 
   module.exports.getExpenseLimitsCourt = function(app) {
     return async function(req, res) {
@@ -51,7 +50,7 @@ const { replaceAllObjKeys } = require('../../../lib/mod-utils');
 
   module.exports.postExpenseLimitsCourt = function(app) {
     return async function(req, res) {
-      const validatorResult = validate(req.body, updateExpenseLimits());
+      const validatorResult = updateExpenseLimits(req.body);
 
       const locCode = req.session.authentication.locCode;
 
