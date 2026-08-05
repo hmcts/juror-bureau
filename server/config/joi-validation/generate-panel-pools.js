@@ -1,7 +1,9 @@
 const Joi = require('joi');
 const { validateJoiSchema } = require('./index');
 
-const selectedPoolsMessage = 'Select which pools you want to use jurors from';
+const generatePanelPoolsMessageMapping = {
+  selectedPools: 'Select which pools you want to use jurors from',
+};
 
 const schema = Joi.object({
   selectedPools: Joi.alternatives()
@@ -11,12 +13,12 @@ const schema = Joi.object({
     )
     .required()
     .messages({
-      'any.required': selectedPoolsMessage,
-      'alternatives.types': selectedPoolsMessage,
-      'string.base': selectedPoolsMessage,
-      'string.empty': selectedPoolsMessage,
-      'string.min': selectedPoolsMessage,
-      'array.base': selectedPoolsMessage,
+      'any.required': generatePanelPoolsMessageMapping.selectedPools,
+      'alternatives.types': generatePanelPoolsMessageMapping.selectedPools,
+      'string.base': generatePanelPoolsMessageMapping.selectedPools,
+      'string.empty': generatePanelPoolsMessageMapping.selectedPools,
+      'string.min': generatePanelPoolsMessageMapping.selectedPools,
+      'array.base': generatePanelPoolsMessageMapping.selectedPools,
     }),
 });
 
