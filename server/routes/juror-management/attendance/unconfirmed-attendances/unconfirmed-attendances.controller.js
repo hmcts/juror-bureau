@@ -1,10 +1,8 @@
 (function() {
   'use strict';
 
-  const _ = require('lodash');
   const { dateFilter, convert12to24 } = require('../../../../components/filters');
-  const { validate } = require('validate.js');
-  const { changeAttendanceTimes } = require('../../../../config/validation/change-attendance-times');
+  const changeAttendanceTimes = require('../../../../config/joi-validation/change-attendance-times');
   const { unconfirmedJurorAttendancesDAO, confirmJurorAttendanceDAO } = require('../../../../objects');
   const { makeManualError } = require('../../../../lib/mod-utils');
 
@@ -62,7 +60,7 @@
       const checkOutTimeMinute = req.body.checkOutTimeMinute;
       const checkOutTimePeriod = req.body.checkOutTimePeriod;
 
-      let validatorResult = validate({
+      let validatorResult = changeAttendanceTimes()({
         checkInTime: {
           hour: checkInTimeHour,
           minute: checkInTimeMinute,
@@ -74,22 +72,10 @@
           period: checkOutTimePeriod,
           isMandatory: true,
         },
-      }, changeAttendanceTimes());
-
-      let completeValidatorResult = {};
+      });
 
       if (typeof validatorResult !== 'undefined') {
-        if (typeof validatorResult.checkInTime !== 'undefined') {
-          completeValidatorResult = validatorResult.checkInTime[0];
-        }
-
-        if (typeof validatorResult.checkOutTime !== 'undefined') {
-          completeValidatorResult = Object.assign(completeValidatorResult, validatorResult.checkOutTime[0]);
-        }
-      }
-
-      if (!_.isEmpty(completeValidatorResult)) {
-        req.session.errors = completeValidatorResult;
+        req.session.errors = validatorResult;
         req.session.formFields = req.body;
         return res.redirect(app.namedRoutes.build('juror-management.attendance.unconfirmed-attendances.update.get', { jurorNumber }) + `${date ? `?date=${date}` : ''}`);
       }

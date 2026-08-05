@@ -32,11 +32,11 @@ const isCompleteTime = (body, prefix) => {
 
 const toLongTime = ({ hour, minute, period }) => convertAmPmToLong(`${hour}:${minute}${period}`);
 
-const buildTimeGroupSchema = ({ prefix, message }) => Joi.any()
+const buildTimeGroupSchema = ({ prefix, message, requiredIf = () => true }) => Joi.any()
   .custom((value, helpers) => {
     const body = helpers.state.ancestors[0] || {};
 
-    if (isWholeTimeBlank(body, prefix)) {
+    if (isWholeTimeBlank(body, prefix) && requiredIf(body, value, helpers)) {
       return helpers.error(`${prefix}.missingWholeTime`);
     }
 
@@ -46,7 +46,7 @@ const buildTimeGroupSchema = ({ prefix, message }) => Joi.any()
     [`${prefix}.missingWholeTime`]: message,
   });
 
-const buildTimeFieldSchema = ({ prefix, part, messages, min, max }) => Joi.any()
+const buildTimeFieldSchema = ({ prefix, part, messages }) => Joi.any()
   .custom((value, helpers) => {
     const body = helpers.state.ancestors[0] || {};
 
@@ -71,6 +71,8 @@ const buildTimeFieldSchema = ({ prefix, part, messages, min, max }) => Joi.any()
     }
 
     const numberValue = Number(value);
+    const min = part === 'Hour' ? 1 : 0;
+    const max = part === 'Hour' ? 12 : 59;
 
     if (numberValue < min || numberValue > max) {
       return helpers.error(`${prefix}.${part}.invalidRange`);

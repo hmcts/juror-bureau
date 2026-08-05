@@ -6,9 +6,8 @@ const { jurorsOnTrialDAO, confirmAttendanceDAO } = require('../../../objects');
 const { panelListDAO } = require('../../../objects/panel');
 const { Logger } = require('../../../components/logger');
 const { setPreviousWorkingDay, makeManualError } = require('../../../lib/mod-utils');
-const validate = require('validate.js');
-  const { jurorsOnTrial: jurorsOnTrialValidator } = require('../../../config/joi-validation/jurors-on-trial');
-const { changeAttendanceTimes } = require('../../../config/validation/change-attendance-times');
+const { jurorsOnTrial: jurorsOnTrialValidator } = require('../../../config/joi-validation/jurors-on-trial');
+const changeAttendanceTimes = require('../../../config/joi-validation/change-attendance-times');
 
 module.exports.getJurorsOnTrial = function(app) {
   return async function(req, res) {
@@ -208,7 +207,7 @@ function validatePostConfirm(req) {
   const checkOutTimePeriod = req.body.checkOutTimePeriod;
 
   const validatorResult = jurorsOnTrialValidator(req.body);
-  const timeValidatorResult = validate({
+  const timeValidatorResult = changeAttendanceTimes()({
     checkInTime: {
       hour: checkInTimeHour,
       minute: checkInTimeMinute,
@@ -220,23 +219,10 @@ function validatePostConfirm(req) {
       period: checkOutTimePeriod,
       isMandatory: true,
     },
-  }, changeAttendanceTimes());
+  });
 
-  let validationErrors = {};
-
-  if (validatorResult || timeValidatorResult) {
-    if (validatorResult) {
-      validationErrors = Object.assign(validationErrors, validatorResult);
-    }
-
-    if (timeValidatorResult && timeValidatorResult.checkInTime) {
-      validationErrors = Object.assign(validationErrors, timeValidatorResult.checkInTime[0]);
-    }
-
-    if (timeValidatorResult && timeValidatorResult.checkOutTime) {
-      validationErrors = Object.assign(validationErrors, timeValidatorResult.checkOutTime[0]);
-    }
-  }
-
-  return validationErrors;
+  return {
+    ...(validatorResult || {}),
+    ...(timeValidatorResult || {}),
+  };
 }
