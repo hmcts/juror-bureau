@@ -3,9 +3,8 @@
 
   const _ = require('lodash')
     , { dateFilter } = require('../../../../components/filters')
-    , validate = require('validate.js')
     , jurorRecordObject = require('../../../../objects/juror-record')
-    , attendanceDateValidator = require('../../../../config/validation/change-attendance-date').attendanceDate;
+    , attendanceDateValidator = require('../../../../config/joi-validation/change-attendance-date').attendanceDate;
 
   module.exports.getChangeAttendanceDate = function(app) {
     return async function(req, res) {
@@ -119,7 +118,7 @@
 
       let validatorResult;
 
-      validatorResult = validate(req.body, attendanceDateValidator({ onCall: req.session.jurorCommonDetails.onCall }));
+      validatorResult = attendanceDateValidator({ onCall: req.session.jurorCommonDetails.onCall })(req.body);
 
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
@@ -145,6 +144,4 @@
   };
 
 })();
-
-
 
