@@ -4,7 +4,7 @@
   const _ = require('lodash');
   const validate = require('validate.js');
   const moment = require('moment');
-  const validator = require('../../../config/validation/record-create-manual');
+  const validator = require('../../../config/joi-validation/record-create-manual');
   const { jurorCreateObject, bureauCreateJuror } = require('../../../objects/juror-create-manual');
   const { reassignJurors } = require('../../../objects/pool-management');
   const courtSelectValidator = require('../../../config/validation/request-pool').courtNameOrLocation;
@@ -96,7 +96,7 @@
 
   module.exports.postPoolSelect = function(app) {
     return function(req, res) {
-      const validatorResult = validate(req.body, validator.poolSelect());
+      const validatorResult = validator.poolSelect(req.body);
 
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
@@ -241,7 +241,7 @@
     return function(req, res) {
       const { poolNumber } = req.params;
       const routePrefix = isBureauCreation(req, res) ? 'bureau-' : '';
-      const validatorResult = validate(req.body, validator.jurorName());
+      const validatorResult = validator.jurorName(req.body);
       let tmpBody = req.body;
 
       if (typeof validatorResult !== 'undefined') {
@@ -313,7 +313,7 @@
     return async function(req, res) {
       const { poolNumber } = req.params;
       const routePrefix = isBureauCreation(req, res) ? 'bureau-' : '';
-      const validatorResult = validate(req.body, validator.jurorDob(isBureauCreation(req, res)));
+      const validatorResult = validator.jurorDob(req.body, isBureauCreation(req, res));
       let tmpBody = req.body;
 
       if (typeof validatorResult !== 'undefined') {
@@ -412,7 +412,7 @@
     return function(req, res) {
       const { poolNumber } = req.params;
       const routePrefix = isBureauCreation(req, res) ? 'bureau-' : '';
-      const validatorResult = validate(req.body, validator.confirmIneligibleAge());
+      const validatorResult = validator.confirmIneligibleAge(req.body);
 
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
@@ -478,7 +478,7 @@
     return async function(req, res) {
       const { poolNumber } = req.params;
       const routePrefix = isBureauCreation(req, res) ? 'bureau-' : '';
-      const validatorResult = validate(req.body, validator.jurorAddress());
+      const validatorResult = validator.jurorAddress(req.body);
       let tmpBody = req.body;
 
       if (typeof validatorResult !== 'undefined') {
@@ -598,7 +598,7 @@
     return function(req, res) {
       const { poolNumber } = req.params;
       const routePrefix = isBureauCreation(req, res) ? 'bureau-' : '';
-      const validatorResult = validate(req.body, validator.contactDetails(req.body));
+      const validatorResult = validator.contactDetails(req.body);
 
       if (validatorResult) {
         req.session.errors = validatorResult;
@@ -670,7 +670,7 @@
     return function(req, res) {
       const { poolNumber } = req.params;
       const routePrefix = isBureauCreation(req, res) ? 'bureau-' : '';
-      const validatorResult = validate(req.body, validator.jurorNotes(req.body));
+      const validatorResult = validator.jurorNotes(req.body);
 
       if (validatorResult) {
         req.session.errors = validatorResult;
