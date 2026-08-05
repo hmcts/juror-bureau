@@ -9,6 +9,7 @@ const datePickerErrorKeys = {
   invalidFormat: 'datePicker.invalidFormat',
   realDate: 'datePicker.realDate',
   notBeforeDate: 'datePicker.notBeforeDate',
+  notAfterDate: 'datePicker.notAfterDate',
 };
 
 const strictFormatValidator = (value, dateInitial) => (
@@ -35,6 +36,24 @@ const buildNotBeforeDateValidator = (referenceDate, referenceDateFormat) => {
   };
 };
 
+const buildNotAfterDateValidator = (referenceDate, referenceDateFormat) => {
+  const parsedReferenceDate = referenceDateFormat
+    ? moment(referenceDate, referenceDateFormat, true)
+    : moment(referenceDate);
+
+  if (!parsedReferenceDate.isValid()) {
+    return undefined;
+  }
+
+  return (value, dateInitial) => {
+    if (moment(dateInitial.dateAsDate).isAfter(parsedReferenceDate.clone().endOf('day'))) {
+      return datePickerErrorKeys.notAfterDate;
+    }
+
+    return undefined;
+  };
+};
+
 const buildDatePickerSchema = ({
   field,
   requiredMessage,
@@ -42,15 +61,20 @@ const buildDatePickerSchema = ({
   invalidFormatMessage,
   realDateMessage,
   notBeforeDateMessage,
+  notAfterDateMessage,
   notBeforeDate,
+  notAfterDate,
   notBeforeDateField,
+  notAfterDateField,
   notBeforeDateFormat,
+  notAfterDateFormat,
   extraMessages = {},
   requiredErrorKey = datePickerErrorKeys.required,
   invalidCharsErrorKey = datePickerErrorKeys.invalidChars,
   invalidFormatErrorKey = datePickerErrorKeys.invalidFormat,
   realDateErrorKey = datePickerErrorKeys.realDate,
   notBeforeDateErrorKey = datePickerErrorKeys.notBeforeDate,
+  notAfterDateErrorKey = datePickerErrorKeys.notAfterDate,
   required = true,
   checks = ['required', 'invalidChars', 'invalidFormat', 'realDate'],
   formatValidator = strictFormatValidator,
@@ -106,6 +130,23 @@ const buildDatePickerSchema = ({
       }
     }
 
+    if (typeof notAfterDateMessage !== 'undefined') {
+      const notAfterDateValidator = buildNotAfterDateValidator(
+        typeof notAfterDateField !== 'undefined'
+          ? helpers.state.ancestors[0]?.[notAfterDateField]
+          : (typeof notAfterDate === 'undefined' ? new Date() : notAfterDate),
+        notAfterDateFormat,
+      );
+
+      if (typeof notAfterDateValidator === 'function') {
+        const errorKey = notAfterDateValidator(value, dateInitial, helpers);
+
+        if (errorKey) {
+          return helpers.error(notAfterDateErrorKey);
+        }
+      }
+    }
+
     return value;
   }, `${field} validation`)
   .messages({
@@ -114,6 +155,7 @@ const buildDatePickerSchema = ({
     ...(typeof invalidFormatMessage !== 'undefined' ? { [invalidFormatErrorKey]: invalidFormatMessage } : {}),
     ...(typeof realDateMessage !== 'undefined' ? { [realDateErrorKey]: realDateMessage } : {}),
     ...(typeof notBeforeDateMessage !== 'undefined' ? { [notBeforeDateErrorKey]: notBeforeDateMessage } : {}),
+    ...(typeof notAfterDateMessage !== 'undefined' ? { [notAfterDateErrorKey]: notAfterDateMessage } : {}),
     ...extraMessages,
   });
 
