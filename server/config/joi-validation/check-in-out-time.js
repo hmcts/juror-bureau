@@ -74,11 +74,37 @@ const timeMessageMapping = {
   },
 };
 
-const buildCheckInSchema = () => Joi.object({
+const validateSchema = (schema, body) => {
+  const validationResult = validateJoiSchema(schema, body);
+
+  if (typeof validationResult !== 'undefined') {
+    return validationResult;
+  }
+
+  return undefined;
+};
+
+const compareCheckOutTimes = buildTimeComparisonValidator({
+  earlierPrefix: 'checkInTime',
+  laterPrefix: 'checkOutTime',
+  message: timeMessageMapping.checkOut.beforeCheckIn.summary,
+});
+
+const buildCheckInEmptySchema = () => Joi.object({
   checkInTime: buildTimeGroupSchema({
     prefix: 'checkInTime',
     message: timeMessageMapping.checkIn.missingWholeTime.summary,
   }),
+});
+
+const buildCheckOutEmptySchema = () => Joi.object({
+  checkOutTime: buildTimeGroupSchema({
+    prefix: 'checkOutTime',
+    message: timeMessageMapping.checkOut.missingWholeTime.summary,
+  }),
+});
+
+const buildCheckInFieldSchema = () => Joi.object({
   checkInTimeHour: buildTimeFieldSchema({
     prefix: 'checkInTime',
     part: 'Hour',
@@ -106,40 +132,7 @@ const buildCheckInSchema = () => Joi.object({
   }),
 });
 
-const buildCheckOutSchema = () => Joi.object({
-  checkInTime: buildTimeGroupSchema({
-    prefix: 'checkInTime',
-    message: timeMessageMapping.checkIn.missingWholeTime.summary,
-  }),
-  checkInTimeHour: buildTimeFieldSchema({
-    prefix: 'checkInTime',
-    part: 'Hour',
-    messages: {
-      missing: timeMessageMapping.checkIn.missingHour.summary,
-      invalidChars: timeMessageMapping.checkIn.invalidChars.summary,
-      invalidRange: timeMessageMapping.checkIn.invalidHour.summary,
-    },
-  }),
-  checkInTimeMinute: buildTimeFieldSchema({
-    prefix: 'checkInTime',
-    part: 'Minute',
-    messages: {
-      missing: timeMessageMapping.checkIn.missingMinutes.summary,
-      invalidChars: timeMessageMapping.checkIn.invalidChars.summary,
-      invalidRange: timeMessageMapping.checkIn.invalidMinutes.summary,
-    },
-  }),
-  checkInTimePeriod: buildTimeFieldSchema({
-    prefix: 'checkInTime',
-    part: 'Period',
-    messages: {
-      missing: timeMessageMapping.checkIn.missingPeriod.summary,
-    },
-  }),
-  checkOutTime: buildTimeGroupSchema({
-    prefix: 'checkOutTime',
-    message: timeMessageMapping.checkOut.missingWholeTime.summary,
-  }),
+const buildCheckOutFieldSchema = () => Joi.object({
   checkOutTimeHour: buildTimeFieldSchema({
     prefix: 'checkOutTime',
     part: 'Hour',
@@ -167,35 +160,18 @@ const buildCheckOutSchema = () => Joi.object({
   }),
 });
 
-const validateSchema = (schema, body) => {
-  const validationResult = validateJoiSchema(schema, body);
-
-  if (typeof validationResult !== 'undefined') {
-    return validationResult;
-  }
-
-  return undefined;
-};
-
-const compareCheckOutTimes = buildTimeComparisonValidator({
-  earlierPrefix: 'checkInTime',
-  laterPrefix: 'checkOutTime',
-  message: timeMessageMapping.checkOut.beforeCheckIn.summary,
-});
-
 module.exports.timeMessageMapping = timeMessageMapping;
 
-module.exports.validateCheckInTime = (body) => {
-  return validateSchema(buildCheckInSchema(), normaliseTimeBody(body, 'checkInTime'));
-};
-
-module.exports.validateCheckOutTime = (body) => {
+module.exports.checkInTimeEmpty = (body) => validateSchema(buildCheckInEmptySchema(), body);
+module.exports.checkOutTimeEmpty = (body) => validateSchema(buildCheckOutEmptySchema(), body);
+module.exports.checkInTime = (body) => validateSchema(buildCheckInFieldSchema(), body);
+module.exports.checkOutTime = (body) => {
   const normalisedBody = {
     ...normaliseTimeBody(body, 'checkInTime'),
     ...normaliseTimeBody(body, 'checkOutTime'),
   };
 
-  const validationResult = validateSchema(buildCheckOutSchema(), normalisedBody);
+  const validationResult = validateSchema(buildCheckOutFieldSchema(), normalisedBody);
 
   if (typeof validationResult !== 'undefined') {
     return validationResult;
@@ -203,3 +179,6 @@ module.exports.validateCheckOutTime = (body) => {
 
   return compareCheckOutTimes(normalisedBody);
 };
+
+module.exports.validateCheckInTime = module.exports.checkInTime;
+module.exports.validateCheckOutTime = module.exports.checkOutTime;
