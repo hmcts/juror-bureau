@@ -73,8 +73,6 @@ const schema = Joi.object({
   checkInTimeHour: buildTimeFieldSchema({
     prefix: 'checkInTime',
     part: 'Hour',
-    min: 1,
-    max: 12,
     messages: {
       missing: timeMessages.checkIn.missingHour,
       invalidChars: timeMessages.checkIn.invalidChars,
@@ -84,8 +82,6 @@ const schema = Joi.object({
   checkInTimeMinute: buildTimeFieldSchema({
     prefix: 'checkInTime',
     part: 'Minute',
-    min: 0,
-    max: 59,
     messages: {
       missing: timeMessages.checkIn.missingMinutes,
       invalidChars: timeMessages.checkIn.invalidChars,
@@ -106,8 +102,6 @@ const schema = Joi.object({
   checkOutTimeHour: buildTimeFieldSchema({
     prefix: 'checkOutTime',
     part: 'Hour',
-    min: 1,
-    max: 12,
     messages: {
       missing: timeMessages.checkOut.missingHour,
       invalidChars: timeMessages.checkOut.invalidChars,
@@ -117,8 +111,6 @@ const schema = Joi.object({
   checkOutTimeMinute: buildTimeFieldSchema({
     prefix: 'checkOutTime',
     part: 'Minute',
-    min: 0,
-    max: 59,
     messages: {
       missing: timeMessages.checkOut.missingMinutes,
       invalidChars: timeMessages.checkOut.invalidChars,
