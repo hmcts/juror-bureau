@@ -10,7 +10,7 @@
   const { deferralPoolsObject: activePoolsObj, changeDeferralObject, deleteDeferralObject } = require('../../../objects/deferral-mod');
   const { deferralDateAndReason: changeDeferralValidator, deferralDateAndPool: deferralPoolValidator } = require('../../../config/validation/deferral-mod');
   const { record: jurorRecordObject, editDetails: editJurorDetailsObject } = require('../../../objects/juror-record');
-  const { overviewDetails: overviewDetailsValidator, extraSupport: extraSupportValidator, thirdParty: thirdPartyValidator } = require('../../../config/validation/edit-juror-details-mod');
+  const { overviewDetails: overviewDetailsValidator, extraSupport: extraSupportValidator, thirdParty: thirdPartyValidator } = require('../../../config/joi-validation/edit-juror-details-mod');
   const paperReplyValidator = require('../../../config/validation/paper-reply');
   const { systemCodesDAO } = require('../../../objects/administration');
   const { changeName: fixNameObj, disqualifyAgeDAO } = require('../../../objects/juror-record');
@@ -585,7 +585,7 @@
   module.exports.postEditDetails = (app) => {
     return (req, res) => {
       const { jurorNumber } = req.params;
-      let validatorResult = validate(req.body, overviewDetailsValidator());
+      let validatorResult = overviewDetailsValidator(req.body);
 
       modUtils.stripSpacesFromPhoneNumbersInBody(req);
 
@@ -600,7 +600,7 @@
       let extraSupportValidatorResult;
 
       if (req.body.extraSupport === 'yes') {
-        extraSupportValidatorResult = validate(req.body, extraSupportValidator());
+        extraSupportValidatorResult = extraSupportValidator(req.body);
       } else {
         req.body.specNeedValue = null;
         req.body.specNeedMsg = null;
@@ -609,7 +609,7 @@
 
       let thirdPartyValidatorResult;
       if (req.body.thirdPartyEnabled === 'yes') {
-        thirdPartyValidatorResult = validate(req.body, thirdPartyValidator());
+        thirdPartyValidatorResult = thirdPartyValidator(req.body);
       } else {
         req.body.thirdParty = null;
         req.body['thirdParty-first-name'] = null;
