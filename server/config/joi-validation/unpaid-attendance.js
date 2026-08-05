@@ -2,28 +2,30 @@ const Joi = require('joi');
 const { validateJoiSchema } = require('./index');
 const { buildDatePickerSchema } = require('./date-validation');
 
-const fromRequiredMessage = 'Enter a date to filter unpaid attendance from';
-const fromInvalidCharsMessage = '‘Date from’ can only include numbers and forward slashes';
-const fromInvalidFormatMessage = 'Enter ‘date from’  in the correct format, for example, 31/01/2023';
-const toRequiredMessage = 'Enter a date to filter unpaid attendance to';
-const toInvalidCharsMessage = '‘Date to’ can only include numbers and forward slashes';
-const toInvalidFormatMessage = 'Enter ‘date to‘  in the correct format, for example, 31/01/2023';
-const realDateMessage = 'Enter a real date';
+const unpaidAttendanceMessageMapping = {
+  fromRequired: 'Enter a date to filter unpaid attendance from',
+  fromInvalidChars: '‘Date from’ can only include numbers and forward slashes',
+  fromInvalidFormat: 'Enter ‘date from’  in the correct format, for example, 31/01/2023',
+  toRequired: 'Enter a date to filter unpaid attendance to',
+  toInvalidChars: '‘Date to’ can only include numbers and forward slashes',
+  toInvalidFormat: 'Enter ‘date to‘  in the correct format, for example, 31/01/2023',
+  realDate: 'Enter a real date',
+};
 
 const schema = Joi.object({
   unpaidAttendanceFromDate: buildDatePickerSchema({
     field: 'unpaidAttendanceFromDate',
-    requiredMessage: fromRequiredMessage,
-    invalidCharsMessage: fromInvalidCharsMessage,
-    invalidFormatMessage: fromInvalidFormatMessage,
-    realDateMessage,
+    requiredMessage: unpaidAttendanceMessageMapping.fromRequired,
+    invalidCharsMessage: unpaidAttendanceMessageMapping.fromInvalidChars,
+    invalidFormatMessage: unpaidAttendanceMessageMapping.fromInvalidFormat,
+    realDateMessage: unpaidAttendanceMessageMapping.realDate,
   }),
   unpaidAttendanceToDate: buildDatePickerSchema({
     field: 'unpaidAttendanceToDate',
-    requiredMessage: toRequiredMessage,
-    invalidCharsMessage: toInvalidCharsMessage,
-    invalidFormatMessage: toInvalidFormatMessage,
-    realDateMessage,
+    requiredMessage: unpaidAttendanceMessageMapping.toRequired,
+    invalidCharsMessage: unpaidAttendanceMessageMapping.toInvalidChars,
+    invalidFormatMessage: unpaidAttendanceMessageMapping.toInvalidFormat,
+    realDateMessage: unpaidAttendanceMessageMapping.realDate,
   }),
 });
 
