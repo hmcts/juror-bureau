@@ -43,10 +43,11 @@
     const numberTypeClass = this.dataTypes[i] === 'number'
       ? 'govuk-table__header--numeric' : '';
     const isHidden = curr.includes('hidden_') || this.dataTypes[i] === 'hidden';
+    const isDbdColumn = curr === 'Original sent by' || curr === 'Current preference'
 
     let row = [];
 
-    if (!isHidden) {
+    if (!isHidden && !(isDbdColumn && !config.featureFlags?.digitalByDefault)) {
       row = [{
         id: _.camelCase(curr),
         value: curr,
@@ -215,7 +216,7 @@
         isTag,
       };
 
-      if (!isHidden) {
+      if (!isHidden && !(isTag && !config.featureFlags?.digitalByDefault)) {
         row.push({
           html: formatValue(_formatValue),
           classes: `jd-middle-align ${paddingClass} ${isPrintedHighlight}`,
