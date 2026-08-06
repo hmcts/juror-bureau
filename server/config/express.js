@@ -151,6 +151,7 @@ module.exports = async (app) => {
     res.locals.serviceName = 'HMCTS Juror';
     res.locals.env = env;
     res.locals.skipSSO = skipSSO;
+    res.locals.featureFlags = config.featureFlags;
 
     res.locals.responseEditEnabled = config.responseEditEnabled === true;
 

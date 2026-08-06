@@ -6,6 +6,7 @@
   const reassignController = require('../reassign/reassign.controller');
   const auth = require('../../../components/auth/');
   const { isBureauUser } = require('../../../components/auth/user-type');
+  const config = require('../../../config/environment')();
 
   module.exports = function(app) {
 
@@ -101,5 +102,16 @@
       'juror-record.details-edit.reassign.ineligible-age.get',
       auth.verify,
       jurorUpdateController.getIneligibleAge(app));
+
+    if (config.featureFlags.digitalByDefault) {
+      app.get('/juror-management/record/:jurorNumber/details/edit/communication-changed',
+        'juror-record.details-edit.communication-changed.get',
+        auth.verify,
+        controller.getCommunicationChanged(app));
+      app.post('/juror-management/record/:jurorNumber/details/edit/communication-changed',
+        'juror-record.details-edit.communication-changed.post',
+        auth.verify,
+        controller.postCommunicationChanged(app));
+    }
   };
 })();

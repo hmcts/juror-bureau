@@ -154,6 +154,8 @@
 
     const detailsValidatorResult = validate(req.body, paperReplyValidator.jurorDetails());
 
+    modUtils.stripSpacesFromPhoneNumbersInBody(req);
+
     req.session.startedPaperResponse = true;
 
     // build thirdParty Object if any detail in the relationship field
