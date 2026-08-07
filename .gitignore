@@ -87,6 +87,9 @@ temp.sh
 .gradle/
 out/
 bin/
+!bin/
+bin/*
+!bin/codex-local-pipeline.sh
 build/
 
 # Yarn v3
