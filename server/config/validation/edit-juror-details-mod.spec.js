@@ -56,6 +56,21 @@
         expect(validatorResult.dateOfBirth[0].details).to.equal('Date of birth cannot be empty');
       });
 
+      it('should allow an empty date of birth when date of birth is not required', function() {
+        let mockRequest = {
+          dateOfBirth: '',
+          primaryPhone: '',
+          secondaryPhone: '',
+          emailAddress: '',
+        };
+
+        validatorResult = validate(mockRequest, overviewValidator({
+          requireDateOfBirth: false,
+        }));
+
+        expect(validatorResult).to.be.undefined;
+      });
+
       // move this into date-picker spec when created
       // not going to validate date format here, covered in generic date picker(or will be)
       it('should validate an invalid request - date of birth is not in the past', function() {

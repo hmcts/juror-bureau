@@ -115,19 +115,24 @@
   };
 
   // Validates remaining fields.
-  module.exports.overviewDetails = () => {
-    return {
-      dateOfBirth: {
-        presence: {
-          allowEmpty: false,
-          message: {
-            summary: 'Date of birth cannot be empty',
-            details: 'Date of birth cannot be empty',
-          },
+  module.exports.overviewDetails = (options = {}) => {
+    const dateOfBirthValidation = {
+      genericDatePicker: {},
+      dateOfBirthDatePicker: {},
+    };
+
+    if (options.requireDateOfBirth !== false) {
+      dateOfBirthValidation.presence = {
+        allowEmpty: false,
+        message: {
+          summary: 'Date of birth cannot be empty',
+          details: 'Date of birth cannot be empty',
         },
-        genericDatePicker: {},
-        dateOfBirthDatePicker: {},
-      },
+      };
+    }
+
+    return {
+      dateOfBirth: dateOfBirthValidation,
       primaryPhone: {
         phoneNumber: {
           messageMap: messageMap,

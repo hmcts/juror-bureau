@@ -585,7 +585,11 @@
   module.exports.postEditDetails = (app) => {
     return (req, res) => {
       const { jurorNumber } = req.params;
-      let validatorResult = validate(req.body, overviewDetailsValidator());
+      const canUpdateDbdPreferenceWithoutDob = config.featureFlags.digitalByDefault
+        && typeof req.body.dbdPreference !== 'undefined';
+      let validatorResult = validate(req.body, overviewDetailsValidator({
+        requireDateOfBirth: !canUpdateDbdPreferenceWithoutDob,
+      }));
 
       modUtils.stripSpacesFromPhoneNumbersInBody(req);
 
