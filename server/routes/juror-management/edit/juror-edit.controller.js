@@ -585,7 +585,15 @@
   module.exports.postEditDetails = (app) => {
     return (req, res) => {
       const { jurorNumber } = req.params;
-      let validatorResult = validate(req.body, overviewDetailsValidator());
+      if (!req.session[`editJurorDetails-${jurorNumber}`]) {
+        return res.render('_errors/generic', { err });
+      }
+      const canUpdateDbdPreferenceWithoutDob = config.featureFlags.digitalByDefault
+        && typeof req.body.dbdPreference !== 'undefined'
+        && req.session[`editJurorDetails-${jurorNumber}`].commonDetails.dbdPreference !== req.body.dbdPreference;
+      let validatorResult = validate(req.body, overviewDetailsValidator({
+        requireDateOfBirth: !canUpdateDbdPreferenceWithoutDob,
+      }));
 
       modUtils.stripSpacesFromPhoneNumbersInBody(req);
 
