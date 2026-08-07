@@ -116,20 +116,18 @@
 
   // Validates remaining fields.
   module.exports.overviewDetails = (options = {}) => {
+
     const dateOfBirthValidation = {
+      presence: {
+      allowEmpty: options.requireDateOfBirth === false,
+        message: {
+        summary: 'Date of birth cannot be empty',
+        details: 'Date of birth cannot be empty',
+        },
+      },
       genericDatePicker: {},
       dateOfBirthDatePicker: {},
     };
-
-    if (options.requireDateOfBirth !== false) {
-      dateOfBirthValidation.presence = {
-        allowEmpty: false,
-        message: {
-          summary: 'Date of birth cannot be empty',
-          details: 'Date of birth cannot be empty',
-        },
-      };
-    }
 
     return {
       dateOfBirth: dateOfBirthValidation,

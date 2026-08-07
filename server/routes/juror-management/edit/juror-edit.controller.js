@@ -586,7 +586,8 @@
     return (req, res) => {
       const { jurorNumber } = req.params;
       const canUpdateDbdPreferenceWithoutDob = config.featureFlags.digitalByDefault
-        && typeof req.body.dbdPreference !== 'undefined';
+        && typeof req.body.dbdPreference !== 'undefined'
+        && req.session[`editJurorDetails-${jurorNumber}`].commonDetails.dbdPreference !== req.body.dbdPreference;
       let validatorResult = validate(req.body, overviewDetailsValidator({
         requireDateOfBirth: !canUpdateDbdPreferenceWithoutDob,
       }));
