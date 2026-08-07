@@ -83,9 +83,11 @@
     "webpack-node-externals": "^3.0.0"
   },
   "resolutions": {
-    "express/body-parser": "^1.20.6",
+    "brace-expansion": "^5.0.9",
     "csurf/cookie": "^0.7.0",
+    "express/body-parser": "^1.20.6",
     "express-rate-limit/ip-address": "^10.3.1",
+    "immutable": "^5.1.8",
     "undici": "^6.28.0"
   },
   "packageManager": "yarn@4.14.1"
