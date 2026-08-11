@@ -287,7 +287,7 @@
       return value ? dateFilter(value, 'YYYY-MM-DD', 'ddd D MMM YYYY') : '-';
     }
     if (isTag) {
-      return `<strong class="govuk-tag">${toSentenceCase(value)}</strong>`;
+      return `<strong class="govuk-tag${value === 'LETTER' ? ' govuk-tag--grey' : ''}">${toSentenceCase(value)}</strong>`;
     }
 
     return value;
