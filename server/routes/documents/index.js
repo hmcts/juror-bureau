@@ -9,6 +9,7 @@
     deletePendingLetter,
     getStatusChanged,
     getSummonsReminderValidation,
+    postSummonsReminderValidation,
   } = require('./letters-list/letters-list.controller');
 
   const { printDocuments } = require('./print.controller');
@@ -77,6 +78,11 @@
       'documents.summons-reminder-validation.get',
       auth.verify,
       getSummonsReminderValidation(app));
+
+    app.post('/documents/:document(summons-reminders)/letters-list/validation',
+      'documents.summons-reminder-validation.post',
+      auth.verify,
+      postSummonsReminderValidation(app));
 
     require('./show-cause')(app);
     require('./failed-to-attend')(app);
