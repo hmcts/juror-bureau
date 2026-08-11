@@ -60,7 +60,7 @@
       const dao = new DAO('moj/letter/reissue-letter', {
         post: function(body) {
           return {
-            body: _.cloneDeep(body),
+            body: mapCamelToSnake(_.cloneDeep(body)),
             transform: (data) => {
               delete data['_headers'];
               return mapSnakeToCamel(data);
@@ -93,7 +93,7 @@
       const dao = new DAO('moj/letter/delete-pending-letter', {
         delete: function(body) {
           return {
-            body: _.cloneDeep(body),
+            body: mapCamelToSnake(_.cloneDeep(body)),
           };
         },
       });
@@ -167,6 +167,19 @@
       return {
         uri: urljoin(this.resource, jurorNumber),
         transform: basicDataTransform,
+      };
+    },
+  });
+
+  module.exports.getSummonsReminderValidationDAO = new DAO('moj/letter/validate-reissue-letter', {
+    post: function(body) {
+      console.log(`\n\nPayload for summons reminder validation: ${JSON.stringify(body, null, 2)}\n\n`);
+      return {
+        body: mapCamelToSnake(_.cloneDeep(body)),
+        transform: (data) => {
+          delete data['_headers'];
+          return mapSnakeToCamel(data);
+        },
       };
     },
   });

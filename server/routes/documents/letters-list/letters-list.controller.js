@@ -7,7 +7,7 @@
   const validate = require('validate.js');
   const validator = require('../../../config/validation/letters-list');
   const { isBureauUser, isCourtUser } = require('../../../components/auth/user-type');
-  const { reissueLetterDAO } = require('../../../objects/documents');
+  const { reissueLetterDAO, getSummonsReminderValidationDAO } = require('../../../objects/documents');
   const { tableGenerator } = require('../helper/table-generator');
   const { toSentenceCase } = require('../../../components/filters');
   const { Logger } = require('../../../components/logger');
@@ -159,6 +159,45 @@
       };
 
       delete req.session.statusChangedList;
+
+      if (document === 'summons-reminders') {
+        console.log('Summons reminders letters are not reissued yet, checking validity of the selected jurors');
+        try {
+          const response = await getSummonsReminderValidationDAO.post(req, payload);
+          console.log('Response from summons reminder validation: ', response);
+
+          if (response?.invalidSummonedJurors?.length) {
+            req.session.summonsReminderValidation = {
+              invalidJurors: response.invalidSummonedJurors,
+              validJurors: response.validSummonedJurors,
+              payload,
+            }
+
+            return res.redirect(app.namedRoutes.build('documents.summons-reminder-validation.get', {
+              document,
+            }));
+          }
+
+        } catch (err) {
+          console.log('Error from summons reminder validation: ', err);
+          req.session.errors = {
+            selectedJurors: [{
+              summary: 'Unable to reprint letters for the selected jurors',
+              details: 'Unable to reprint letters for the selected jurors',
+            }],
+          };
+
+          app.logger.crit('Failed to validate summons reminders for selected jurors', {
+            userId: req.session.authentication.login,
+            data: payload,
+            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+          });
+
+          return res.redirect(urljoin(app.namedRoutes.build('documents.letters-list.get', {
+            document,
+          }), urlBuilder(req.query)));
+        }
+      }
 
       try {
         const { jurors: jurorList } = await reissueLetterDAO.postList(req, payload);
@@ -466,6 +505,19 @@
       });
     }
     return tableData.data;
+  }
+
+  module.exports.getSummonsReminderValidation = (app) => (req, res) => {
+    const { document } = req.params;
+
+    return res.render('documents/summons-reminder-validation.njk', {
+      pageIdentifier: modUtils.getLetterIdentifier(document),
+      backLinkUrl: app.namedRoutes.build('documents.letters-list.get', {
+        document,
+      }),
+      validJurors: req.session.summonsReminderValidation.validJurors,
+      invalidJurors: req.session.summonsReminderValidation.invalidJurors,
+    });
   }
 
 })();

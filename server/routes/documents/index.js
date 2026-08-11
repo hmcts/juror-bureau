@@ -8,6 +8,7 @@
     checkJuror,
     deletePendingLetter,
     getStatusChanged,
+    getSummonsReminderValidation,
   } = require('./letters-list/letters-list.controller');
 
   const { printDocuments } = require('./print.controller');
@@ -71,6 +72,11 @@
       'documents.letter-list.status-changed.get',
       auth.verify,
       getStatusChanged(app));
+
+    app.get('/documents/:document(summons-reminders)/letters-list/validation',
+      'documents.summons-reminder-validation.get',
+      auth.verify,
+      getSummonsReminderValidation(app));
 
     require('./show-cause')(app);
     require('./failed-to-attend')(app);
