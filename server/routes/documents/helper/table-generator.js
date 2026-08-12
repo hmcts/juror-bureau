@@ -210,7 +210,7 @@
       const _formatValue = {
         isDate,
         value,
-        version: jurorInfo[jurorInfo.length - 1],
+        version: jurorInfo[formCodeIdx],
         jurorNumber: jurorInfo[0],
         showPending,
         isTag,
