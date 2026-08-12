@@ -738,12 +738,8 @@
           const expenseDate = expense.dateOfExpense;
           let editedExpense = req.session.editedExpenses[expenseDate];
           if (!editedExpense) {
-            expense.financialLoss.lossOfEarningsOrBenefits = expense.financialLoss.lossOfEarnings;
-            delete expense.financialLoss.lossOfEarnings;
             recalculatePayload.push({ ..._.merge(expense, applyToAllPayload) });
           } else {
-            editedExpense.formData.financialLoss.lossOfEarningsOrBenefits = editedExpense.formData.financialLoss.lossOfEarnings;
-            delete editedExpense.formData.financialLoss.lossOfEarnings;
             recalculatePayload.push({ ..._.merge(editedExpense.formData, applyToAllPayload) });
           }
         }
