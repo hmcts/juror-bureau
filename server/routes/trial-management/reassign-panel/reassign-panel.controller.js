@@ -2,8 +2,7 @@
   'use strict';
 
   const _ = require('lodash')
-  const returnsValidator = require('../../../config/validation/return-panel-jury');
-  const validate = require('validate.js');
+  const returnsValidator = require('../../../config/joi-validation/return-panel-jury');
   const { panelListDAO, trialDetailsObject, trialsListDAO } = require('../../../objects');
   const { capitalise } = require('../../../components/filters');
   const { buildMovementProblems } = require('../../../lib/mod-utils');
@@ -14,7 +13,7 @@
     const { trialNumber, locationCode } = req.params;
     delete req.session.formFields;
 
-    const validatorResult = validate(req.body, returnsValidator.reassignPanel());
+    const validatorResult = returnsValidator.reassignPanel(req.body);
 
     if (typeof validatorResult !== 'undefined') {
       req.session.errors = validatorResult;

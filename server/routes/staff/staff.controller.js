@@ -11,7 +11,8 @@
     , responseOverviewObj = require('../../objects/response-overview').object
     , assignmentsMultiObj = require('../../objects/assignments-multi').object
     , teamObj = require('../../objects/team').object
-    , validate = require('validate.js')
+    , staffCreateValidator = require('../../config/joi-validation/staff-create')
+    , staffEditValidator = require('../../config/joi-validation/staff-edit')
     , utils = require('../../lib/utils');
 
   // Staff list
@@ -164,7 +165,7 @@
         };
 
       // Validate form submission
-      validatorResult = validate(req.body, require('../../config/validation/staff-create.js')(req));
+      validatorResult = staffCreateValidator(req.body);
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
         req.session.formFields = req.body;
@@ -343,7 +344,7 @@
 
 
       // Validate form submission
-      validatorResult = validate(req.body, require('../../config/validation/staff-edit.js')(req));
+      validatorResult = staffEditValidator(req.body);
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
         req.session.formFields = req.body;
