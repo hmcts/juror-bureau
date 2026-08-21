@@ -7,17 +7,29 @@ nodejs:
     juror:
       secrets:
         - name: bureau-sessionSecret
+          alias: bureau-sessionSecret
         - name: bureau-jwtKey
+          alias: bureau-jwtKey
         - name: bureau-jwtNoAuthKey
+          alias: bureau-jwtNoAuthKey
         - name: bureau-jwtTTL
+          alias: bureau-jwtTTL
         - name: bureau-smartSurveyToken
+          alias: bureau-smartSurveyToken
         - name: bureau-smartSurveyTokenSecret
-        - name: bureau-redisConnection
+          alias: bureau-smartSurveyTokenSecret
+        - name: bureau-managedRedisConnection
+          alias: bureau-redisConnection
         - name: launchDarklyKey
+          alias: launchDarklyKey
         - name: app-insights-connection-string
+          alias: app-insights-connection-string
         - name: azure-app-id
+          alias: azure-app-id
         - name: azure-tenant-id
+          alias: azure-tenant-id
         - name: azure-client-secret
+          alias: azure-client-secret
   environment:
     API_ENDPOINT: https://juror-api.{{ .Values.global.environment }}.platform.hmcts.net/api/v1
     USE_AUTH: false
@@ -31,3 +43,4 @@ nodejs:
     LOGOUT_REDIRECT: https://juror.{{ .Values.global.environment }}.apps.hmcts.net
     RATE_LIMIT_TIME: 300000 # 5 minutes
     RATE_LIMIT_MAX: 1000000 # 1 mil requests
+    REDIS_CLUSTER_ENABLED: true

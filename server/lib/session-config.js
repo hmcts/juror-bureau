@@ -1,7 +1,7 @@
 const secretsConfig = require('config');
-const { createClient } = require('redis');
 const { RedisStore } = require('connect-redis');
 const expressSession = require('express-session');
+const { createRedisClient } = require('./redis-client');
 
 module.exports.SessionConfig = class SessionConfig {
   constructor() {
@@ -23,13 +23,9 @@ module.exports.SessionConfig = class SessionConfig {
   }
 
   redisClient() {
-    this._redisClient = createClient({
-      url: secretsConfig.get('secrets.juror.bureau-redisConnection'),
-      pingInterval: 5000,
-      socket: {
-        keepAlive: true,
-      },
-    });
+    this._redisClient = createRedisClient(
+      secretsConfig.get('secrets.juror.bureau-redisConnection'),
+    );
 
     this._redisClient.connect()
       .catch(function(error) {
