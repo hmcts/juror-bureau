@@ -1579,4 +1579,69 @@
     });
   }
 
+  const validateQueryParam = (req, res, paramString) => {
+
+    const [paramName = '', paramValue = ''] = paramString.replace('?', '').split('=');
+
+    let err = {
+      "error": {
+        "code": "400 - Bad Request",
+        "message": "validateQueryParam() - Invalid parameter: " + paramName + " value: " + paramValue
+      }
+    }
+    let isParamValid = false;
+
+    switch (paramName.toLowerCase()) {
+      case 'jurornumber':
+        isParamValid= validateJurorNumber(paramValue);
+        break;
+      case 'poolnumber':
+        isParamValid = validatePoolNumber(paramValue);
+        break;
+      case 'trialnumber':
+        isParamValid = validateTrialNumber(paramValue);
+        break;
+      case 'date':
+        isParamValid = validateDate(paramValue);
+        break;
+      default:
+        isParamValid = false;
+    }
+
+    if (isParamValid) {
+      return encodeURIComponent(paramValue);
+    }
+
+    // If the query string parameter is unknown or fails validation, display error on generic error page
+    res.render('./_errors/generic', { err: err });
+    return null;
+  };
+
+  const validateJurorNumber = (paramValue) => {
+    return paramValue.trim().length === 9
+        && paramValue.split('').every(character => character >= '0' && character <= '9');
+  };
+
+  const validatePoolNumber = (paramValue) => {
+    return paramValue.trim().length === 9
+        && paramValue.split('').every(character => character >= '0' && character <= '9');
+  };
+
+  const validateTrialNumber = (paramValue) => {
+    return paramValue.length > 0
+        && paramValue.length <= 16
+        && paramValue.split('').every(character => {
+          const isDigit = character >= '0' && character <= '9';
+          const isLowercaseLetter = character >= 'a' && character <= 'z';
+
+          return isDigit || isLowercaseLetter;
+        });
+  };
+
+  const validateDate = (paramValue) => {
+    return moment(paramValue, 'YYYYMMDD', true).isValid();
+  };
+
+  module.exports.validateQueryParam = validateQueryParam
+
 })();
