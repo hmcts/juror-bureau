@@ -29,8 +29,8 @@ const thirdPartyMessageMapping = {
   reasonLength: 'Please check the third party reason',
 };
 
-const buildOverviewDetailsSchema = () => Joi.object({
-  dateOfBirth: buildDatePickerSchema({
+const buildOverviewDetailsSchema = (requireDateOfBirth = true) => Joi.object({
+  dateOfBirth: requireDateOfBirth ? buildDatePickerSchema({
     field: 'dateOfBirth',
     requiredMessage: overviewDetailsMessageMapping.requiredDateOfBirth,
     invalidCharsMessage: overviewDetailsMessageMapping.invalidDateOfBirthChars,
@@ -38,7 +38,7 @@ const buildOverviewDetailsSchema = () => Joi.object({
     realDateMessage: overviewDetailsMessageMapping.invalidDateOfBirth,
     notAfterDateMessage: overviewDetailsMessageMapping.dateOfBirthInPast,
     notAfterDate: moment().subtract(1, 'day').toDate(),
-  }),
+  }) : Joi.any().optional(),
   primaryPhone: commonPhoneNumber({
     invalidCharMessage: overviewDetailsMessageMapping.phoneNumber,
   }),
@@ -118,6 +118,6 @@ const buildThirdPartySchema = () => Joi.object({
     .optional(),
 });
 
-module.exports.overviewDetails = (body) => validateJoiSchema(buildOverviewDetailsSchema(), body);
+module.exports.overviewDetails = (body, requireDateOfBirth = true) => validateJoiSchema(buildOverviewDetailsSchema(requireDateOfBirth), body);
 module.exports.extraSupport = (body) => validateJoiSchema(buildExtraSupportSchema(), body);
 module.exports.thirdParty = (body) => validateJoiSchema(buildThirdPartySchema(), body);
