@@ -591,11 +591,7 @@
       const canUpdateDbdPreferenceWithoutDob = config.featureFlags.digitalByDefault
         && typeof req.body.dbdPreference !== 'undefined'
         && req.session[`editJurorDetails-${jurorNumber}`].commonDetails.dbdPreference !== req.body.dbdPreference;
-      // TODO SORT OUT VALIDATION FOR DOB AND DBD PREFERENCE WHEN FEATURE FLAG IS ON
-      // let validatorResult = validate(req.body, overviewDetailsValidator({
-      //   requireDateOfBirth: !canUpdateDbdPreferenceWithoutDob,
-      // }));
-      let validatorResult = overviewDetailsValidator(req.body);
+      let validatorResult = overviewDetailsValidator(req.body, !canUpdateDbdPreferenceWithoutDob);
 
       modUtils.stripSpacesFromPhoneNumbersInBody(req);
 
