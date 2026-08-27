@@ -1,5 +1,3 @@
-const { validateQueryParam } = require('../../../../lib/mod-utils');
-
 (function() {
   'use strict';
 
