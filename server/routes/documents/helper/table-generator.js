@@ -2,14 +2,18 @@
   'use strict';
 
   const _ = require('lodash');
-  const { dateFilter } = require('../../../components/filters');
+  const { dateFilter, toSentenceCase } = require('../../../components/filters');
+  const config = require('../../../config/environment')();
 
   function tableGenerator(isBureauUser) {
     return tableBuilder(this.response, this.checkedJurors, isBureauUser, this.allChecked, this.sortBy, this.sortOrder);
   }
 
   function tableBuilder({ headings, dataTypes, data }, checkedJurors, isBureauUser, allChecked, sortBy, sortOrder) {
-    const _thead = headings.reduce(headingsReducer.bind({ headings, dataTypes, sortBy, sortOrder }), '');
+    const headingIndexes = getHeadingIndexes(headings);
+    const _thead = headingIndexes.reduce((prev, index) => (
+      headingsReducer.call({ headings, dataTypes, sortBy, sortOrder }, prev, headings[index], index)
+    ), '');
 
     const selectAllCheck = allChecked ? 'checked' : '';
 
@@ -28,8 +32,8 @@
     ..._thead];
 
     const tableRows = isBureauUser
-      ? data.reduce(rowsReducerBureau.bind({ headings, dataTypes, checkedJurors }), '')
-      : data.reduce(rowsReducerCourt.bind({ headings, dataTypes, checkedJurors }), '');
+      ? data.reduce(rowsReducerBureau.bind({ headings, dataTypes, checkedJurors, headingIndexes }), '')
+      : data.reduce(rowsReducerCourt.bind({ headings, dataTypes, checkedJurors, headingIndexes }), '');
 
     return { tableHeader, tableRows };
   }
@@ -39,10 +43,11 @@
     const numberTypeClass = this.dataTypes[i] === 'number'
       ? 'govuk-table__header--numeric' : '';
     const isHidden = curr.includes('hidden_') || this.dataTypes[i] === 'hidden';
+    const isDbdColumn = curr === 'Original sent by' || curr === 'Current preference'
 
     let row = [];
 
-    if (!isHidden) {
+    if (!isHidden && !(isDbdColumn && !config.featureFlags?.digitalByDefault)) {
       row = [{
         id: _.camelCase(curr),
         value: curr,
@@ -54,6 +59,20 @@
     row = [...prev, ...row];
 
     return row;
+  }
+
+  function getHeadingIndexes(headings) {
+    const headingIndexes = headings.map((_, index) => index);
+    const datePrintedIdx = headings.indexOf('Date printed');
+
+    if (datePrintedIdx === -1) {
+      return headingIndexes;
+    }
+
+    return [
+      ...headingIndexes.filter((index) => index !== datePrintedIdx),
+      datePrintedIdx,
+    ];
   }
 
   function rowsReducerCourt(prev, curr) {
@@ -89,8 +108,7 @@
       classes: `mod-padding-block--0 ${isPrintedHighlight}`
     }];
 
-    // eslint-disable-next-line guard-for-in
-    for (let index in jurorInfo) {
+    for (const index of this.headingIndexes) {
       const isDate = this.dataTypes[index] === 'date';
       const isNumber = this.dataTypes[index] === 'number';
       const value = jurorInfo[index];
@@ -124,7 +142,22 @@
     const isPrintedIdx = this.headings.indexOf('hidden_extracted_flag');
     const formCodeIdx = this.headings.indexOf('hidden_form_code');
 
-    const _isPrinted = isPrinted(jurorInfo[isPrintedIdx]);
+    let emailStatusIdx = null;
+    let originalMethodIdx = null;
+    let currentMethodIdx = null;
+    if (config.featureFlags?.digitalByDefault) {
+      emailStatusIdx = this.headings.indexOf('hidden_email_status');
+      originalMethodIdx = this.headings.indexOf('Original sent by');
+      currentMethodIdx = this.headings.indexOf('Current preference');
+    }
+
+    let _isPrinted = false;
+    if (config.featureFlags?.digitalByDefault) {
+      _isPrinted = isPrinted(jurorInfo[isPrintedIdx], jurorInfo[originalMethodIdx], jurorInfo[emailStatusIdx]);
+    } else {
+      _isPrinted = isPrinted(jurorInfo[isPrintedIdx]);
+    }
+
     const isPrintedHighlight = _isPrinted ? 'mod-highlight-table-row__grey' : '';
 
     const _neverPrinted = !_isPrinted && jurorInfo[datePrintedIdx] === null;
@@ -137,7 +170,14 @@
 
     const isChecked = (checkedJuror && checkedJuror.length) ? 'checked' : '';
 
-    let row = isPending(jurorInfo[jurorInfo.length - 2]) && !_neverPrinted
+    let _isPending = false;
+    if (config.featureFlags?.digitalByDefault) {
+      _isPending = isPending(jurorInfo[isPrintedIdx], jurorInfo[originalMethodIdx], jurorInfo[emailStatusIdx]);
+    } else {
+      _isPending = isPending(jurorInfo[isPrintedIdx]);
+    }
+
+    let row = _isPending && !_neverPrinted
       ? [{}]
       : [{
         html:
@@ -159,23 +199,24 @@
 
     const paddingClass = _isPrinted ? 'mod-padding-block--0' : '';
 
-    // eslint-disable-next-line guard-for-in
-    for (let index in jurorInfo) {
+    for (const index of this.headingIndexes) {
       const isDate = this.dataTypes[index] === 'date';
       const isNumber = this.dataTypes[index] === 'number';
       const value = jurorInfo[index];
       const isHidden = this.headings[index].includes('hidden_');
       const showPending = parseInt(index) === datePrintedIdx && !_isPrinted && !_neverPrinted;
+      const isTag = this.headings[index] === 'Original sent by' || this.headings[index] === 'Current preference';
 
       const _formatValue = {
         isDate,
         value,
-        version: jurorInfo[jurorInfo.length - 1],
+        version: jurorInfo[formCodeIdx],
         jurorNumber: jurorInfo[0],
         showPending,
+        isTag,
       };
 
-      if (!isHidden) {
+      if (!isHidden && !(isTag && !config.featureFlags?.digitalByDefault)) {
         row.push({
           html: formatValue(_formatValue),
           classes: `jd-middle-align ${paddingClass} ${isPrintedHighlight}`,
@@ -191,8 +232,13 @@
     return row;
   }
 
-  function isPrinted(value) {
-    return value && value !== '-';
+  function isPrinted(letterStatus, originalMethod = null, emailStatus = null) {
+    if (config.featureFlags?.digitalByDefault) {
+      if (originalMethod === 'EMAIL') {
+        return emailStatus && emailStatus !== 'PENDING';
+      }
+    }
+    return letterStatus && letterStatus !== '-';
   }
 
   function rowValuesFromHeadings(row, headings) {
@@ -207,11 +253,16 @@
     });
   }
 
-  function isPending(value) {
-    return !value;
+  function isPending(letterExtracted, originalMethod = null, emailStatus = null) {
+    if (config.featureFlags?.digitalByDefault) {
+      if (originalMethod === 'EMAIL') {
+        return emailStatus && emailStatus === 'PENDING';
+      }
+    }
+    return !letterExtracted;
   }
 
-  function formatValue({ isDate, value, version, jurorNumber, showPending, isCourtPending }) {
+  function formatValue({ isDate, value, version, jurorNumber, showPending, isCourtPending, isTag }) {
     if (showPending) {
       return `
         <span class="mod-flex mod-gap-x-4">
@@ -234,6 +285,9 @@
     }
     if (isDate) {
       return value ? dateFilter(value, 'YYYY-MM-DD', 'ddd D MMM YYYY') : '-';
+    }
+    if (isTag) {
+      return `<strong class="govuk-tag${value === 'LETTER' ? ' govuk-tag--grey' : ''}">${toSentenceCase(value)}</strong>`;
     }
 
     return value;
