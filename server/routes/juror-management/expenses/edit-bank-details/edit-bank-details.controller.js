@@ -113,7 +113,7 @@
         status = 'draft';
       }
 
-      const statusValue = validateQueryParam(req, res, `?status=${status}`);
+      const statusValue = validateQueryParam(req, res, `?status=${status}`, { statusType: 'expenses' });
       if (!statusValue) {
         return;
       }

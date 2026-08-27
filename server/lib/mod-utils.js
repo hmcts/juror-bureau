@@ -1579,7 +1579,7 @@
     });
   }
 
-  const validateQueryParam = (req, res, paramString) => {
+  const validateQueryParam = (req, res, paramString, options) => {
 
     const [paramName = '', paramValue = ''] = paramString.replace('?', '').split('=');
 
@@ -1605,7 +1605,7 @@
         isParamValid = validateDate(paramValue);
         break;
       case 'status':
-        isParamValid = validateStatus(paramValue);
+        isParamValid = validateStatus(paramValue, options?.statusType);
         break;
       default:
         isParamValid = false;
@@ -1645,9 +1645,11 @@
     return moment(paramValue, 'YYYYMMDD', true).isValid();
   };
 
-  const validateStatus = (paramValue) => {
-    const validStatuses = ['for-approval', 'approved', 'for-reapproval', 'draft'];
-    return validStatuses.includes(paramValue);
+  const validateStatus = (paramValue, statusType = 'expenses') => {
+    const validStatuses = {
+      expenses: ['for-approval', 'approved', 'for-reapproval', 'draft'],
+    };
+    return validStatuses[statusType].includes(paramValue);
   };
 
   module.exports.validateQueryParam = validateQueryParam
