@@ -1604,6 +1604,9 @@
       case 'date':
         isParamValid = validateDate(paramValue);
         break;
+      case 'status':
+        isParamValid = validateStatus(paramValue);
+        break;
       default:
         isParamValid = false;
     }
@@ -1640,6 +1643,11 @@
 
   const validateDate = (paramValue) => {
     return moment(paramValue, 'YYYYMMDD', true).isValid();
+  };
+
+  const validateStatus = (paramValue) => {
+    const validStatuses = ['for-approval', 'approved', 'for-reapproval', 'draft'];
+    return validStatuses.includes(paramValue);
   };
 
   module.exports.validateQueryParam = validateQueryParam

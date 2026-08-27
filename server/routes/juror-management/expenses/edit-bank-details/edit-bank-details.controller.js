@@ -1,3 +1,5 @@
+const { validateQueryParam } = require('../../../../lib/mod-utils');
+
 (function() {
   'use strict';
 
@@ -112,18 +114,23 @@
         status = 'draft';
       }
 
+      const statusValue = validateQueryParam(req, res, `?status=${status}`);
+      if (!statusValue) {
+        return;
+      }
+
       const validatorResult = validate(req.body, bankDetailsValidator());
       const routePrefix = req.url.includes('record') ? 'juror-record' : 'juror-management';
       const errorUrl = app.namedRoutes.build(`${routePrefix}.bank-details.get`, {
         jurorNumber,
         locCode,
-      }) + status ? `?status=${status}` : '';
+      }) + `?status=${statusValue}`;
       const redirectUrl = req.url.includes('record')
         ? app.namedRoutes.build('juror-record.expenses.get', { jurorNumber })
         : app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
           jurorNumber,
           locCode,
-          status: status ? status : 'draft',
+          status,
         });
 
       if (typeof validatorResult !== 'undefined') {
