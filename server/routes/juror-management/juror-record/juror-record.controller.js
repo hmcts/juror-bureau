@@ -742,22 +742,27 @@
         const { locCode } = req.params;
         const { status } = req.query;
 
+        const statusValue = validateQueryParam(req, res, `?status=${status}`, { statusType: 'expenses' });
+        if (!statusValue) {
+          return;
+        }
+
         successUrl = app.namedRoutes.build(`${routePrefix}.bank-details.get`, {
           jurorNumber,
           locCode,
-        }) + (status ? `?status=${status}` : '');
+        }) + `?status=${statusValue}`;
         backLinkUrl = app.namedRoutes.build(`${routePrefix}.bank-details.get`, {
           jurorNumber,
           locCode,
-        }) + (status ? `?status=${status}` : '');
+        }) + `?status=${statusValue}`;
         actionUrl = app.namedRoutes.build(`${routePrefix}.bank-details.notes-edit.post`, {
           jurorNumber,
           locCode,
-        }) + (status ? `?status=${status}` : '');
+        }) + `?status=${statusValue}`;
         formErrorUrl = app.namedRoutes.build(`${routePrefix}.bank-details.notes-edit.get`, {
           jurorNumber,
           locCode,
-        }) + (status ? `?status=${status}` : '');
+        }) + `?status=${statusValue}`;
       }
 
       const editSuccessCB = function() {
