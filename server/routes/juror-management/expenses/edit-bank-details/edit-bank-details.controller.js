@@ -1,12 +1,11 @@
-const { validateQueryParam } = require('../../../../lib/mod-utils');
-
 (function() {
   'use strict';
 
-  const _ = require('lodash')
-    , validate = require('validate.js')
-    , { jurorBankDetailsDAO } = require('../../../../objects/expenses')
-    , bankDetailsValidator = require('../../../../config/validation/bank-details');
+  const _ = require('lodash');
+  const validate = require('validate.js');
+  const { jurorBankDetailsDAO } = require('../../../../objects/expenses');
+  const bankDetailsValidator = require('../../../../config/validation/bank-details');
+  const { validateQueryParam } = require('../../../../lib/mod-utils');
 
   module.exports.getBankDetails = (app) => {
     return async function(req, res) {
