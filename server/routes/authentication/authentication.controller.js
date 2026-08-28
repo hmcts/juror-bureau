@@ -39,7 +39,6 @@ module.exports.getCourtsList = function(app) {
 
       // keep it only during this request lifetime
       req.session.authCourtsList = courtsList;
-      req.session.noKeyAuthToken = authToken;
 
       req.session.changeCourtAvailable = courtsList.length > 1;
     } catch (err) {
@@ -158,7 +157,6 @@ module.exports.getChangeCourt = (app) => async (req, res) => {
     
     // keep it only during this request lifetime
     req.session.authCourtsList = courtsList;
-    req.session.noKeyAuthToken = authToken;
 
     res.locals.changeCourtAvailable = courtsList.length > 1;
     req.session.changeCourtAvailable = courtsList.length > 1;
@@ -243,7 +241,6 @@ function doLogin(req) {
     // delete unwanted cached on successful login
     delete req.session.authCourtsList;
     delete req.session.email;
-    delete req.session.noKeyAuthToken;
 
     app.logger.info('User logged in', {
       auth: req.session.authentication,
@@ -296,14 +293,8 @@ async function fetchAuthCourtsList (authToken, body) {
 }
 
 const getNoKeyAuthToken = (req) => {
-  if (req.session.noKeyAuthToken) {
-    return req.session.noKeyAuthToken;
-  }
-
   const signingKey = secretsConfig.get('secrets.juror.bureau-jwtNoAuthKey');
   const expiresIn = secretsConfig.get('secrets.juror.bureau-jwtTTL');
 
-  req.session.noKeyAuthToken = jwt.sign({}, signingKey, { expiresIn });
-
-  return req.session.noKeyAuthToken;
-}
+  return jwt.sign({}, signingKey, { expiresIn });
+};

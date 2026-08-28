@@ -329,13 +329,13 @@
       const { jurorNumber } = req.params;
       const attendanceDate = req.session.attendanceListDate;
 
-      try {
-        const absencePayload = {
-          'jurorNumber': jurorNumber,
-          'attendanceDate': attendanceDate,
-          'modifyAttendanceType': 'ABSENCE',
-        };
+      const absencePayload = {
+        'jurorNumber': jurorNumber,
+        'attendanceDate': attendanceDate,
+        'modifyAttendanceType': 'ABSENCE',
+      };
 
+      try {
         await modifyJurorAttendance.patch(req, mapCamelToSnake(absencePayload));
 
         res.redirect(
