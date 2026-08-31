@@ -961,7 +961,15 @@
 
   module.exports.postEditName = (app) => async (req, res) => {
     const jurorNumber = req.params['id'];
-    const { action } = req.query;
+    let { action } = req.query;
+    
+    if (action) {
+      action = modUtils.validateQueryParam(req, res, `?action=${action}`);
+      if (!action) {
+        return;
+      }
+    }
+    
     const validatorResult = validate(req.body, paperReplyValidator.jurorName());
 
     if (typeof validatorResult !== 'undefined') {
