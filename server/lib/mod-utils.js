@@ -1604,6 +1604,9 @@
       case 'date':
         isParamValid = validateDate(paramValue);
         break;
+      case 'action':
+        isParamValid = ['fix', 'new'].includes(paramValue);
+        break;
       default:
         isParamValid = false;
     }
