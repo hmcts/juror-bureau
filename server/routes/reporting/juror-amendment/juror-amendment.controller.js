@@ -1,3 +1,5 @@
+const { validateQueryParam } = require('../../../lib/mod-utils');
+
 (function() {
     'use strict';
   
@@ -85,18 +87,28 @@
             return res.redirect(app.namedRoutes.build('reports.juror-amendment.search.get'));
           }
         }
-  
+
+
+        let paramValue;
         switch (req.body.searchBy) {
-        case 'poolNumber':
-          return res.redirect(app.namedRoutes.build('reports.amendment-pool.filter.get') + `?filter=${req.body.poolNumber}`);
-        case 'jurorNumber':
-            return res.redirect(app.namedRoutes.build('reports.amendment-juror.filter.get') + `?filter=${req.body.jurorNumber}`);
-        case 'customDateRange':
-          return res.redirect(app.namedRoutes.build('reports.amendment-date.report.get', {filter: 'dateRange'})
-            + `?fromDate=${dateFilter(req.body.dateFrom, 'DD/MM/YYYY', 'YYYY-MM-DD')}`
-            + `&toDate=${dateFilter(req.body.dateTo, 'DD/MM/YYYY', 'YYYY-MM-DD')}`);
-        default:
-          return res.redirect(app.namedRoutes.build('reports.juror-amendment.search.get'));
+          case 'poolNumber':
+            paramValue = validateQueryParam(req, res, `?poolNumber=${req.params.poolNumber}`);
+            if (!paramValue) {
+              return;
+            }
+            return res.redirect(app.namedRoutes.build('reports.amendment-pool.filter.get') + `?filter=${jurorNumber}`);
+          case 'jurorNumber':
+            paramValue = validateQueryParam(req, res, `?jurorNumber=${req.params.jurorNumber}`);
+            if (!paramValue) {
+              return;
+            }
+            return res.redirect(app.namedRoutes.build('reports.amendment-juror.filter.get') + `?filter=${paramValue}`);
+          case 'customDateRange':
+            return res.redirect(app.namedRoutes.build('reports.amendment-date.report.get', {filter: 'dateRange'})
+              + `?fromDate=${dateFilter(req.body.dateFrom, 'DD/MM/YYYY', 'YYYY-MM-DD')}`
+              + `&toDate=${dateFilter(req.body.dateTo, 'DD/MM/YYYY', 'YYYY-MM-DD')}`);
+          default:
+            return res.redirect(app.namedRoutes.build('reports.juror-amendment.search.get'));
         }
       };
     };
