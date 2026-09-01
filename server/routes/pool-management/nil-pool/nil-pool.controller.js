@@ -228,6 +228,8 @@
         return res.redirect(app.namedRoutes.build('nil-pool.change-attendance-date.get'));
       }
 
+      delete req.session.invalidDate;
+
       req.session.tmpDate = filters.dateFilter(tmpBody.attendanceDate, 'DD/MM/YYYY', 'YYYY-MM-DD');
       req.session.redirectedFrom = 'nil-pool.change-attendance-date.post';
 
