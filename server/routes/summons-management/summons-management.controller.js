@@ -1164,7 +1164,16 @@
 
   module.exports.getViewJurorRecord = (app) => (req, res) => {
     req.session.isJurorSearchResult = true;
-    return res.redirect(app.namedRoutes.build('juror-record.search.get') + `?jurorNumber=${req.params.id}`);
+    //return res.redirect(app.namedRoutes.build('juror-record.search.get') + `?jurorNumber=${req.params.id}`);
+
+    const paramValue = modUtils.validateQueryParam(req, res, `?jurorNumber=${req.params.id}`);
+    if (!paramValue) {
+      return;
+    }
+
+    return res.redirect(
+      app.namedRoutes.build('juror-record.search.get') + `?jurorNumber=${paramValue}`,
+    );
   };
 
   // Helper functions
