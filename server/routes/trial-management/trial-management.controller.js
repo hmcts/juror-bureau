@@ -8,7 +8,7 @@
   const { getReturnedJurors } = require('../../objects/reinstate-jury');
   const { trialDetailsObject, trialsListDAO } = require('../../objects/create-trial');
   const { endTrialObject } = require('../../objects/end-trial');
-  const { dateFilter, capitalizeFully, capitalise } = require('../../components/filters');
+  const { dateFilter, capitalizeFully, capitalise, makeDate } = require('../../components/filters');
   const endTrialDateValidator = require('../../config/joi-validation/end-trial');
   const moment = require('moment');
   const messagingValidator = require('../../config/validation/messaging');

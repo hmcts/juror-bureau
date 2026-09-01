@@ -57,7 +57,7 @@
         req,
         trialNumber,
         locationCode,
-        req.body.numberOfJurors
+        req.body.numberOfJurors >= 1 ? req.body.numberOfJurors : 1
       ).then(resp => {
         const noOfJurors = resp.empanelList.length;
         const validatorResult = validator.numberOfJurors(noOfJurors)(req.body);
