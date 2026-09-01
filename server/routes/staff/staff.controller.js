@@ -13,7 +13,8 @@
     , teamObj = require('../../objects/team').object
     , staffCreateValidator = require('../../config/joi-validation/staff-create')
     , staffEditValidator = require('../../config/joi-validation/staff-edit')
-    , utils = require('../../lib/utils');
+    , utils = require('../../lib/utils')
+    , validate = require('validate.js');
 
   // Staff list
   module.exports.index = function(app) {
