@@ -83,7 +83,7 @@
   };
 
   module.exports.postPoolDetails = function(app) {
-    return function(req, res) {
+    return async function(req, res) {
       const createJurorMode = req.originalUrl === app.namedRoutes.build('create-juror-record.create-pool.post');
       const validatorResult = validate(req.body, validator());
       const tmpBody = req.body;
@@ -107,6 +107,55 @@
 
       delete req.session.formFields;
       delete req.session.courtChange;
+
+      const attendanceDate = dateFilter(tmpBody.serviceStartDate, 'DD/MM/YYYY', 'YYYY-MM-DD');
+
+      try {
+
+        let dayType = await requestPoolObj.checkDayType.get(
+          req,
+          tmpBody.courtLocCode,
+          attendanceDate,
+        );
+
+        delete req.session.errors;
+        delete req.session.invalidDate;
+
+        if ([modUtils.dayTypes.HOLIDAY, modUtils.dayTypes.WEEKEND].includes(dayType)) {
+
+          if (dayType == modUtils.dayTypes.HOLIDAY) {
+            req.session.errors = {
+              invalidDate: {
+                title: 'The service start date is a non working day or bank holiday',
+                reason: 'You’ve selected a service start date that’s a non working day or a UK bank holiday. You can continue or go back and change the date.',
+              }
+            };
+          }
+          if (dayType == modUtils.dayTypes.WEEKEND) {
+            req.session.errors = {
+              invalidDate: {
+                title: 'The Service start date is a weekend',
+                reason: 'You’ve selected a service start date that’s a Saturday or a Sunday. You can continue or go back and change the date.',
+              }
+            };
+          }
+
+          req.session.redirectedFrom = createJurorMode
+            ? 'create-juror-record.create-pool.post'
+            : 'court-only-pool.post';
+
+          return res.redirect(app.namedRoutes.build('request-pool.invalid-date.get'));
+        }
+      } catch (err) {
+        app.logger.crit('Error checking the service start date day type', {
+          auth: req.session.authentication,
+          error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+        });
+
+        return res.redirect(app.namedRoutes.build(createJurorMode
+          ? 'create-juror-record.create-pool.get'
+          : 'court-only-pool.get'));
+      }
 
       return res.redirect(createJurorMode
         ? app.namedRoutes.build('create-juror-record.create-pool.confirm.get')
