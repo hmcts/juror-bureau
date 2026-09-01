@@ -15,8 +15,6 @@ const datePickerErrorKeys = {
 
 const strictFormatValidator = (value, dateInitial) => (
   /^([0-9][0-9])(\/)([0-9][0-9])(\/)\d{4}$/.test(value)
-    && moment(value, 'DD/MM/YYYY', true).isValid()
-    && moment(dateInitial.dateAsDate).isValid()
 );
 
 const buildNotBeforeDateValidator = (referenceDate, referenceDateFormat) => {
