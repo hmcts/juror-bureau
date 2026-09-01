@@ -164,12 +164,25 @@ module.exports.timeMessageMapping = timeMessageMapping;
 
 module.exports.checkInTimeEmpty = (body) => validateSchema(buildCheckInEmptySchema(), body);
 module.exports.checkOutTimeEmpty = (body) => validateSchema(buildCheckOutEmptySchema(), body);
-module.exports.checkInTime = (body) => validateSchema(buildCheckInFieldSchema(), body);
+module.exports.checkInTime = (body) => {
+  const emptyValidationResult = validateSchema(buildCheckInEmptySchema(), body);
+
+  if (typeof emptyValidationResult !== 'undefined') {
+    return emptyValidationResult;
+  }
+
+  return validateSchema(buildCheckInFieldSchema(), body);
+};
 module.exports.checkOutTime = (body) => {
   const normalisedBody = {
     ...normaliseTimeBody(body, 'checkInTime'),
     ...normaliseTimeBody(body, 'checkOutTime'),
   };
+
+  const emptyValidationResult = validateSchema(buildCheckOutEmptySchema(), normalisedBody);
+  if (typeof emptyValidationResult !== 'undefined') {
+    return emptyValidationResult;
+  }
 
   const validationResult = validateSchema(buildCheckOutFieldSchema(), normalisedBody);
 
