@@ -591,7 +591,12 @@
       const canUpdateDbdPreferenceWithoutDob = config.featureFlags.digitalByDefault
         && typeof req.body.dbdPreference !== 'undefined'
         && req.session[`editJurorDetails-${jurorNumber}`].commonDetails.dbdPreference !== req.body.dbdPreference;
-      let validatorResult = overviewDetailsValidator(req.body, !canUpdateDbdPreferenceWithoutDob);
+      const canUpdateDetailsWithoutDob = canUpdateDbdPreferenceWithoutDob
+        || (
+          isBureauUser(req, res)
+          && req.session[`editJurorDetails-${jurorNumber}`]?.commonDetails?.jurorStatus === 'Summoned'
+        );
+      let validatorResult = overviewDetailsValidator(req.body, req, !canUpdateDetailsWithoutDob);
 
       modUtils.stripSpacesFromPhoneNumbersInBody(req);
 

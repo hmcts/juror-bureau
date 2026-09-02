@@ -4,6 +4,7 @@ const { validateJoiSchema } = require('./index');
 const { buildDatePickerSchema } = require('./date-validation');
 const commonEmailAddress = require('./common-email-address');
 const commonPhoneNumber = require('./common-phone-number');
+const { isBureauUser } = require('../../components/auth/user-type');
 
 const overviewDetailsMessageMapping = {
   phoneNumber: 'Telephone number cannot contain letters or special characters apart from hyphens, dashes, brackets or a plus sign.',
@@ -27,6 +28,16 @@ const thirdPartyMessageMapping = {
   firstNameLength: 'Please check the third party first name',
   lastNameLength: 'Please check the third party last name',
   reasonLength: 'Please check the third party reason',
+};
+
+const shouldRequireDateOfBirth = (req, requireDateOfBirth) => {
+  if (!requireDateOfBirth) {
+    return false;
+  }
+
+  const jurorStatus = req?.session?.[`editJurorDetails-${req?.params?.jurorNumber}`]?.commonDetails?.jurorStatus;
+
+  return !(req && isBureauUser(req) && jurorStatus === 'Summoned');
 };
 
 const buildOverviewDetailsSchema = (requireDateOfBirth = true) => Joi.object({
@@ -118,6 +129,13 @@ const buildThirdPartySchema = () => Joi.object({
     .optional(),
 });
 
-module.exports.overviewDetails = (body, requireDateOfBirth = true) => validateJoiSchema(buildOverviewDetailsSchema(requireDateOfBirth), body);
+module.exports.overviewDetails = (body, reqOrRequireDateOfBirth = true, requireDateOfBirth = true) => {
+  const req = typeof reqOrRequireDateOfBirth === 'boolean' ? undefined : reqOrRequireDateOfBirth;
+  const shouldRequire = typeof reqOrRequireDateOfBirth === 'boolean'
+    ? reqOrRequireDateOfBirth
+    : requireDateOfBirth;
+
+  return validateJoiSchema(buildOverviewDetailsSchema(shouldRequireDateOfBirth(req, shouldRequire)), body);
+};
 module.exports.extraSupport = (body) => validateJoiSchema(buildExtraSupportSchema(), body);
 module.exports.thirdParty = (body) => validateJoiSchema(buildThirdPartySchema(), body);
