@@ -34,7 +34,6 @@ const recordCreateManualMessageMapping = {
 };
 
 const optionalPhoneNumberSchema = (message) => Joi.string()
-  .trim()
   .pattern(constants.PHONE_REGEX)
   .messages({
     'string.pattern.base': message,
@@ -182,7 +181,7 @@ const contactDetailsSchema = Joi.object({
   emailAddress: commonEmailAddress({
     required: false,
     message: recordCreateManualMessageMapping.emailAddressInvalid,
-  }).trim(),
+  }),
 });
 
 module.exports.poolSelect = (body) => validateJoiSchema(poolSelectSchema, body);
