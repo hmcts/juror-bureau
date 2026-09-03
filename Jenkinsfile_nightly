@@ -6,12 +6,9 @@ String type = "nodejs"
 String product = "juror"
 String component = "bureau"
 
-def branchesToSync = ['demo', 'ithc', 'perftest']
-
 def yarnBuilder = new uk.gov.hmcts.contino.YarnBuilder(this)
 
-withPipeline(type, product, component) {
+withNightlyPipeline(type, product, component) {
   enableSlackNotifications('#juror-build-notices')
-  syncBranchesWithMaster(branchesToSync)
 }
 
