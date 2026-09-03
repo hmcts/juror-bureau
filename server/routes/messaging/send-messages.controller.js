@@ -358,7 +358,12 @@ const { poolRequestsDAO } = require('../../objects/pool-list');
         return res.redirect(url);
       }
 
-      return res.redirect(url + '?trialNumber=' + encodeURIComponent(req.body.searchTrialNumber));
+      const trialNumber = modUtils.validateQueryParam(req, res, `?trialNumber=${req.body.searchTrialNumber}`);
+      if (!trialNumber) {
+        return;
+      }
+
+      return res.redirect(url + '?trialNumber=' + trialNumber);
     };
   };
 
@@ -380,9 +385,14 @@ const { poolRequestsDAO } = require('../../objects/pool-list');
         ]));
       };
 
+      const trialNumber = modUtils.validateQueryParam(req, res, `?trialNumber=${req.body.selectedTrial}`);
+      if (!trialNumber) {
+        return;
+      }
+
       if (message === 'export-contact-details') {
         return res.redirect(app.namedRoutes.build('messaging.export-contacts.jurors.get')
-          + '?searchBy=trial&trialNumber=' + encodeURIComponent(req.body.selectedTrial));
+          + '?searchBy=trial&trialNumber=' + trialNumber);
       }
 
       const searchOptions = {
@@ -390,13 +400,13 @@ const { poolRequestsDAO } = require('../../objects/pool-list');
         'poolNumber': null,
         'nextDueAtCourtDate': null,
         'dateDeferredTo': null,
-        'trialNumber': req.body.selectedTrial,
+        'trialNumber': trialNumber,
       };
 
       req.session.messaging.searchOptions = searchOptions;
 
       if (req.session.messaging.trialNoRequired) {
-        req.session.messaging.placeholderValues['<trial_no>'] = req.body.selectedTrial;
+        req.session.messaging.placeholderValues['<trial_no>'] = trialNumber;
       }
 
       return res.redirect(app.namedRoutes.build('messaging.send.select-jurors.get', { message }));

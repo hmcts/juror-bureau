@@ -1637,9 +1637,9 @@
         && paramValue.length <= 16
         && paramValue.split('').every(character => {
           const isDigit = character >= '0' && character <= '9';
-          const isLowercaseLetter = character >= 'a' && character <= 'z';
+          const isUppercaseChar = character >= 'A' && character <= 'Z';
 
-          return isDigit || isLowercaseLetter;
+          return isDigit || isUppercaseChar;
         });
   };
 
