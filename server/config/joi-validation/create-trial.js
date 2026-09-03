@@ -98,44 +98,73 @@ const judgeSchema = (judgesList) => Joi.string()
     'judge.select': createTrialMessageMapping.judgeSelect,
   });
 
-const courtSchema = (courtsList) => Joi.any()
-  .custom((value, helpers) => {
-    if (courtsList.length > 1 && typeof value === 'undefined') {
-      return helpers.error('court.select');
-    }
+const courtSchema = (courtsList) => {
+  if (courtsList.length <= 1) {
+    return Joi.any().optional();
+  }
 
-    return value;
-  }, 'court validation')
-  .messages({
-    'court.select': createTrialMessageMapping.courtSelect,
+  return Joi.string()
+    .required()
+    .custom((value, helpers) => {
+      if (!value) {
+        return helpers.error('court.select');
+      }
+
+      if (!courtsList.find((court) => court.courtLocation === value)) {
+        return helpers.error('court.select');
+      }
+
+      return value;
+    }, 'court validation')
+    .messages({
+      'any.required': createTrialMessageMapping.courtSelect,
+      'string.base': createTrialMessageMapping.courtSelect,
+      'string.empty': createTrialMessageMapping.courtSelect,
+      'court.select': createTrialMessageMapping.courtSelect,
+    });
+};
+
+const courtroomSchema = (courtsList) => {
+  const baseSchema = Joi.string()
+    .custom((value, helpers) => {
+      const body = helpers.state.ancestors[0] || {};
+
+      if (courtsList.length === 0) {
+        return helpers.error('courtroom.select');
+      }
+
+      if (!value) {
+        return helpers.error('courtroom.required');
+      }
+
+      const selectedCourtrooms = body.court
+        ? courtsList.find((court) => court.courtLocation === body.court)?.courtRooms
+        : courtsList[0].courtRooms;
+
+      if (!selectedCourtrooms?.find((courtroom) => courtroom.description === value)) {
+        return helpers.error('courtroom.select');
+      }
+
+      return value;
+    }, 'courtroom validation')
+    .messages({
+      'any.required': createTrialMessageMapping.courtroomRequired,
+      'string.base': createTrialMessageMapping.courtroomRequired,
+      'string.empty': createTrialMessageMapping.courtroomRequired,
+      'courtroom.required': createTrialMessageMapping.courtroomRequired,
+      'courtroom.select': createTrialMessageMapping.courtroomSelect,
+    });
+
+  if (courtsList.length <= 1) {
+    return baseSchema.required();
+  }
+
+  return baseSchema.when('court', {
+    is: Joi.string().required(),
+    then: baseSchema.required(),
+    otherwise: Joi.optional(),
   });
-
-const courtroomSchema = (courtsList) => Joi.string()
-  .allow('')
-  .custom((value, helpers) => {
-    if (value === '') {
-      return helpers.error('courtroom.required');
-    }
-
-    if (courtsList.length === 0) {
-      return helpers.error('courtroom.select');
-    }
-
-    const body = helpers.state.ancestors[0] || {};
-    const selectedCourtrooms = body.court
-      ? courtsList.find((court) => court.courtLocation === body.court)?.courtRooms
-      : courtsList[0].courtRooms;
-
-    if (!selectedCourtrooms?.find((courtroom) => courtroom.description === value)) {
-      return helpers.error('courtroom.select');
-    }
-
-    return value;
-  }, 'courtroom validation')
-  .messages({
-    'courtroom.required': createTrialMessageMapping.courtroomRequired,
-    'courtroom.select': createTrialMessageMapping.courtroomSelect,
-  });
+};
 
 const startDateSchema = buildDatePickerSchema({
   field: 'startDate',
