@@ -44,11 +44,11 @@
         </div>
       </div>
 
-        {% if validJurorsHTML|length%}
+        {% if validJurorsHTML|length %}
           <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
               <h2 class="govuk-heading-m">Jurors who will get a summons reminder</h2>
-              <p class="govuk-body">6 jurors are eligible. Only selected eligible jurors will be included.</p>
+              <p class="govuk-body">{{ validJurorsHTML|length }} juror{{ "s are" if validJurorsHTML|length > 1 else " is" }} eligible. Only selected eligible jurors will be included.</p>
               <div class="govuk-grid-column-three-quarters govuk-!-margin-bottom-7">
                 {{ govukTable({
                 firstCellIsHeader: true,
