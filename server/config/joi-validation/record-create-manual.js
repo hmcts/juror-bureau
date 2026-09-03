@@ -34,6 +34,7 @@ const recordCreateManualMessageMapping = {
 };
 
 const optionalPhoneNumberSchema = (message) => Joi.string()
+  .trim()
   .pattern(constants.PHONE_REGEX)
   .messages({
     'string.pattern.base': message,
@@ -43,6 +44,7 @@ const optionalPhoneNumberSchema = (message) => Joi.string()
 
 const poolSelectSchema = Joi.object({
   poolNumber: Joi.string()
+    .trim()
     .required()
     .messages({
       'any.required': recordCreateManualMessageMapping.poolSelect,
@@ -53,6 +55,7 @@ const poolSelectSchema = Joi.object({
 
 const jurorNameSchema = Joi.object({
   title: Joi.string()
+    .trim()
     .max(10)
     .messages({
       'string.max': recordCreateManualMessageMapping.titleTooLong,
@@ -60,6 +63,7 @@ const jurorNameSchema = Joi.object({
     .allow('')
     .optional(),
   firstName: Joi.string()
+    .trim()
     .required()
     .max(20)
     .messages({
@@ -69,6 +73,7 @@ const jurorNameSchema = Joi.object({
       'string.max': recordCreateManualMessageMapping.firstNameTooLong,
     }),
   lastName: Joi.string()
+    .trim()
     .required()
     .max(25)
     .messages({
@@ -94,6 +99,7 @@ const buildJurorDobSchema = (isBureauCreation) => Joi.object({
 
 const jurorAddressSchema = Joi.object({
   addressLineOne: Joi.string()
+    .trim()
     .required()
     .max(35)
     .messages({
@@ -103,6 +109,7 @@ const jurorAddressSchema = Joi.object({
       'string.max': recordCreateManualMessageMapping.addressLineOneTooLong,
     }),
   addressLineTwo: Joi.string()
+    .trim()
     .max(35)
     .messages({
       'string.max': recordCreateManualMessageMapping.addressLineTwoTooLong,
@@ -110,6 +117,7 @@ const jurorAddressSchema = Joi.object({
     .allow('')
     .optional(),
   addressLineThree: Joi.string()
+    .trim()
     .max(35)
     .messages({
       'string.max': recordCreateManualMessageMapping.addressLineThreeTooLong,
@@ -117,6 +125,7 @@ const jurorAddressSchema = Joi.object({
     .allow('')
     .optional(),
   addressTown: Joi.string()
+    .trim()
     .required()
     .max(35)
     .messages({
@@ -126,6 +135,7 @@ const jurorAddressSchema = Joi.object({
       'string.max': recordCreateManualMessageMapping.addressTownTooLong,
     }),
   addressCounty: Joi.string()
+    .trim()
     .max(35)
     .messages({
       'string.max': recordCreateManualMessageMapping.addressCountyTooLong,
@@ -133,6 +143,7 @@ const jurorAddressSchema = Joi.object({
     .allow('')
     .optional(),
   addressPostcode: Joi.string()
+    .trim()
     .required()
     .pattern(constants.POSTCODE_REGEX)
     .messages({
@@ -145,6 +156,7 @@ const jurorAddressSchema = Joi.object({
 
 const confirmIneligibleAgeSchema = Joi.object({
   confirmIneligibleAge: Joi.string()
+    .trim()
     .required()
     .messages({
       'any.required': recordCreateManualMessageMapping.confirmIneligibleAge,
@@ -155,6 +167,7 @@ const confirmIneligibleAgeSchema = Joi.object({
 
 const jurorNotesSchema = Joi.object({
   notes: Joi.string()
+    .trim()
     .max(2000)
     .messages({
       'string.max': recordCreateManualMessageMapping.notesTooLong,
@@ -169,7 +182,7 @@ const contactDetailsSchema = Joi.object({
   emailAddress: commonEmailAddress({
     required: false,
     message: recordCreateManualMessageMapping.emailAddressInvalid,
-  }),
+  }).trim(),
 });
 
 module.exports.poolSelect = (body) => validateJoiSchema(poolSelectSchema, body);
