@@ -173,7 +173,6 @@
 
   module.exports.getSummonsReminderValidationDAO = new DAO('moj/letter/validate-reissue-letter', {
     post: function(body) {
-      console.log(`\n\nPayload for summons reminder validation: ${JSON.stringify(body, null, 2)}\n\n`);
       return {
         body: mapCamelToSnake(_.cloneDeep(body)),
         transform: (data) => {
