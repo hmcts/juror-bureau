@@ -7,13 +7,15 @@
   const validate = require('validate.js');
   const validator = require('../../../config/validation/letters-list');
   const { isBureauUser, isCourtUser } = require('../../../components/auth/user-type');
-  const { reissueLetterDAO } = require('../../../objects/documents');
+  const { reissueLetterDAO, getSummonsReminderValidationDAO } = require('../../../objects/documents');
   const { tableGenerator } = require('../helper/table-generator');
   const { toSentenceCase } = require('../../../components/filters');
   const { Logger } = require('../../../components/logger');
 
   module.exports.getListLetters = function(app) {
     return function(req, res) {
+      delete req.session.summonsReminderValidation;
+
       try {
         const { document } = req.params;
         const _isBureauUser = isBureauUser(req, res);
@@ -160,46 +162,46 @@
 
       delete req.session.statusChangedList;
 
-      try {
-        const { jurors: jurorList } = await reissueLetterDAO.postList(req, payload);
+      if (document === 'summons-reminders') {
+        try {
+          const response = await getSummonsReminderValidationDAO.post(req, payload);
 
-        if (jurorList && jurorList.length) {
-          req.session.statusChangedList = jurorList;
+          if (response?.invalidSummonedJurors?.length) {
+            req.session.summonsReminderValidation = {
+              invalidJurors: response.invalidSummonedJurors,
+              validJurors: response.validSummonedJurors,
+              payload: {
+                'letters': payload.letters.filter(x => {
+                  return !response.invalidSummonedJurors.some(y => y.jurorNumber === x.jurorNumber);
+                }),
+              }
+            }
 
-          app.logger.info('Found jurors with status changes', {
-            auth: req.session.authentication,
-            data: { ...payload, ...jurorList },
+            return res.redirect(app.namedRoutes.build('documents.summons-reminder-validation.get', {
+              document,
+            }) + urlBuilder(req.query));
+          }
+        } catch (err) {
+          req.session.errors = {
+            selectedJurors: [{
+              summary: 'Unable to reprint letters for the selected jurors',
+              details: 'Unable to reprint letters for the selected jurors',
+            }],
+          };
+
+          app.logger.crit('Failed to validate summons reminders for selected jurors', {
+            userId: req.session.authentication.login,
+            data: payload,
+            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
 
-          return res.redirect(app.namedRoutes.build('documents.letter-list.status-changed.get', {
+          return res.redirect(urljoin(app.namedRoutes.build('documents.letters-list.get', {
             document,
-          }));
+          }), urlBuilder(req.query)));
         }
-
-        const documentCount = req.session.documentsJurorsList.checkedJurors.length;
-
-        req.session.documentsJurorsList.successMessage =
-          `${documentCount} document${documentCount > 1 ? 's' : ''} sent for printing`;
-
-        return res.redirect(app.namedRoutes.build('documents.get'));
-      } catch (err) {
-        req.session.errors = {
-          selectedJurors: [{
-            summary: 'Unable to reprint letters for the selected jurors',
-            details: 'Unable to reprint letters for the selected jurors',
-          }],
-        };
-
-        app.logger.crit('Failed to reprint letters for selected jurors', {
-          userId: req.session.authentication.login,
-          data: payload,
-          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-        });
-
-        return res.redirect(urljoin(app.namedRoutes.build('documents.letters-list.get', {
-          document,
-        }), urlBuilder(req.query)));
       }
+
+      return resendCommunication(app)(req, res, payload);
     };
   };
 
@@ -253,6 +255,36 @@
         jurorsList,
       });
     };
+  };
+
+  module.exports.getSummonsReminderValidation = (app) => (req, res) => {
+    const { document } = req.params;
+
+    delete req.session.documentsJurorsList.checkedJurors;
+
+    return res.render('documents/summons-reminder-validation.njk', {
+      pageIdentifier: modUtils.getLetterIdentifier(document),
+      constinueUrl: app.namedRoutes.build('documents.summons-reminder-validation.post', {
+        document,
+      }) + urlBuilder(req.query),
+      backLinkUrl: app.namedRoutes.build('documents.letters-list.get', {
+        document,
+      }) + urlBuilder(req.query),
+      cancelUrl: app.namedRoutes.build('documents.letters-list.get', {
+        document,
+      }) + urlBuilder(req.query),
+      validJurors: req.session.summonsReminderValidation.validJurors,
+      invalidJurors: req.session.summonsReminderValidation.invalidJurors,
+    });
+  }
+
+  module.exports.postSummonsReminderValidation = (app) => async (req, res) => {
+    const { document } = req.params;
+    const payload = req.session.summonsReminderValidation.payload;
+
+    delete req.session.summonsReminderValidation;
+
+    return resendCommunication(app)(req, res, payload);
   };
 
   function removeStatusChangedJurors(app, req) {
@@ -339,6 +371,49 @@
       return res.status(200).send(req.session.documentsJurorsList.checkedJurors.length.toString());
     };
   };
+
+  const resendCommunication = (app) => async (req, res, payload) => {
+    try {
+      const { jurors: jurorList } = await reissueLetterDAO.postList(req, payload);
+
+      if (jurorList && jurorList.length) {
+        req.session.statusChangedList = jurorList;
+
+        app.logger.info('Found jurors with status changes', {
+          auth: req.session.authentication,
+          data: { ...payload, ...jurorList },
+        });
+
+        return res.redirect(app.namedRoutes.build('documents.letter-list.status-changed.get', {
+          document,
+        }));
+      }
+
+      const documentCount = payload.letters.length;
+
+      req.session.documentsJurorsList.successMessage =
+        `${documentCount} document${documentCount > 1 ? 's' : ''} sent for printing`;
+
+      return res.redirect(app.namedRoutes.build('documents.get'));
+    } catch (err) {
+      req.session.errors = {
+        selectedJurors: [{
+          summary: 'Unable to reprint letters for the selected jurors',
+          details: 'Unable to reprint letters for the selected jurors',
+        }],
+      };
+
+      app.logger.crit('Failed to reprint letters for selected jurors', {
+        userId: req.session.authentication.login,
+        data: payload,
+        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+      });
+
+      return res.redirect(urljoin(app.namedRoutes.build('documents.letters-list.get', {
+        document,
+      }), urlBuilder(req.query)));
+    }
+  }
 
   function paginateJurorsList(jurors, currentPage) {
     let start = 0;
