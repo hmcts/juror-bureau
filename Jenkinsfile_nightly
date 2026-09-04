@@ -1,17 +1,18 @@
 #!groovy
 
+properties([
+pipelineTriggers([cron('H 08 * * 1-5')])
+])
+
 @Library("Infrastructure@2.5.4") _
 
 String type = "nodejs"
 String product = "juror"
 String component = "bureau"
 
-def branchesToSync = ['demo', 'ithc', 'perftest']
-
 def yarnBuilder = new uk.gov.hmcts.contino.YarnBuilder(this)
 
-withPipeline(type, product, component) {
+withNightlyPipeline(type, product, component) {
   enableSlackNotifications('#juror-build-notices')
-  syncBranchesWithMaster(branchesToSync)
 }
 
