@@ -90,5 +90,5 @@
     "immutable": "^5.1.8",
     "undici": "^6.28.0"
   },
-  "packageManager": "yarn@4.14.1"
+  "packageManager": "yarn@4.18.0"
 }
