@@ -1,5 +1,9 @@
 #!groovy
 
+properties([
+pipelineTriggers([cron('H 08 * * 1-5')])
+])
+
 @Library("Infrastructure@2.5.4") _
 
 String type = "nodejs"
