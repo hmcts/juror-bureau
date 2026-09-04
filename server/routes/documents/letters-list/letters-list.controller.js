@@ -373,6 +373,8 @@
   };
 
   const resendCommunication = (app) => async (req, res, payload) => {
+    const { document } = req.params;
+    
     try {
       const { jurors: jurorList } = await reissueLetterDAO.postList(req, payload);
 
