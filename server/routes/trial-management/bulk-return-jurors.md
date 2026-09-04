@@ -26,7 +26,7 @@ No filters are used in this flow.
 
 This validator checks that the user has selected a non-zero number of jurors on the Jury Details page
 
-`bureau/server/config/validation/check-in-out-time.js`
+`bureau/server/config/joi-validation/check-in-out-time.js`
 
 Two validators from this file are used; one checks the user has input a valid check out time, and the other checks the user has input a valid check in time.
 

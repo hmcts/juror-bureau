@@ -2,9 +2,8 @@
   'use strict';
 
   const _ = require('lodash')
-    , validate = require('validate.js')
     , { jurorBankDetailsDAO } = require('../../../../objects/expenses')
-    , bankDetailsValidator = require('../../../../config/validation/bank-details');
+    , bankDetailsValidator = require('../../../../config/joi-validation/bank-details');
 
   module.exports.getBankDetails = (app) => {
     return async function(req, res) {
@@ -112,7 +111,7 @@
         status = 'draft';
       }
 
-      const validatorResult = validate(req.body, bankDetailsValidator());
+      const validatorResult = bankDetailsValidator(req.body);
       const routePrefix = req.url.includes('record') ? 'juror-record' : 'juror-management';
       const errorUrl = app.namedRoutes.build(`${routePrefix}.bank-details.get`, {
         jurorNumber,

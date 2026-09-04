@@ -3,9 +3,8 @@
 
   const  _ = require('lodash');
   const { generatePanelDAO, availableJurorsDAO } = require('../../../objects/panel');
-  const generatePanelValidator = require('../../../config/validation/generate-panel');
-  const poolsValidator = require('../../../config/validation/generate-panel-pools');
-  const validate = require('validate.js');;
+  const generatePanelValidator = require('../../../config/joi-validation/generate-panel');
+  const poolsValidator = require('../../../config/joi-validation/generate-panel-pools');
   const { makeManualError } = require('../../../lib/mod-utils');
 
 
@@ -42,9 +41,7 @@
   module.exports.postGeneratePanel = function(app) {
     return function(req, res) {
       const { trialNumber, locationCode } = req.params;
-      let validatorResult;
-
-      validatorResult = validate(req.body, generatePanelValidator());
+      const validatorResult = generatePanelValidator(req.body);
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
         req.session.formFields = req.body;
@@ -157,7 +154,7 @@
       let validatorResult
         , selectedPools;
 
-      validatorResult = validate(req.body, poolsValidator());
+      validatorResult = poolsValidator(req.body);
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
         return res.redirect(app.namedRoutes.build('trial-management.generate-panel.select-pools.get', {

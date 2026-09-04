@@ -22,7 +22,7 @@ This flow starts on the [Pool Overview page](./pool-overview.md). The user selec
 * `dateFilter` is used to format dates used in the flow.
 
 ## 3.0.5 Validators
-`bureau/server/config/validation/change-attendance-date.js`
+`bureau/server/config/joi-validation/change-attendance-date.js`
 
 * `jurorSelect()` - This validator checks that the user has selected a non-zero number of pool members on the Pool Overview page
 * `bulkAttendanceDate()` - This validator ensures that the date selected is valid, in the correct format, and in the future.
