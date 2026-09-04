@@ -40,7 +40,6 @@
     app.get('/pool-management/request-pool/invalid-date',
       'request-pool.invalid-date.get',
       auth.verify,
-      controller.hasStartedRequest(app),
       controller.getInvalidDate(app));
 
     app.get('/pool-management/request-pool/check-details',
