@@ -1606,6 +1606,7 @@
         break;
       case 'status':
         isParamValid = validateStatus(paramValue, options?.statusType);
+        break;
       case 'action':
         isParamValid = ['fix', 'new'].includes(paramValue);
         break;
