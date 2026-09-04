@@ -77,6 +77,20 @@
       expect(output).to.be.equal(expected);
     });
 
+    it('should build a juror record address from multiple lines with an empty line', function() {
+      var address = [
+          '123 STREET NAME',
+          '',
+          'GREATER CITY',
+        ]
+        , expected = '123 STREET NAME<br> GREATER CITY'
+        , output;
+
+      output = filter.buildRecordAddress(address);
+
+      expect(output).to.be.equal(expected);
+    });
+
     it('should build a juror record address from multiple lines with null lines and capitalized properly', function() {
       var address = [
           '123 STREET NAME',
