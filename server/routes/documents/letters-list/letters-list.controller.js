@@ -44,6 +44,14 @@
 
         req.session.documentsJurorsList.data = sortLettersList(sortBy, sortOrder, _.clone(req.session.documentsJurorsList), isCourtUser(req))
 
+        const totalCheckableJurors = calculateTotalJurors(
+          req.session.documentsJurorsList.data,
+          documentSearchBy,
+        );
+        const showSelectAll = _isBureauUser
+          && documentSearchBy !== 'allLetters'
+          && totalCheckableJurors > 0;
+
         if (req.session.documentsJurorsList.data.length > modUtils.constants.PAGE_SIZE) {
           paginationObject = modUtils.paginationBuilder(
             req.session.documentsJurorsList.data.length,
@@ -63,7 +71,7 @@
           checkedJurors: req.session.documentsJurorsList.checkedJurors || [],
           allChecked: areAllChecked(req),
           sortBy, sortOrder
-        })(_isBureauUser);
+        })(_isBureauUser, showSelectAll);
 
         const postUrl = urljoin(app.namedRoutes.build('documents.letters-list.post', {
           document,
@@ -94,7 +102,7 @@
           buttonLabel: buttonLabel(document, _isBureauUser),
           selectedJurors,
           totalJurors: req.session.documentsJurorsList.data.length,
-          totalCheckableJurors: calculateTotalJurors(req.session.documentsJurorsList.data, documentSearchBy),
+          totalCheckableJurors,
           document,
           documentSearchBy,
           errors: {
