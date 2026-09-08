@@ -6,7 +6,8 @@
     , validate = require('validate.js')
     , showCauseValidator = require('../../../config/validation/show-cause')
     , { reissueLetterDAO } = require('../../../objects/documents')
-    , { dateFilter, convert12to24 } = require('../../../components/filters');
+    , { dateFilter, convert12to24 } = require('../../../components/filters')
+    , modUtils = require('../../../lib/mod-utils');
 
 
   module.exports.postShowCause = function(app) {
@@ -22,9 +23,18 @@
         req.session.errors = validatorResult;
         req.session.formFields = req.body;
 
+        let jurorNumberParamValue = jurorNumber;
+
+        if (jurorNumber) {
+          jurorNumberParamValue = modUtils.validateQueryParam(req, res, `?jurorNumber=${jurorNumber}`);
+          if (!jurorNumberParamValue) {
+            return;
+          }
+        }
+
         return res.redirect(app.namedRoutes.build('documents.form.get', {
           document: 'show-cause',
-        }) + `${jurorNumber ? `?jurorNumber=${jurorNumber}` : ''}`);
+        }) + `${jurorNumber ? `?jurorNumber=${jurorNumberParamValue}` : ''}`);
       };
 
       if (jurorNumber) {

@@ -1,0 +1,127 @@
+{% extends "../layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+
+{% block page_title %}You cannot move some of these jurors{% endblock %}
+
+{% block content %}
+
+    {# Setup movement problems table data #}
+    {% set validJurorsHTML = [] %}
+    {% for juror in validJurors %}
+      {% set validJurorsHTML = (validJurorsHTML.push(
+        [
+          { html: '<a href="'+url('juror-record.overview.get', { jurorNumber: juror.jurorNumber })+'" class="govuk-body govuk-link">'+juror.jurorNumber+'</a>' }, 
+          { text: juror.firstName }, 
+          { text: juror.lastName },
+          { text: juror.postcode }
+        ]
+      ), validJurorsHTML) %}
+    {% endfor %}
+
+    {% set invalidJurorsHTML = [] %}
+    {% for juror in invalidJurors %}
+      {% set invalidJurorsHTML = (invalidJurorsHTML.push(
+        [
+          { html: '<a href="'+url('juror-record.overview.get', { jurorNumber: juror.jurorNumber })+'" class="govuk-body govuk-link">'+juror.jurorNumber+'</a>' }, 
+          { text: juror.firstName }, 
+          { text: juror.lastName },
+          { text: juror.postcode },
+          { text: juror.errorMessage }
+        ]
+      ), invalidJurorsHTML) %}
+    {% endfor %}
+
+    {% include "includes/errors.njk" %}
+
+    <form method="POST" id="summonsReminderValidationForm">
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+          <h1 class="govuk-heading-l govuk-!-margin-bottom-6">
+            Check summons reminders
+          </h1>
+        </div>
+      </div>
+
+        {% if validJurorsHTML|length %}
+          <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+              <h2 class="govuk-heading-m">Jurors who will get a summons reminder</h2>
+              <p class="govuk-body">{{ validJurorsHTML|length }} juror{{ "s are" if validJurorsHTML|length > 1 else " is" }} eligible. Only selected eligible jurors will be included.</p>
+              <div class="govuk-grid-column-three-quarters govuk-!-margin-bottom-7">
+                {{ govukTable({
+                firstCellIsHeader: true,
+                caption: "Jurors no longer in the original pool",
+                captionClasses: "govuk-visually-hidden",
+                head: [
+                  {
+                    text: "Juror number"
+                  },
+                  {
+                    text: "First name"
+                  },
+                  {
+                    text: "Last name"
+                  },
+                  {
+                    text: "Postcode"
+                  }
+                ],
+                rows: validJurorsHTML
+                }) }}
+              </div>
+            </div>
+          </div>
+        {% endif %}
+
+        {% if invalidJurorsHTML|length%}
+          <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+              <h2 class="govuk-heading-m">Jurors removed from summons reminders</h2>
+              <p class="govuk-body">These jurors will not receive a summons reminder because the system has received a digital response that is pending.</p>
+              <div class="govuk-grid-column-three-quarters govuk-!-margin-bottom-7">
+                {{ govukTable({
+                firstCellIsHeader: true,
+                caption: "Jurors no longer in the original pool",
+                captionClasses: "govuk-visually-hidden",
+                head: [
+                  {
+                    text: "Juror number"
+                  },
+                  {
+                    text: "First name"
+                  },
+                  {
+                    text: "Last name"
+                  },
+                  {
+                    text: "Postcode"
+                  },
+                  {
+                    text: "Reason removed"
+                  }
+                ],
+                rows: invalidJurorsHTML
+                }) }}
+              </div>
+            </div>
+          </div>
+        {% endif %}
+
+        {# Submit form #}
+        <div class="govuk-button-group">
+          {% if (validJurorsHTML|length > 0) %}
+            {{ govukButton({
+              text: "Send summons reminders",
+              attributes: {
+                formAction: continueUrl
+              }
+            }) }}
+          {% endif %}
+          <a href="{{ cancelUrl }}" class="govuk-body govuk-link--no-visited-state" id="cancelAnchor">Cancel and go back</a>
+        </div>
+
+        <input type="hidden" name="_csrf" id="_csrf" value="{{ csrftoken }}">
+    </form>
+{% endblock %}

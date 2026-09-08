@@ -1079,7 +1079,14 @@
   module.exports.postEditName = (app) => {
     return (req, res) => {
       const { jurorNumber } = req.params;
-      const { action } = req.query;
+      let { action } = req.query;
+
+      if (action) {
+        action = modUtils.validateQueryParam(req, res, `?action=${action}`);
+        if (!action) {
+          return;
+        }
+      }
 
       if (action === 'fix') {
         req.session[`editJurorDetails-${jurorNumber}`].commonDetails.title = req.body.title;
