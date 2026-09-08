@@ -6,10 +6,26 @@
   const config = require('../../../config/environment')();
 
   function tableGenerator(isBureauUser) {
-    return tableBuilder(this.response, this.checkedJurors, isBureauUser, this.allChecked, this.sortBy, this.sortOrder);
+    return tableBuilder(
+      this.response,
+      this.checkedJurors,
+      isBureauUser,
+      this.allChecked,
+      this.showSelectAll,
+      this.sortBy,
+      this.sortOrder,
+    );
   }
 
-  function tableBuilder({ headings, dataTypes, data }, checkedJurors, isBureauUser, allChecked, sortBy, sortOrder) {
+  function tableBuilder(
+    { headings, dataTypes, data },
+    checkedJurors,
+    isBureauUser,
+    allChecked,
+    showSelectAll,
+    sortBy,
+    sortOrder,
+  ) {
     const headingIndexes = getHeadingIndexes(headings);
     const _thead = headingIndexes.reduce((prev, index) => (
       headingsReducer.call({ headings, dataTypes, sortBy, sortOrder }, prev, headings[index], index)
@@ -19,7 +35,7 @@
 
     const tableHeader = [{
       id: 'check-all-juror',
-      html: `${isBureauUser ? `<div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">
+      html: `${showSelectAll ? `<div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">
                 <input type="checkbox" class="govuk-checkboxes__input select-check juror-select-check"
                 id="check-all-jurors" ${selectAllCheck} name="selectAllCheckbox"/>
                 <label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="check-all-jurors">

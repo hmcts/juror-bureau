@@ -58,10 +58,19 @@
           data: paginateJurorsList(req.session.documentsJurorsList.data, page || 1),
         };
 
+        const totalCheckableJurors = calculateTotalJurors(
+          req.session.documentsJurorsList.data,
+          documentSearchBy,
+        );
+        const showSelectAll = _isBureauUser
+          && documentSearchBy !== 'allLetters'
+          && totalCheckableJurors > 0;
+
         const { tableHeader, tableRows } = tableGenerator.bind({
           response: slicedJurorList,
           checkedJurors: req.session.documentsJurorsList.checkedJurors || [],
           allChecked: areAllChecked(req),
+          showSelectAll,
           sortBy, sortOrder
         })(_isBureauUser);
 
@@ -94,7 +103,7 @@
           buttonLabel: buttonLabel(document, _isBureauUser),
           selectedJurors,
           totalJurors: req.session.documentsJurorsList.data.length,
-          totalCheckableJurors: calculateTotalJurors(req.session.documentsJurorsList.data, documentSearchBy),
+          totalCheckableJurors,
           document,
           documentSearchBy,
           errors: {
