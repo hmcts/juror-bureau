@@ -333,14 +333,20 @@
         filter = req.body.jurorNumber;
         break;
       case 'trial':
-        filter = encodeURIComponent(req.body.filterTrialNumber);
+        filter = req.body.filterTrialNumber;
         break;
       case 'month':
         filter = req.body.selectMonth;
         break;
     }
 
-    return res.redirect(addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.filter.get`) + '?filter=' + filter));
+    const filterUrl = addURLQueryParams(
+      reportType,
+      app.namedRoutes.build(`reports.${reportKey}.filter.get`),
+      { filter },
+    );
+
+    return res.redirect(filterUrl);
   };
 
   const standardReportGet = (app, reportKey, isPrint = false, isExport = false) => async(req, res) => {
@@ -867,7 +873,11 @@
           }],
         };
 
-        return res.redirect(addURLQueryParams(reportType, app.namedRoutes.build(`reports.${reportKey}.filter.get`)+ (req.body.filter ? '?filter=' + req.body.filter : '')));
+        return res.redirect(addURLQueryParams(
+          reportType,
+          app.namedRoutes.build(`reports.${reportKey}.filter.get`),
+          req.body.filter ? { filter: req.body.filter } : {},
+        ));
       }
 
       req.session.reportFilter = req.body.filter;
@@ -887,7 +897,11 @@
           }],
         };
 
-        return res.redirect(addURLQueryParams(reportType, app.namedRoutes.build(`reports.${reportKey}.filter.get`) + (req.body.filter ? '?filter=' + req.body.filter : '')));
+        return res.redirect(addURLQueryParams(
+          reportType,
+          app.namedRoutes.build(`reports.${reportKey}.filter.get`),
+          req.body.filter ? { filter: req.body.filter } : {},
+        ));
       }
       
       req.session.reportFilter = req.body.filter;
@@ -900,8 +914,11 @@
       if (!req.body.selectedCourts) {
         req.session.errors = makeManualError('selectedCourts', 'Select at least one court');
 
-        return res.redirect(addURLQueryParams(reportType, app.namedRoutes.build(`reports.${reportKey}.filter.get`)
-          + (req.body.filter ? '?filter=' + req.body.filter : '')));
+        return res.redirect(addURLQueryParams(
+          reportType,
+          app.namedRoutes.build(`reports.${reportKey}.filter.get`),
+          req.body.filter ? { filter: req.body.filter } : {},
+        ));
       }
       req.session.reportFilter = req.body.filter;
       const selectedCourts = Array.isArray(req.body.selectedCourts) ? req.body.selectedCourts : [req.body.selectedCourts]
@@ -984,7 +1001,11 @@
       if (!req.body.selectMonth) {
         req.session.errors = makeManualError('selectMonth', 'Select a month');
 
-        return res.redirect(addURLQueryParams(reportType, app.namedRoutes.build(`reports.${reportKey}.filter.get`)+ (req.body.filter ? '?filter=' + req.body.filter : '')));
+        return res.redirect(addURLQueryParams(
+          reportType,
+          app.namedRoutes.build(`reports.${reportKey}.filter.get`),
+          req.body.filter ? { filter: req.body.filter } : {},
+        ));
       }
 
       req.session.reportFilter = req.body.filter;
@@ -1039,21 +1060,26 @@
     
   }
 
-  function addURLQueryParams(reportType, url){
-    let queryParams = _.clone(reportType.queryParams);
-    if(url.includes('?')) {
+  function addURLQueryParams(reportType, url, additionalQueryParams = {}) {
+    const queryParams = {
+      ..._.clone(reportType.queryParams),
+      ...additionalQueryParams,
+    };
+    if (url.includes('?')) {
       url
         .split('?')[1]
         .split('&')
         .map((param) => param.split('=')[0])
         .forEach((param) => {
-          if (queryParams && queryParams[param]) {
+          if (queryParams && Object.prototype.hasOwnProperty.call(queryParams, param)) {
             delete queryParams[param];
           }
         });
     }
 
-    return url + `${reportType.queryParams ? `${url.includes('?') ? '&' : '?'}${new URLSearchParams(queryParams).toString()}` : ''}`
+    const serializedQueryParams = new URLSearchParams(queryParams).toString();
+
+    return url + `${serializedQueryParams ? `${url.includes('?') ? '&' : '?'}${serializedQueryParams}` : ''}`;
   }
 
   module.exports = {
