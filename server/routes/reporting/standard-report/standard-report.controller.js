@@ -653,27 +653,29 @@
     }
 
     const buildPrintExportUrl = function(urlType = 'print') {
-      let url = req.params.filter
+      const url = req.params.filter
         ? app.namedRoutes.build(`reports.${reportKey}.report.${urlType}`, {filter: req.params.filter})
         : app.namedRoutes.build(`reports.${reportKey}.report.${urlType}`);
+      const queryParams = {};
 
       if (req.query.fromDate) {
-        url = url + '?fromDate=' + req.query.fromDate + '&toDate=' + req.query.toDate;
+        queryParams.fromDate = req.query.fromDate;
+        queryParams.toDate = req.query.toDate;
       }
       if (req.query.courtLocCode) {
-        url = url + (url.includes('?') ? '&' : '?') + 'courtLocCode=' + req.query.courtLocCode;
+        queryParams.courtLocCode = req.query.courtLocCode;
       }
       if (req.query.sortBy) {
-        url = url + (url.includes('?') ? '&' : '?') + 'sortBy=' + req.query.sortBy;
+        queryParams.sortBy = req.query.sortBy;
       }
       if (req.query.sortDirection) {
-        url = url + (url.includes('?') ? '&' : '?') + 'sortDirection=' + req.query.sortDirection;
+        queryParams.sortDirection = req.query.sortDirection;
       }
       if (req.query.currentTrialJurors) {
-        url = url + (url.includes('?') ? '&' : '?') + 'currentTrialJurors=' + req.query.currentTrialJurors;
+        queryParams.currentTrialJurors = req.query.currentTrialJurors;
       }
 
-      return addURLQueryParams(reportType,  url);
+      return addURLQueryParams(reportType, url, queryParams);
     };
 
     const buildBackLinkUrl = function() {
@@ -691,7 +693,11 @@
           return app.namedRoutes.build(`reports.${reportKey}.trial-juror-select.get`, { filter: req.params.filter });
         }
         if (reportKey === 'jury-cost-bill' || reportKey === 'trial-attendance') {
-          return app.namedRoutes.build(`reports.${reportKey}.filter.get`) + (filter ? '?filter=' + filter : '')
+          return addURLQueryParams(
+            reportType,
+            app.namedRoutes.build(`reports.${reportKey}.filter.get`),
+            filter ? { filter } : {},
+          );
         }
         return app.namedRoutes.build('trial-management.trials.detail.get', {
           trialNumber: req.params.filter, locationCode: req.session.authentication.locCode
@@ -701,7 +707,11 @@
         return req.session.dailyUtilisation.route
       }
       if (Object.keys(app.namedRoutes.routesByNameAndMethod).includes(`reports.${reportKey}.filter.get`)) {
-        return addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.filter.get`) + (filter ? '?filter=' + filter : ''));
+        return addURLQueryParams(
+          reportType,
+          app.namedRoutes.build(`reports.${reportKey}.filter.get`),
+          filter ? { filter } : {},
+        );
       } else {
         return app.namedRoutes.build(`reports.reports.get`)
       }
@@ -765,10 +775,17 @@
     // Backlink routing needs saved for jurors report
     if (reportKey === 'daily-utilisation') {
       req.session.dailyUtilisation = {
-        route: app.namedRoutes.build('reports.daily-utilisation.report.get', {
-          filter:'dateRange' 
-        }) + `?fromDate=${req.query.fromDate}&toDate=${req.query.toDate}`
-      }
+        route: addURLQueryParams(
+          reportType,
+          app.namedRoutes.build('reports.daily-utilisation.report.get', {
+            filter: 'dateRange',
+          }),
+          {
+            fromDate: req.query.fromDate,
+            toDate: req.query.toDate,
+          },
+        ),
+      };
     }
 
     if (reportKey.includes('jury-summoning-monitor')) {
@@ -979,10 +996,14 @@
         redirectRoute = `reports.${reportKey}.report.export`;
       }
 
-      return res.redirect(addURLQueryParams(reportType,  app.namedRoutes.build(redirectRoute, {filter: 'dateRange'})
-        + `?fromDate=${dateFilter(req.body.dateFrom, 'DD/MM/YYYY', 'YYYY-MM-DD')}`
-        + `&toDate=${dateFilter(req.body.dateTo, 'DD/MM/YYYY', 'YYYY-MM-DD')}`
-        ));
+      return res.redirect(addURLQueryParams(
+        reportType,
+        app.namedRoutes.build(redirectRoute, {filter: 'dateRange'}),
+        {
+          fromDate: dateFilter(req.body.dateFrom, 'DD/MM/YYYY', 'YYYY-MM-DD'),
+          toDate: dateFilter(req.body.dateTo, 'DD/MM/YYYY', 'YYYY-MM-DD'),
+        },
+      ));
     }
     if (reportType.search === 'trial') {
       if (!req.body.selectedTrial) {
@@ -1029,7 +1050,11 @@
       });
     } else {
       cancelUrl = app.namedRoutes.build('reports.reports.get');
-      backLinkUrl = app.namedRoutes.build(`reports.${reportKey}.filter.get`) + (req.params.filter ? '?filter=' + req.params.filter : '');
+      backLinkUrl = addURLQueryParams(
+        reportType,
+        app.namedRoutes.build(`reports.${reportKey}.filter.get`),
+        req.params.filter ? { filter: req.params.filter } : {},
+      );
     }
     
     return res.render('reporting/standard-reports/trial-juror-select.njk', {
@@ -1054,9 +1079,13 @@
     const currentTrialJurors = req.body.currentTrialJurors;
     const locCode = req.session.authentication.locCode;
     
-    return res.redirect(app.namedRoutes.build(`reports.${reportKey}.report.get`, {
-      filter: trialNo
-    }) + `?currentTrialJurors=${currentTrialJurors}`);
+    return res.redirect(addURLQueryParams(
+      reportType,
+      app.namedRoutes.build(`reports.${reportKey}.report.get`, {
+        filter: trialNo,
+      }),
+      { currentTrialJurors },
+    ));
     
   }
 
