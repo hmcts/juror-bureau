@@ -64,7 +64,7 @@
           return res.redirect(app.namedRoutes.build('pool-management.get'));
         }
         , errorCB = function(err) {
-          var cancelUrl = '/pool-management/pool-overview/' + poolNumber;
+          var cancelUrl = app.namedRoutes.build('pool-overview.get', { poolNumber });
 
           if (err.response?.status === 423) {
 
@@ -92,7 +92,7 @@
             type: 'pool-delete-error',
           };
 
-          return res.redirect('/pool-management/pool-overview/' + poolNumber);
+          return res.redirect(app.namedRoutes.build('pool-overview.get', { poolNumber }))
         };
 
       deletePoolObject.delete(req, poolNumber)

@@ -26,6 +26,16 @@
     {% set goBackToUrl = "nil-pool.change-attendance-date.get" %}
   {% endif %}
 
+  {% if invalidDate.redirectedFrom === "court-only-pool.post" %}
+    {% set continueToUrl = "court-only-pool.check-details.get" %}
+    {% set goBackToUrl = "court-only-pool.get" %}
+  {% endif %}
+
+  {% if invalidDate.redirectedFrom === "create-juror-record.create-pool.post" %}
+    {% set continueToUrl = "create-juror-record.create-pool.confirm.get" %}
+    {% set goBackToUrl = "create-juror-record.create-pool.get" %}
+  {% endif %}
+
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
 

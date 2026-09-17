@@ -1,7 +1,7 @@
 /* eslint-disable strict */
 const _ = require('lodash');
 const { dateFilter, capitalizeFully, toSentenceCase } = require('../../../components/filters');
-const { snakeToCamel } = require('../../../lib/mod-utils');
+const { snakeToCamel, validateQueryParam } = require('../../../lib/mod-utils');
 const { tableDataMappers } = require('./utils');
 
 async function reportExport(app, req, res, reportKey, data, reportTitle) {
@@ -32,7 +32,12 @@ async function reportExport(app, req, res, reportKey, data, reportTitle) {
 
 async function poolStatusReportExport(req, res, data) {
   const { tableData } = data;
-  const poolNumber = req.params.filter;
+  let poolNumber = req.params.filter;
+
+  poolNumber = validateQueryParam(req, res, `?poolNumber=${poolNumber}`);
+  if (!poolNumber) {
+    return;
+  }
 
   let csvResult = [['Pool number', poolNumber], [], ['Status', 'Total members']];
   const csvData = tableData.headings.map(header => {

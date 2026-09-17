@@ -1,10 +1,11 @@
 (function() {
   'use strict';
 
-  const _ = require('lodash')
-    , validate = require('validate.js')
-    , { jurorBankDetailsDAO } = require('../../../../objects/expenses')
-    , bankDetailsValidator = require('../../../../config/validation/bank-details');
+  const _ = require('lodash');
+  const validate = require('validate.js');
+  const { jurorBankDetailsDAO } = require('../../../../objects/expenses');
+  const bankDetailsValidator = require('../../../../config/validation/bank-details');
+  const { validateQueryParam } = require('../../../../lib/mod-utils');
 
   module.exports.getBankDetails = (app) => {
     return async function(req, res) {
@@ -112,18 +113,23 @@
         status = 'draft';
       }
 
+      const statusValue = validateQueryParam(req, res, `?status=${status}`, { statusType: 'expenses' });
+      if (!statusValue) {
+        return;
+      }
+
       const validatorResult = validate(req.body, bankDetailsValidator());
       const routePrefix = req.url.includes('record') ? 'juror-record' : 'juror-management';
       const errorUrl = app.namedRoutes.build(`${routePrefix}.bank-details.get`, {
         jurorNumber,
         locCode,
-      }) + status ? `?status=${status}` : '';
+      }) + `?status=${statusValue}`;
       const redirectUrl = req.url.includes('record')
         ? app.namedRoutes.build('juror-record.expenses.get', { jurorNumber })
         : app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
           jurorNumber,
           locCode,
-          status: status ? status : 'draft',
+          status,
         });
 
       if (typeof validatorResult !== 'undefined') {
