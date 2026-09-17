@@ -52,19 +52,17 @@
       // Ensure log directory exists
       checkDirectoryCreate(this.config.logPath);
 
-      if (app) {
-        // attach to the app object
-        app.logger = Logger.instance;
-      }
-
       if (!this.config.logSanitisationDisabled) {
-        // attempt to attach sanitiser wrapper to app.logger and Logger.instance
         try {
-          sanitiseLog(Logger.instance, levels, app);
           sanitiseLog(Logger.instance, levels);
         } catch (e) {
           console.error('Logger sanitisation not applied:', e && e.message ? e.message : e);
         }
+      }
+
+      if (app) {
+        // Attach the same sanitised logger used by direct Logger.instance calls.
+        app.logger = Logger.instance;
       }
     }
   };
