@@ -1,0 +1,47 @@
+@startuml reports.yield-performance
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant "Yield performance form page" as YieldPerformanceFormPage <</reporting/yield-performance>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant "Yield performance controller" as YieldPerformanceController <<yield-performance.controller.js>> #LightYellow
+participant "Courts list" as CourtsList <<courts-list>> #LightYellow
+participant "Standard report controller" as StandardReportController <<standard-report.controller.js>> #LightYellow
+
+''' TEMPLATES
+participant "Standard report" as StandardReport <<reporting/standard-reports/standard-report.njk>> #lavender
+
+''' VALIDATORS
+participant "'Yield performance' validator" as Validator
+
+''' SELECT PAGE
+Actor -> YieldPerformanceFormPage : fill form and submit
+YieldPerformanceFormPage -> YieldPerformanceController : call page controller
+YieldPerformanceController -> Validator : validate form data
+
+alt Invalid form data
+
+  YieldPerformanceController <- Validator : invalid form data
+  YieldPerformanceController -> YieldPerformanceFormPage : request and build template
+  YieldPerformanceController <- YieldPerformanceFormPage : return HTML
+  Actor <- YieldPerformanceController : return and render HTML with error messages
+
+end
+|||
+
+YieldPerformanceController <- Validator : valid form data
+
+YieldPerformanceController -> CourtsList : request and build template
+YieldPerformanceController <- CourtsList : return HTML
+CourtsList -> YieldPerformanceController : select courts from the list
+
+YieldPerformanceController -> StandardReportController : redirect to standard report controller
+
+StandardReportController -> StandardReport : request and build template
+StandardReportController <- StandardReport : return HTML
+Actor <- StandardReportController : report displayed by standard renderer
