@@ -6,6 +6,7 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
 
 {% block page_title %}{{ serviceName }} - Documents - {{pageIdentifier}}{% endblock %}
 {% block page_identifier %}Documents - {{pageIdentifier}}{% endblock %}
@@ -113,6 +114,15 @@
 
       <form action="{{ postUrl }}" method="post" id="documentLetterForm">
         <h1 class="title govuk-heading-l">{{pageIdentifier}}</h1>
+
+        {% if featureFlags.digitalByDefault %}
+          {% if document === 'paper-packs-sent' %}
+            {% call govukInsetText({ classes: "guidance-panel" }) %}
+              <h2 class="govuk-heading-m">Digital by Default pilot only</h2>
+              <p>Only jurors marked as part of the Digital by Default pilot are included in this document.</p>
+            {% endcall %}
+          {% endif %}
+        {% endif %}
 
         {% if isCourtUser %}
           {{ govukRadios({

@@ -29,6 +29,9 @@
       
       <ul class="govuk-list govuk-list--spaced">
         <li><a class="govuk-link" href="{{ buildUrl('initial-summons') }}">Initial summons</a></li>
+        {% if featureFlags.digitalByDefault %}
+          <li><a class="govuk-link" href="{{ buildUrl('paper-packs-sent') }}">Paper packs sent</a></li>
+        {% endif %}
         <li><a class="govuk-link" href="{{ buildUrl('summons-reminders') }}">Summons reminders</a></li>
         <li><a class="govuk-link" href="{{ buildUrl('further-information') }}">Requests for further information</a></li>
         <li><a class="govuk-link" href="{{ buildUrl('deferral-granted') }}">Deferral granted letters</a></li>
