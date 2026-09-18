@@ -40,9 +40,10 @@ data "azurerm_redis_cache" "juror" {
 }
 
 resource "azurerm_monitor_diagnostic_setting" "cache-ds" {
-  name                       = "${local.cacheName}-${var.env}"
-  target_resource_id         = data.azurerm_redis_cache.juror.id
-  log_analytics_workspace_id = module.log_analytics_workspace.workspace_id
+  name                           = "${local.cacheName}-${var.env}"
+  target_resource_id             = data.azurerm_redis_cache.juror.id
+  eventhub_name                  = "azure-resource-events"
+  eventhub_authorization_rule_id = "/subscriptions/8ae5b3b6-0b12-4888-b894-4cec33c92292/resourceGroups/soc-xsiam-eventhubs-prod-rg/providers/Microsoft.EventHub/namespaces/soc-prod-xsiam-eventhubns/authorizationRules/soc-xsiam-eventhub-namespace-sender"
 
   enabled_log {
     category = "ConnectedClientList"
@@ -59,7 +60,3 @@ resource "azurerm_monitor_diagnostic_setting" "cache-ds" {
   }
 }
 
-module "log_analytics_workspace" {
-  source      = "git@github.com:hmcts/terraform-module-log-analytics-workspace-id.git?ref=master"
-  environment = var.env
-}
