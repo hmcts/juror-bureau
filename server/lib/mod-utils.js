@@ -1601,6 +1601,9 @@
       case 'trialnumber':
         isParamValid = validateTrialNumber(paramValue);
         break;
+       case 'isactive':
+        isParamValid = ['true', 'false'].includes(paramValue.toLowerCase());
+        break;
       case 'date':
         isParamValid = validateDate(paramValue);
         break;
