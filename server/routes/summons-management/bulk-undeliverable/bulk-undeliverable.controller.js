@@ -67,10 +67,8 @@ module.exports.postFindJuror = (app) => async (req, res) => {
     const status = juror?.activePool?.status;
 
     if (status !== 'Summoned') {
-      return res.status(422).render('summons-management/bulk-undeliverable/table-row.njk', {
-        rowData: {
-          jurorNumber,
-        },
+      return res.status(422).json({
+        jurorNumber,
         isFail: true,
       });
     }
@@ -82,10 +80,8 @@ module.exports.postFindJuror = (app) => async (req, res) => {
       error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
     });
 
-    return res.status(err.statusCode || 400).render('summons-management/bulk-undeliverable/table-row.njk', {
-      rowData: {
-        jurorNumber,
-      },
+    return res.status(err.statusCode || 400).json({
+      jurorNumber,
       isFail: true,
     });
   }
@@ -97,15 +93,14 @@ module.exports.postFindJuror = (app) => async (req, res) => {
 
     acc.push(jurorDetails[0].address[key]);
     return acc;
-  }, []).join('<br>');
+  }, []);
 
-  return res.render('summons-management/bulk-undeliverable/table-row.njk', {
-    rowData: {
-      jurorNumber,
-      address,
-      name: jurorDetails[0].name,
-      postcode: jurorDetails[0].address.postcode,
-      court: jurorDetails[0].activePool.courtName,
-    }
+  return res.json({
+    jurorNumber,
+    address,
+    firstName: jurorDetails[0].name.firstName,
+    lastName: jurorDetails[0].name.lastName,
+    postcode: jurorDetails[0].address.postcode,
+    court: jurorDetails[0].activePool.courtName,
   });
 };
