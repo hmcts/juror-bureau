@@ -527,13 +527,20 @@
   module.exports.postEditName = (app) => (req, res) => {
     const { id, type } = req.params;
     const validatorResult = validate(req.body, validator.jurorName());
-    const { action } = req.query;
+    let { action } = req.query;
     const title = req.body.title.trim();
     const firstName = req.body.firstName.trim();
     const lastName = req.body.lastName.trim();
     const postPath = req.params['type'] === 'paper' ?
       'summons.update-details.get' :
       'summons.update-details-digital.get';
+
+    if (action) {
+      action = modUtils.validateQueryParam(req, res, `?action=${action}`);
+      if (!action) {
+        return;
+      }
+    }
 
     req.session[`summonsUpdate-${id}`].newJurorDetails = {
       title,
