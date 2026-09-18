@@ -1,11 +1,10 @@
 (function() {
   'use strict';
   const _ = require('lodash');
-  const { validate } = require('validate.js');
   const { courtDetailsDAO, courtroomsDAO } = require('../../../objects/administration');
   const { convert24to12, convert12to24 } = require('../../../components/filters');
   const { replaceAllObjKeys, padTimeForApi } = require('../../../lib/mod-utils');
-  const validator = require('../../../config/validation/court-details');
+  const validator = require('../../../config/joi-validation/court-details');
   const { isSystemAdministrator } = require('../../../components/auth/user-type');
 
   module.exports.getCourtDetails = function(app) {
@@ -77,7 +76,7 @@
         locationCode,
       });
 
-      const validatorResult = validate(req.body, validator.courtDetails());
+      const validatorResult = validator(req.body);
 
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;

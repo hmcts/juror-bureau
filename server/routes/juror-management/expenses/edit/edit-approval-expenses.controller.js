@@ -9,8 +9,7 @@
     postEditedExpensesDAO,
   } = require('../../../../objects/expense-record');
   const { defaultExpensesDAO } = require('../../../../objects/expenses');
-  const validate = require('validate.js');
-  const enterExpensesValidator = require('../../../../config/validation/enter-expenses');
+  const enterExpensesValidator = require('../../../../config/joi-validation/enter-expenses');
   const { expenseRatesAndLimitsDAO } = require('../../../../objects/administration');
   const { getCourtLocationRates } = require('../../../../objects/court-location');
   const { jurorRecordDetailsDAO } = require('../../../../objects');
@@ -370,12 +369,12 @@
       }
 
       if (nonAttendanceDay) {
-        validatorResult = validate(req.body, enterExpensesValidator.nonAttendanceDay());
+        validatorResult = enterExpensesValidator.nonAttendanceDay(req.body);
       } else {
         req.body.travelType =
         !Array.isArray(req.body.travelType) ? [req.body.travelType] : req.body.travelType;
 
-        validatorResult = validate(req.body, enterExpensesValidator.attendanceDay());
+        validatorResult = enterExpensesValidator.attendanceDay(req.body);
       }
 
       if (typeof validatorResult !== 'undefined') {

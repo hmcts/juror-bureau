@@ -3,9 +3,8 @@
 
 const _ = require('lodash');
 const moment = require('moment');
-const validate = require('validate.js');
-const { jurorsToDismiss, completeService } = require('../../../config/validation/dismiss-jurors');
-const { checkOutTime } = require('../../../config/validation/check-in-out-time');
+const { jurorsToDismiss, completeService } = require('../../../config/joi-validation/dismiss-jurors');
+const { checkOutTime } = require('../../../config/joi-validation/check-in-out-time');
 const modUtils = require('../../../lib/mod-utils');
 const { getDismissablePools, getJurorsObject, dismissJurorsObject } = require('../../../objects/dismiss-jurors');
 const { convertAmPmToLong, dateFilter, timeArrayToString, convert12to24, fullCourtType } = require('../../../components/filters');
@@ -107,7 +106,7 @@ module.exports.postDismissJurorsPools = function(app) {
       return res.redirect(app.namedRoutes.build('pool-management.dismiss-jurors.pools.get'));
     }
 
-    const validatorResult = validate(req.body, jurorsToDismiss(jurorsAvailable));
+    const validatorResult = jurorsToDismiss(jurorsAvailable)(req.body);
 
     if (validatorResult ) {
       req.session.errors = validatorResult;
@@ -279,12 +278,10 @@ module.exports.getCompleteService = function() {
 module.exports.postCompleteService = function(app) {
   return async function(req, res) {
 
-    const validatorResult = validate({ dateToCheck: req.body.completionDate }, completeService());
+    const validatorResult = completeService(req.body);
 
     if (validatorResult) {
-      req.session.errors = {
-        completionDate: validatorResult.dateToCheck,
-      };
+      req.session.errors = validatorResult;
 
       return res.redirect(app.namedRoutes.build('pool-management.dismiss-jurors.complete-service.get'));
     }
@@ -369,7 +366,7 @@ module.exports.postCheckOutJurors = function(app) {
       period: checkOutTimePeriod,
     };
 
-    const validatorResult = validate(req.body, checkOutTime());
+    const validatorResult = checkOutTime(req.body);
 
     if (validatorResult) {
       req.session.errors = validatorResult;

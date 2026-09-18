@@ -3,9 +3,8 @@
 
   const _ = require('lodash');
   const { convert12to24 } = require('../../../../components/filters');
-  const validate = require('validate.js');
-  const modifyAttendanceValidator = require('../../../../config/validation/modify-jurors-attendance');
-  const attendanceTimeValidator = require('../../../../config/validation/add-attendance').attendanceTime;
+  const modifyAttendanceValidator = require('../../../../config/joi-validation/modify-jurors-attendance');
+  const attendanceTimeValidator = require('../../../../config/joi-validation/add-attendance');
   const { makeManualError, padTimeForApi, mapCamelToSnake } = require('../../../../lib/mod-utils');
   const { modifyJurorAttendance } = require('../../../../objects');
   const moment = require('moment');
@@ -96,14 +95,14 @@
         return res.render('_errors/generic');
       }
 
-      let validatorResult = validate(req.body, modifyAttendanceValidator.modifyAttendanceType());
+      let validatorResult = modifyAttendanceValidator.modifyAttendanceType(req.body);
 
       if (typeof validatorResult !== 'undefined') {
         return validationRedirect(validatorResult);
       }
 
       if (req.body.attendanceType === 'ATTENDANCE') {
-        validatorResult = validate(req.body, attendanceTimeValidator());
+        validatorResult = attendanceTimeValidator(req.body);
       }
 
       if (typeof validatorResult !== 'undefined') {

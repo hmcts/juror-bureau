@@ -3,8 +3,7 @@
 
   const _ = require('lodash');
   const { expenseRatesAndLimitsDAO } = require('../../../objects/administration');
-  const { validate } = require('validate.js');
-  const updateExpenseRates = require('../../../config/validation/update-expense-rates');
+  const updateExpenseRates = require('../../../config/joi-validation/update-expense-rates');
 
   module.exports.getExpenseLimits = function(app) {
     return async function(req, res) {
@@ -44,7 +43,7 @@
 
   module.exports.postExpenseLimits = function(app) {
     return async function(req, res) {
-      const validatorResult = validate(req.body, updateExpenseRates());
+      const validatorResult = updateExpenseRates(req.body);
 
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;

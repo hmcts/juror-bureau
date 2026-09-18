@@ -6,12 +6,11 @@
   const { isCourtUser } = require('../../../components/auth/user-type');
   const jurorRecordObject = require('../../../objects/juror-record');
   const { jurorHistoryDAO, jurorPaymentsHistoryDAO } = require('../../../objects/juror-history');
-  const validate = require('validate.js');
   const modUtils = require('../../../lib/mod-utils');
   const { defaultExpensesDAO, jurorBankDetailsDAO } = require('../../../objects/expenses');
   const { systemCodesDAO, expensesSummaryDAO } = require('../../../objects');
   const { generateDocument } = require('../../../lib/reports/single-generator');
-  const validator = require('../../../config/validation/juror-record');
+  const validator = require('../../../config/joi-validation/juror-record');
 
   // when accessing a tab (any tab) if the juror record does not exist the api will return a 404
   // this 404 needs to be handled on a different way to all other error codes... it should show a juror-not-found page
@@ -970,7 +969,7 @@
         });
       }
 
-      const validatorResult = validate(req.body, validator.contactLog());
+      const validatorResult = validator.contactLog(req.body);
 
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;

@@ -3,7 +3,7 @@
 
   const _ = require('lodash');
   const { changeName } = require('../../../objects/juror-record');
-  const { nameChangeValidator } = require('../../../config/validation/juror-record');
+  const { nameChangeValidator } = require('../../../config/joi-validation/juror-record');
 
   module.exports.getNewName = function(app) {
     return function(req, res) {

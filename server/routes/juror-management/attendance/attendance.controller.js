@@ -2,8 +2,7 @@
   'use strict';
 
   const _ = require('lodash');
-  const validate = require('validate.js');
-  const checkOutAllValidator = require('../../../config/validation/check-out-all-jurors');
+  const checkOutAllValidator = require('../../../config/joi-validation/check-out-all-jurors');
   const { getJurorStatus, padTimeForApi, mapCamelToSnake, makeManualError } = require('../../../lib/mod-utils');
   const { convertAmPmToLong, convert12to24, timeArrayToString,
     timeStringToArray } = require('../../../components/filters');
@@ -171,7 +170,7 @@
         return _time >= time ? _time : time;
       }, 0);
 
-      let validatorResult = validate(req.body, checkOutAllValidator.checkOutAllJurors());
+      let validatorResult = checkOutAllValidator(req.body);
 
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;

@@ -2,8 +2,7 @@
   'use strict';
 
   const { addSmartcardSpend } = require('../../../../objects/expense-record');
-  const smartcardSpendValidator = require('../../../../config/validation/add-smartcard-spend');
-  const validate = require('validate.js');
+  const smartcardSpendValidator = require('../../../../config/joi-validation/add-smartcard-spend');
 
   module.exports.getAddSmartcardSpend = function(app) {
     return function(req, res) {
@@ -48,7 +47,7 @@
       const { jurorNumber, locCode } = req.params;
       const { attendanceDates, smartcardAmount } = req.body;
 
-      const validatorResult = validate(req.body, smartcardSpendValidator());
+      const validatorResult = smartcardSpendValidator(req.body);
 
       if (validatorResult) {
         req.session.errors = validatorResult;

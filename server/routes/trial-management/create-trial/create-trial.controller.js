@@ -2,8 +2,7 @@
   'use strict';
 
   const _ = require('lodash');
-  const createTrialValidator = require('../../../config/validation/create-trial');
-  const validate = require('validate.js');
+  const createTrialValidator = require('../../../config/joi-validation/create-trial');
   const { courtroomsObject, judgesObject, createTrialObject } = require('../../../objects/create-trial');
   const { dateFilter } = require('../../../components/filters');
   const { makeManualError } = require('../../../lib/mod-utils');
@@ -107,7 +106,7 @@
         req.body.courtroom = courtroom;
       }
 
-      let validatorResult = validate(req.body, createTrialValidator.trialDetails(courtrooms, judges));
+      let validatorResult = createTrialValidator.trialDetails(courtrooms, judges)(req.body);
 
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;

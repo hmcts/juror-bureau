@@ -3,9 +3,8 @@
 
   const _ = require('lodash')
     , { dateFilter } = require('../../../../components/filters')
-    , validate = require('validate.js')
     , { convertTimeToHHMM, makeManualError } = require('../../../../lib/mod-utils')
-    , attendanceDateValidator = require('../../../../config/validation/add-attendance')
+    , attendanceDateValidator = require('../../../../config/joi-validation/add-attendance')
     , { jurorAddAttendanceDao } = require('../../../../objects/juror-attendance');
 
   module.exports.getAddAttendanceDate = function(app) {
@@ -75,19 +74,7 @@
 
       delete req.session.bannerMessage;
 
-      const attendanceDateValidation = validate(req.body, attendanceDateValidator.attendanceDay());
-      const attendanceTimeValidation = validate(req.body, attendanceDateValidator.attendanceTime());
-
-      const validatorResult = {};
-
-      if (typeof attendanceDateValidation !== 'undefined') {
-        validatorResult.attendanceDay = attendanceDateValidation.attendanceDay;
-      };
-
-      if (typeof attendanceTimeValidation !== 'undefined') {
-        validatorResult.checkInTime = attendanceTimeValidation.checkInTime;
-        validatorResult.checkOutTime = attendanceTimeValidation.checkOutTime;
-      };
+      const validatorResult = attendanceDateValidator(req.body);
 
       let errorUrl = app.namedRoutes.build('juror-record.attendance.add-attendance-date.get', {
         jurorNumber,
@@ -97,7 +84,7 @@
         bannerMessage,
       });
 
-      if (Object.keys(validatorResult).length) {
+      if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
         req.session.formFields = req.body;
 
@@ -151,4 +138,3 @@
   };
 
 })();
-

@@ -3,10 +3,9 @@
 
   const _ = require('lodash');
   const modUtils = require('../../../lib/mod-utils');
-  const validate = require('validate.js');
   const urljoin = require('url-join');
   const fetchUnpaidExpenses = require('../../../objects/expenses').fetchUnpaidExpenses;
-  const unpaidAttendanceFilterValidation = require('../../../config/validation/unpaid-attendance');
+  const unpaidAttendanceFilterValidation = require('../../../config/joi-validation/unpaid-attendance');
   const { dateFilter } = require('../../../components/filters');
 
   module.exports.getUnpaidAttendance = function(app) {
@@ -93,7 +92,7 @@
     return function(req, res) {
 
       const redirectUrl = app.namedRoutes.build('juror-management.unpaid-attendance.get');
-      const validateFilter = validate(req.body, unpaidAttendanceFilterValidation());
+      const validateFilter = unpaidAttendanceFilterValidation(req.body);
 
       delete req.session.errors;
 

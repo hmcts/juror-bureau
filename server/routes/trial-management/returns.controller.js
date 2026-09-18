@@ -2,8 +2,7 @@
   'use strict';
 
   const _ = require('lodash')
-  const returnsValidator = require('../../config/validation/return-panel-jury');
-  const validate = require('validate.js');
+  const returnsValidator = require('../../config/joi-validation/return-panel-jury');
   const returnsObject = require('../../objects/return-jurors').returnsObject;
   const { jurorAttendanceDao } = require('../../objects/juror-attendance');
   const { convert12to24, dateFilter, convertAmPmToLong } = require('../../components/filters');
@@ -42,8 +41,8 @@
     let validatorResult;
 
     validatorResult = isJuryEmpanelled
-      ? validate(req.body, returnsValidator.returnJury())
-      : validate(req.body, returnsValidator.returnPanel());
+      ? returnsValidator.returnJury(req.body)
+      : returnsValidator.returnPanel(req.body);
 
     if (typeof validatorResult !== 'undefined') {
       req.session.errors = validatorResult;
@@ -222,7 +221,7 @@
         , checkOutTimePeriod = req.body.checkOutTimePeriod
         , earliestCheckIn = req.body.earliestCheckIn;
 
-      let validatorResult = validate({
+      const validatorResult = returnsValidator.returnAttendanceTimes({
         checkInTime: {
           hour: checkInTimeHour,
           minute: checkInTimeMinute,
@@ -233,23 +232,10 @@
           minute: checkOutTimeMinute,
           period: checkOutTimePeriod,
         },
-      }, returnsValidator.returnAttendanceTimes());
+      });
 
-      let completeValidatorResult = {};
-
-      if (typeof validatorResult !== 'undefined') {
-        // Validator returns nested result therefore is resturctured
-        if (typeof validatorResult.checkInTime !== 'undefined') {
-          completeValidatorResult = validatorResult.checkInTime[0];
-        }
-
-        if (typeof validatorResult.checkOutTime !== 'undefined') {
-          completeValidatorResult = Object.assign(completeValidatorResult, validatorResult.checkOutTime[0]);
-        }
-      }
-
-      if (!_.isEmpty(completeValidatorResult)) {
-        req.session.errors = completeValidatorResult;
+      if (!_.isEmpty(validatorResult)) {
+        req.session.errors = validatorResult;
         req.session.formFields = req.body;
         return res.redirect(app.namedRoutes.build('trial-management.trials.return.check-out.get', {
           trialNumber,
@@ -377,16 +363,16 @@
     const panelType = trialDetails.isJuryEmpanelled ? 'jury' : 'panel';
 
     if (req.session[`${trialNumber}-${locationCode}-handleAttendance`] === 'return') {
-      let validatorResult = validate({
+      const validatorResult = returnsValidator.returnCheckInTime({
         checkInTime: {
           hour: req.body.checkInTimeHour,
           minute: req.body.checkInTimeMinute,
           period: req.body.checkInTimePeriod,
         },
-      }, returnsValidator.returnCheckInTime());
+      });
 
-      if (typeof validatorResult !== 'undefined') {
-        req.session.errors = validatorResult.checkInTime[0];
+      if (!_.isEmpty(validatorResult)) {
+        req.session.errors = validatorResult;
         req.session.formFields = req.body;
         return res.redirect(app.namedRoutes.build('trial-management.trials.return.confirm.get', {
           trialNumber,
