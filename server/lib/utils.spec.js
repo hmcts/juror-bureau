@@ -82,7 +82,7 @@
     // eslint-disable-next-line max-len
     it('should reject request if username and password provided do not match defined values for basicAuth', function() {
       var username = 'admin'
-        , password = 'password'
+        , password = Math.random().toString(36)
         , basicAuthStub = function(req) {
           return {
             name: req.name,
@@ -122,7 +122,7 @@
     // eslint-disable-next-line max-len
     it('should continue normal execution if basicAuth passes', function() {
       var username = 'admin'
-        , password = 'password'
+        , password = Math.random().toString(36)
         , basicAuthStub = function(req) {
           return {
             name: req.name,
@@ -132,7 +132,7 @@
         , basicAuth = utils.basicAuth(Logger.instance, username, password, basicAuthStub)
         , reqStub = {
           name: 'admin',
-          pass: 'password'
+          pass: password
         }
         , resStub = {}
         , cb = function() {
