@@ -201,7 +201,8 @@ module.exports.postFilterChangeCourts = function(app) {
     if (req.body.courtSearch === '') {
       return res.redirect(app.namedRoutes.build('authentication.change-court.get'));
     }
-    return res.redirect(app.namedRoutes.build('authentication.change-court.get') + '?filter=' + req.body.courtSearch);
+    const filter = encodeURIComponent(req.body.courtSearch);
+    return res.redirect(app.namedRoutes.build('authentication.change-court.get') + '?filter=' + filter);
   };
 };
 

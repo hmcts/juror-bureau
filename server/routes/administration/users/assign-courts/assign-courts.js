@@ -83,9 +83,10 @@
   module.exports.postFilterCourts = function(app) {
     return async function(req, res) {
       const { username } = req.params;
+      const filter = encodeURIComponent(req.body.courtSearch);
       return res.redirect(app.namedRoutes.build('administration.users.assign-courts.get', {
         username,
-      }) + '?filter=' + req.body.courtSearch);
+      }) + '?filter=' + filter);
     };
   };
 

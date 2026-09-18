@@ -49,7 +49,9 @@
       if (req.body.courtSearch === '') {
         return res.redirect(app.namedRoutes.build('administration.courts-and-bureau.get'));
       }
-      return res.redirect(app.namedRoutes.build('administration.courts-and-bureau.get') + '?filter=' + req.body.courtSearch);
+      const filter = encodeURIComponent(req.body.courtSearch);
+
+      return res.redirect(app.namedRoutes.build('administration.courts-and-bureau.get') + '?filter=' + filter);
     };
   };
 
