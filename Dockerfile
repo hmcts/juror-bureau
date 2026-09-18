@@ -3,7 +3,6 @@ COPY package.json yarn.lock ./
 
 FROM base as build
 USER root
-RUN apk add autoconf automake gcc make g++ zlib-dev nasm
 USER hmcts
 COPY --chown=hmcts:hmcts . .
 RUN yarn install
