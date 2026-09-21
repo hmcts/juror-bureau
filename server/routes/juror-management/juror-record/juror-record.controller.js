@@ -742,7 +742,7 @@
         const { locCode } = req.params;
         const { status } = req.query;
 
-        const statusValue = validateQueryParam(req, res, `?status=${status}`, { statusType: 'expenses' });
+        const statusValue = modUtils.validateQueryParam(req, res, `?status=${status}`, { statusType: 'expenses' });
         if (!statusValue) {
           return;
         }
