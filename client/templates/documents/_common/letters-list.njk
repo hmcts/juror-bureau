@@ -4,6 +4,7 @@
 {% from "govuk/components/pagination/macro.njk" import govukPagination %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "moj/components/alert/macro.njk" import mojAlert %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
 
 {% from "includes/csrf.njk" import csrfProtection %}
 
@@ -67,6 +68,14 @@
         <p class="govuk-body govuk-!-font-weight-bold">Showing results for '{{ "all letters" if documentSearchBy === "allLetters" else searchBy }}' 
           <a id="addressChangeAnchor" href="{{ changeUrl }}" class="govuk-link" aria-label="Change address">Change</a>
         </p>
+      {% endif %}
+
+      {% if featureFlags.digitalByDefault %}
+        {% if document === 'paper-packs-sent' %}
+          {% call govukInsetText({ classes: "guidance-panel" }) %}
+            <p>Only jurors marked as part of the Digital by Default pilot are included in this document.</p>
+          {% endcall %}
+        {% endif %}
       {% endif %}
 
       {% if totalCheckableJurors > 0 and documentSearchBy !== "allLetters" %}
