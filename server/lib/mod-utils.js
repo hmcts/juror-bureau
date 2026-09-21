@@ -1272,6 +1272,8 @@
     switch (pageType){
     case 'initial-summons':
       return 'Initial summons';
+    case 'paper-packs-sent':
+      return 'Paper packs sent';
     case 'summons-reminders':
       return 'Summons reminders';
     case 'further-information':
@@ -1302,6 +1304,7 @@
 
   module.exports.LetterType = {
     'initial-summons': 'SUMMONS',
+    'paper-packs-sent': 'RESPONSE',
     'summons-reminders': 'SUMMONED_REMINDER',
     'further-information': 'INFORMATION',
     'confirmation': 'CONFIRMATION',

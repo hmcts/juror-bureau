@@ -464,6 +464,8 @@
     switch (document) {
     case 'initial-summons':
       return 'Resend initial summons';
+    case 'paper-packs-sent':
+      return 'Resend paper packs';
     case 'summons-reminders':
       return 'Send summons reminder';
     case 'further-information':
