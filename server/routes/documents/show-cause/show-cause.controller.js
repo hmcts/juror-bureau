@@ -23,7 +23,7 @@
         req.session.errors = validatorResult;
         req.session.formFields = req.body;
 
-        let jurorNumberParamValue = jurorNumber;
+        let jurorNumberParamValue;
 
         if (jurorNumber) {
           jurorNumberParamValue = modUtils.validateQueryParam(req, res, `?jurorNumber=${jurorNumber}`);

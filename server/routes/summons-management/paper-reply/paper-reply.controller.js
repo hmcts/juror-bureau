@@ -963,9 +963,10 @@
     const jurorNumber = req.params['id'];
     let { action } = req.query;
     
+    let actionParamValue;
     if (action) {
-      action = modUtils.validateQueryParam(req, res, `?action=${action}`);
-      if (!action) {
+      actionParamValue = modUtils.validateQueryParam(req, res, `?action=${action}`);
+      if (!actionParamValue) {
         return;
       }
     }
@@ -978,7 +979,7 @@
 
       return res.redirect(app.namedRoutes.build('paper-reply.edit-name.get', {
         id: jurorNumber,
-      }) + `?action=${action}`);
+      }) + (action ? `?action=${actionParamValue}` : ''));
     }
 
     const { title, firstName, lastName } = req.body;
