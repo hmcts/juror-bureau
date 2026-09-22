@@ -535,9 +535,10 @@
       'summons.update-details.get' :
       'summons.update-details-digital.get';
 
+    let actionParamValue;
     if (action) {
-      action = modUtils.validateQueryParam(req, res, `?action=${action}`);
-      if (!action) {
+      actionParamValue = modUtils.validateQueryParam(req, res, `?action=${action}`);
+      if (!actionParamValue) {
         return;
       }
     }
@@ -555,7 +556,7 @@
       return res.redirect(app.namedRoutes.build('summons.update-details.edit-name.get', { 
         id, 
         type
-      }) + `?action=${action}`);
+      }) + (action ? `?action=${actionParamValue}` : ''));
     }
 
     if (action === 'new') {
