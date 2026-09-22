@@ -1081,9 +1081,10 @@
       const { jurorNumber } = req.params;
       let { action } = req.query;
 
+      let actionParamValue;
       if (action) {
-        action = modUtils.validateQueryParam(req, res, `?action=${action}`);
-        if (!action) {
+        actionParamValue = modUtils.validateQueryParam(req, res, `?action=${action}`);
+        if (!actionParamValue) {
           return;
         }
       }
@@ -1102,7 +1103,7 @@
 
         return res.redirect(app.namedRoutes.build('juror-record.details-edit.name.get', {
           jurorNumber,
-        }) + `?action=${action}`);
+        }) + (action ? `?action=${actionParamValue}` : ''));
       }
 
       const title = req.body.title.trim();
