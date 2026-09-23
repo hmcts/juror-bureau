@@ -72,11 +72,15 @@ function apiCall(jurorNumber) {
     },
   })
     .then((response) => {
-      const newRow = $(response);
-      tableBody.append(newRow[0]);
+      const newRow = createTableRow(response);
+      tableBody.append(newRow);
 
-      const newInput = $(`<input id="${jurorNumber}" name="undeliverableJurors" value="${jurorNumber}" type="hidden"/>`);
-      jurorsToMarkUndeliverableForm.append(newInput[0]);
+      const newInput = document.createElement('input');
+      newInput.id = jurorNumber;
+      newInput.name = 'undeliverableJurors';
+      newInput.value = jurorNumber;
+      newInput.type = 'hidden';
+      jurorsToMarkUndeliverableForm.append(newInput);
 
       const _totalJurors = totalJurors();
 
@@ -86,20 +90,75 @@ function apiCall(jurorNumber) {
       totalJurorsCaption.textContent = `${_totalJurors} ${_totalJurors === 1 ? 'juror' : 'jurors'} to be marked as undeliverable`;
     })
     .catch((error) => {
-      if (error.status === 404) {
-        const newRow = $(error.responseText);
+      if (error.status === 404 || error.status === 422) {
+        if (error.status === 422) {
+          addError('Juror must be in Summoned status to be marked as undeliverable');
+        }
 
         tableWrapper.classList.remove('js-hidden');
-        tableBody.append(newRow[0]);
-      }
-      if (error.status === 422) {
-        addError("Juror must be in Summoned status to be marked as undeliverable");
-        const newRow = $(error.responseText);
-
-        tableWrapper.classList.remove('js-hidden');
-        tableBody.append(newRow[0]);
+        tableBody.append(createTableRow(error.responseJSON));
       }
     });
+}
+
+function createTableRow(rowData) {
+  const row = document.createElement('tr');
+  row.className = 'govuk-table__row';
+  row.id = `row-${rowData.jurorNumber}`;
+
+  const jurorNumberLink = document.createElement('a');
+  jurorNumberLink.className = 'govuk-link';
+  jurorNumberLink.href = '#';
+  jurorNumberLink.textContent = rowData.jurorNumber;
+  row.append(createTableCell(jurorNumberLink));
+  row.append(createTableCell(rowData.firstName || '-'));
+  row.append(createTableCell(rowData.lastName || '-'));
+
+  const addressCell = createTableCell();
+  if (rowData.address && rowData.address.length) {
+    rowData.address.forEach((addressLine, index) => {
+      if (index > 0) {
+        addressCell.append(document.createElement('br'));
+      }
+      addressCell.append(document.createTextNode(addressLine));
+    });
+  } else {
+    addressCell.textContent = '-';
+  }
+  row.append(addressCell);
+  row.append(createTableCell(rowData.postcode || '-'));
+  row.append(createTableCell(rowData.court || '-'));
+
+  const actionCell = createTableCell();
+  if (rowData.isFail) {
+    const failed = document.createElement('span');
+    failed.className = 'mod-red-text';
+    failed.textContent = 'Failed';
+    actionCell.append(failed);
+  } else {
+    const removeLink = document.createElement('a');
+    removeLink.className = 'govuk-link';
+    removeLink.href = '#';
+    removeLink.id = `remove-${rowData.jurorNumber}`;
+    removeLink.textContent = 'Remove';
+    actionCell.append(removeLink);
+  }
+  row.append(actionCell);
+
+  return row;
+}
+
+function createTableCell(content) {
+  const cell = document.createElement('td');
+  cell.className = 'govuk-table__cell';
+
+  if (content instanceof Node) {
+    cell.append(content);
+  } else if (content) {
+    cell.textContent = content;
+  }
+
+  return cell;
 }
 
 function removeFromTable(jurorNumber) {

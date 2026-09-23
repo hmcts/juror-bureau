@@ -527,13 +527,21 @@
   module.exports.postEditName = (app) => (req, res) => {
     const { id, type } = req.params;
     const validatorResult = validate(req.body, validator.jurorName());
-    const { action } = req.query;
+    let { action } = req.query;
     const title = req.body.title.trim();
     const firstName = req.body.firstName.trim();
     const lastName = req.body.lastName.trim();
     const postPath = req.params['type'] === 'paper' ?
       'summons.update-details.get' :
       'summons.update-details-digital.get';
+
+    let actionParamValue;
+    if (action) {
+      actionParamValue = modUtils.validateQueryParam(req, res, `?action=${action}`);
+      if (!actionParamValue) {
+        return;
+      }
+    }
 
     req.session[`summonsUpdate-${id}`].newJurorDetails = {
       title,
@@ -548,7 +556,7 @@
       return res.redirect(app.namedRoutes.build('summons.update-details.edit-name.get', { 
         id, 
         type
-      }) + `?action=${action}`);
+      }) + (action ? `?action=${actionParamValue}` : ''));
     }
 
     if (action === 'new') {

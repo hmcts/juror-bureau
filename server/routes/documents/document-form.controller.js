@@ -51,6 +51,7 @@
         minDate: dateFilter(tomorrow, null, 'DD/MM/YYYY'),
         urlParams: req.query,
         pageIdentifier: modUtils.getLetterIdentifier(document),
+        document,
         errors: {
           title: 'There is a problem',
           count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
