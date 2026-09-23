@@ -170,7 +170,7 @@
           if (dateSelectionType === dateSelectionTypes.userDefined){
             dashboardData.dateRange = 'Week ' + dashboardDates.startYearWeek + ' to Week ' + dashboardDates.endYearWeek;
           } else {
-            dashboardData.dateRange = moment(dashboardDates.startDate, 'YYYY-MM-DD').format('DD-MM-YYYY') + ' to ' + moment(dashboardDates.endDate, 'YYYY-MM-DD').format('DD-MM-YYYY');
+            dashboardData.dateRange = moment(dashboardDates.startDate, 'DD/MM/YYYY').format('DD/MM/YYYY') + ' to ' + moment(dashboardDates.endDate, 'DD/MM/YYYY').format('DD/MM/YYYY');
           }
 
           return res.render('./dashboard/deferral-excusal.njk', {
@@ -271,8 +271,8 @@
 
       // Determine the date selection type from dates selected
 
-      dashboardDates.startDateMoment = moment(dashboardDates.startDate, 'YYYY-MM-DD');
-      dashboardDates.endDateMoment = moment(dashboardDates.endDate, 'YYYY-MM-DD');
+      dashboardDates.startDateMoment = moment(dashboardDates.startDate, 'DD/MM/YYYY');
+      dashboardDates.endDateMoment = moment(dashboardDates.endDate, 'DD/MM/YYYY');
 
       dashboardDates.startDateYear = dashboardDates.startDateMoment.year();
       dashboardDates.startDateMonth = dashboardDates.startDateMoment.month() + 1;
@@ -406,8 +406,8 @@
       , yearVal
       , returnVal;
 
-    yearVal = moment(dateValue, 'YYYY-MM-DD').isoWeekYear();
-    weekVal = moment(dateValue, 'YYYY-MM-DD').isoWeek();
+    yearVal = moment(dateValue, 'DD/MM/YYYY').isoWeekYear();
+    weekVal = moment(dateValue, 'DD/MM/YYYY').isoWeek();
 
     weekVal = ('' + weekVal).padStart(2, '0');
 
@@ -442,8 +442,8 @@
       , arrValues = []
       , arrWeekLabels = [];
 
-    momentStart = moment(startDate, 'YYYY-MM-DD');
-    momentEnd = moment(endDate, 'YYYY-MM-DD');
+    momentStart = moment(startDate, 'DD/MM/YYYY');
+    momentEnd = moment(endDate, 'DD/MM/YYYY');
 
     // iterate through each date in range building list of year-week labels
     // use ISO weeks to match database data

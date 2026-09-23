@@ -1,9 +1,9 @@
-{% extends "../layouts/default-dashboard.njk" %}
-
-{% from "govuk/components/button/macro.njk" import govukButton %}
+{% extends "../layouts/default-no-nav.njk" %}
 
 {% from "./chartmacro-bar-line.njk" import dashboardChartBarLine %}
-{% from "./datemacro-datepicker.njk" import dashboardDatepicker %}
+{% from "custom-components/date-picker/macro.njk" import datePicker %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
 
 {% block page_title %}Dashboard deferrals - Juror digital{% endblock %}
 
@@ -11,24 +11,19 @@
 
 {% block content %}
 
-  {# Heading #}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-
-      <h1 class="govuk-heading-xl">
-        <span class="govuk-caption-xl">Dashboard</span>
-        Juror Deferrals &amp; Excusals
-      </h1>
+      <span class="govuk-caption-xl">Dashboard</span>
+      <h1 class="govuk-heading-xl">Juror Deferrals &amp; Excusals</h1>
 
       <p class="govuk-body-l"><br/>This dashboard displays information about juror deferrals and excusals.</p>
 
-      <hr class="thickLine"/>
+      <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
     </div>
   </div>
 
   <h2 class="govuk-heading-m">Configure Report</h2>
 
-  {# Date Range selection / submit #}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full govuk-body">
 
@@ -44,102 +39,128 @@
           {% set endDateError = errors.items['endDate'][0].summary %}
         {% endif %}
 
-        {# Dashboard data selection parameters #}
+        {% set deferralExcusalSelections = [] %}
+        {% for option in deferralExcusalOptions %}
+          {% set deferralExcusalSelections = (deferralExcusalSelections.push(
+            {
+              value: option,
+              text: option,
+              selected: deferralExcusalSelection == option
+            }
+          ), deferralExcusalSelections) %}
+        {% endfor %}
 
-        {#  Deferrals / Excusals dropdown #}
-        <div class="govuk-grid-row">
-          <div class="govuk-grid-column-one-quarter">{# #}
+        {{ govukSelect({
+          id: "deferralExcusal",
+          name: "deferralExcusal",
+          label: {
+            text: "Deferrals/Excusals"
+          },
+          items: deferralExcusalSelections
+        }) }}
 
-            <div class="govuk-form-group dashboard-dropdown">
-              <label class="govuk-label govuk-!-display-inline" for="deferralExcusal">Deferrals/Excusals</label>
-              <select class="govuk-select" id="deferralExcusal" name="deferralExcusal">
-                {% for opt in deferralExcusalOptions -%}
-                  <option value="{{ opt }}" {% if deferralExcusalSelection == opt %}selected{% endif %}>{{ opt }}</option>
-                {%- endfor %}
-              </select>
-            </div>
+        {% set bureauCourtSelections = [] %}
+        {% for option in bureauCourtOptions %}
+          {% set bureauCourtSelections = (bureauCourtSelections.push(
+            {
+              value: option,
+              text: option,
+              selected: bureauCourtSelection == option
+            }
+          ), bureauCourtSelections) %}
+        {% endfor %}
 
-          </div>
-        </div>
+        {{ govukSelect({
+          id: "bureauCourt",
+          name: "bureauCourt",
+          label: {
+            text: "Bureau/Court"
+          },
+          items: bureauCourtSelections
+        }) }}
 
-        {#  Bureau / Court dropdown #}
-        <div class="govuk-grid-row">
-          <div class="govuk-grid-column-one-quarter">
+        {% set calendarYearSelections = [
+          {
+            value: "",
+            text: "",
+            selected: selectedCalYear == ""
+          }
+        ] %}
+        {% for option in calendarYears %}
+          {% set calendarYearSelections = (calendarYearSelections.push(
+            {
+              value: option,
+              text: option,
+              selected: selectedCalYear == option
+            }
+          ), calendarYearSelections) %}
+        {% endfor %}
 
-            <div class="govuk-form-group dashboard-dropdown">
-              <label class="govuk-label govuk-!-display-inline" for="bureauCourt">Bureau/Court</label>
-              <select class="govuk-select" id="bureauCourt" name="bureauCourt">
-                {% for opt in bureauCourtOptions -%}
-                  <option value="{{ opt }}" {% if bureauCourtSelection == opt %}selected{% endif %}>{{ opt }}</option>
-                {%- endfor %}
-              </select>
-            </div>
+        {{ govukSelect({
+          id: "calYear",
+          name: "calYear",
+          label: {
+            text: "Calendar Year"
+          },
+          items: calendarYearSelections
+        }) }}
 
-          </div>
-        </div>
+        {% set financialYearSelections = [
+          {
+            value: "",
+            text: "",
+            selected: selectedFinYear == ""
+          }
+        ] %}
+        {% for option in financialYears %}
+          {% set financialYearSelections = (financialYearSelections.push(
+            {
+              value: option,
+              text: option,
+              selected: selectedFinYear == option
+            }
+          ), financialYearSelections) %}
+        {% endfor %}
 
-        {# Calendar Year dropdown #}
-        <div class="govuk-grid-row">
-          <div class="govuk-grid-column-one-quarter">
+        {{ govukSelect({
+          id: "finYear",
+          name: "finYear",
+          label: {
+            text: "Financial Year"
+          },
+          items: financialYearSelections
+        }) }}
 
-            <div class="govuk-form-group dashboard-dropdown">
-              <label class="govuk-label govuk-!-display-inline" for="calYear">Calendar Year</label>
-              <select class="govuk-select" id="calYear" name="calYear">
-                <option value="" {% if selectedCalYear == "" %}selected{% endif %}></option>
-                {% for year in calendarYears -%}
-                  <option value="{{ year }}" {% if selectedCalYear == year %}selected{% endif %}>{{ year }}</option>
-                {%- endfor %}
-              </select>
-            </div>
-
-          </div>
-        </div>
-
-        {# Financial Year dropdown #}
-        <div class="govuk-grid-row">
-          <div class="govuk-grid-column-one-quarter">
-
-            <div class="govuk-form-group dashboard-dropdown">
-              <label class="govuk-label govuk-!-display-inline" for="finYear">Financial Year</label>
-              <select class="govuk-select" id="finYear" name="finYear">
-                <option value="" {% if selectedFinYear == "" %}selected{% endif %}></option>
-                {% for year in financialYears -%}
-                  <option value="{{ year }}" {% if selectedFinYear == year %}selected{% endif %}>{{ year }}</option>
-                {%- endfor %}
-              </select>
-            </div>
-
-          </div>
-        </div>
-
-        {#  Start / End Date input #}
         <div class="govuk-grid-row">
           <div class="govuk-body">
-          
+
             <div class="dashboard-date govuk-grid-column-one-quarter">
-              {{ dashboardDatepicker({
-                id: "startDate",
-                label: "From",
-                prefix: "start",
+              {{ datePicker({
+                id: 'startDate',
+                label: {
+                  text: "From"
+                },
                 dateValue: dashboardDates.startDate,
-                dateError: startDateError
+                dateError: startDateError,
+                showBankHolidays: false
               }) }}
             </div>
 
             <div class="dashboard-date govuk-grid-column-one-quarter">
-              {{ dashboardDatepicker({
-                id: "endDate",
-                label: "To",
-                prefix: "end",
+              {{ datePicker({
+                id: 'endDate',
+                label: {
+                  text: "To"
+                },
                 dateValue: dashboardDates.endDate,
-                dateError: endDateError
+                dateError: endDateError,
+                showBankHolidays: false
               }) }}
             </div>
 
           </div>
         </div>
 
-        {# Reasons selection #}
         <div class="govuk-grid-row">
           <div class="govuk-grid-column-one-third">
             <p>Reasons:</p>
@@ -154,41 +175,33 @@
         </div>
         <div class="govuk-grid-row">
           <div class="govuk-grid-column-one-third">
-            
+
             <div class="dashboard-reasons-list" id="reasonSelection">
-              
+              {% set reasonCheckboxes = [] %}
               {% for reason in reasonsList %}
-                {% set itemSelected = '' %}
-                {% if selectedReasons %}
-                  {% if reason.keyValue in selectedReasons %}
-                    {% set itemSelected = 'checked="checked"' %}
-                  {% endif %}
-                {% endif %}
-                <input type="checkbox" id="chkReason{{reason.code}}" name="chkReason" value="{{reason.keyValue}}" {{itemSelected}}/>
-                <label id="chkReason{{reason.code}}Label" for="chkReason{{reason.code}}">{{reason.description}}</label>
-                <br/>
+                {% set reasonCheckboxes = (reasonCheckboxes.push(
+                  {
+                    value: reason.keyValue,
+                    text: reason.description
+                  }
+                ), reasonCheckboxes) %}
               {% endfor %}
-                        
-            </div> {# reasons list div #}
 
-          </div> {# column 1 #}
+              {{ govukCheckboxes({
+                name: "chkReason",
+                classes: "govuk-checkboxes--small",
+                items: reasonCheckboxes
+              }) }}
 
-          {#
-          <div class="govuk-grid-column-one-third">
-            <button type="button" class="dashboard-select-button" data-module="govuk-button" id="selectAllButton">
-              Select all
-            </button>
-            <button type="button" class="dashboard-select-button" data-module="govuk-button" id="selectNoneButton">
-              Select none
-            </button>
+            </div>
+
           </div>
-          #}
-          
+
         </div>
 
         <div class="govuk-grid-row">
           <div class="govuk-grid-column-one-quarter">
-            <button type="submit" class="govuk-button govuk-body-l" data-module="govuk-button" id="submitButton">
+            <button type="submit" class="govuk-button govuk-!-margin-bottom-0" data-module="govuk-button" id="submitButton">
               Submit
             </button>
           </div>
@@ -197,16 +210,14 @@
         <input type="hidden" name="_csrf" value="{{ csrftoken }}">
 
       </form>
-      
-    </div> <!-- grid column -->
-  </div> <!-- grid row -->
 
-  {# Separator #}
-  <hr class="thickLine"/>
+    </div>
+  </div>
+
+  <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
 
   {% if dashboardData %}
 
-    {# Deferrals bar chart #}
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
 
@@ -241,60 +252,51 @@
 
   {% endif %}
 
-{% endblock %} <!-- content -->
+{% endblock %}
 
 {% block body_end %}
+  {{ super() }}
+  {% include "includes/datepicker.njk" %}
 
- {{super()}}
+  <script nonce="{{ nonce }}">
+    const calYearDropdown = document.getElementById('calYear');
+    const finYearDropdown = document.getElementById('finYear');
+    const startDate = document.getElementById('startDate');
+    const endDate = document.getElementById('endDate');
+    const selectAllButton = document.getElementById('selectAllButton');
+    const selectNoneButton = document.getElementById('selectNoneButton');
 
-<script nonce="{{ nonce }}">
-  var calYearDropdown = document.getElementById("calYear");
-  var finYearDropdown = document.getElementById("finYear");
-  var startDate = document.getElementById("startDate");
-  var endDate = document.getElementById("endDate");
-  var reasonDiv = document.getElementById("reasonSelection");
-
-  // Set start date /  end date based on calendar year selection
-  calYearDropdown.addEventListener("change", function() {
-    if (calYearDropdown.value !== ''){
-      startDate.value = calYearDropdown.value + "-01-01";
-      endDate.value = calYearDropdown.value + "-12-31";
-      finYearDropdown.value = "";
-    }
-  });
-
-  // Set start date / end date based on financial year selection
-  finYearDropdown.addEventListener("change", function() {
-    var startYear=0;
-    if (finYearDropdown.value !== ''){
-      startYear = parseInt(finYearDropdown.value.substring(0,4));
-      startDate.value = startYear + "-04-01";
-      endDate.value = (startYear + 1) + "-03-31";
-      calYearDropdown.value = "";
-    }
-  });
-
-  selectAllButton.addEventListener("click", function(e) {
-
-      e.preventDefault();
-      var checkboxes = document.querySelectorAll("input[type=checkbox]");
-
-      for (chk of checkboxes){
-        chk.checked = true;
+    calYearDropdown.addEventListener('change', function() {
+      if (calYearDropdown.value !== '') {
+        startDate.value = '01/01/' + calYearDropdown.value;
+        endDate.value = '31/12/' + calYearDropdown.value;
+        finYearDropdown.value = '';
       }
-      
-  });
+    });
 
-  selectNoneButton.addEventListener("click", function(e) {
-
-      e.preventDefault();
-      var checkboxes = document.querySelectorAll("input[type=checkbox]");
-
-      for (chk of checkboxes){
-        chk.checked = false;
+    finYearDropdown.addEventListener('change', function() {
+      if (finYearDropdown.value !== '') {
+        const startYear = parseInt(finYearDropdown.value.substring(0, 4), 10);
+        startDate.value = '01/04/' + startYear;
+        endDate.value = '31/03/' + (startYear + 1);
+        calYearDropdown.value = '';
       }
-      
-  });
-</script>
+    });
 
-{% endblock %} <!-- body_end -->
+    selectAllButton.addEventListener('click', function(event) {
+      event.preventDefault();
+
+      document.querySelectorAll('input[type="checkbox"]').forEach(function(checkbox) {
+        checkbox.checked = true;
+      });
+    });
+
+    selectNoneButton.addEventListener('click', function(event) {
+      event.preventDefault();
+
+      document.querySelectorAll('input[type="checkbox"]').forEach(function(checkbox) {
+        checkbox.checked = false;
+      });
+    });
+  </script>
+{% endblock %}
