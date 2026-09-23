@@ -591,8 +591,17 @@
       const canUpdateDbdPreferenceWithoutDob = config.featureFlags.digitalByDefault
         && typeof req.body.dbdPreference !== 'undefined'
         && req.session[`editJurorDetails-${jurorNumber}`].commonDetails.dbdPreference !== req.body.dbdPreference;
+      const jurorDetails = req.session[`editJurorDetails-${jurorNumber}`];
+      const canUpdateContactDetailsWithoutDob = isBureauUser(req)
+        && jurorDetails.commonDetails.jurorStatus === 'Summoned'
+        && (
+          (req.body.primaryPhone || '') !== (jurorDetails.primaryPhone || '')
+          || (req.body.emailAddress || '') !== (jurorDetails.emailAddress || '')
+          || req.session[`editJurorAddressChanged-${jurorNumber}`] === true
+        );
       let validatorResult = validate(req.body, overviewDetailsValidator({
-        requireDateOfBirth: !canUpdateDbdPreferenceWithoutDob,
+        requireDateOfBirth: !canUpdateDbdPreferenceWithoutDob
+          && !canUpdateContactDetailsWithoutDob,
       }));
 
       modUtils.stripSpacesFromPhoneNumbersInBody(req);
@@ -811,6 +820,7 @@
 
     delete req.session[`editJurorEtag-${jurorNumber}`];
     delete req.session[`editJurorDetails-${jurorNumber}`];
+    delete req.session[`editJurorAddressChanged-${jurorNumber}`];
     delete req.session.dateMax;
     delete req.session.formFields;
 
@@ -988,6 +998,7 @@
       req.session[`editJurorDetails-${jurorNumber}`].addressTown = req.body.address4;
       req.session[`editJurorDetails-${jurorNumber}`].addressCounty = req.body.address5;
       req.session[`editJurorDetails-${jurorNumber}`].addressPostcode = req.body.postcode;
+      req.session[`editJurorAddressChanged-${jurorNumber}`] = true;
 
       // If only changing address then resend the data given from original API call
       if (req.url.includes('bank-details')) {
