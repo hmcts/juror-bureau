@@ -366,20 +366,54 @@
 
   const buildQueryParams = (status, localAuthorityFilter, sortBy, sortOrder, action) => {
     let queryParams = '';
-    if (action) {
-      queryParams += `?action=${action}`;
+
+    let statusValue='';
+    let localAuthorityFilterValue='';
+    let sortByValue='';
+    let sortOrderValue='';
+    let actionValue='';
+
+    if (status) {
+      if (['not-uploaded', 'uploaded', 'all'].includes(status.toLowerCase())){
+        statusValue = status;
+      }
+    }
+    if (sortBy){
+      if (['localauthorityname', 'uploadstatus', 'lastuploaddate'].includes(sortBy.toLowerCase())){
+        sortByValue = sortBy;
+      }
+    }
+    if(sortOrder){
+      if (['ascending', 'descending'].includes(sortOrder.toLowerCase())){
+        sortOrderValue = sortOrder;
+      }
+    }
+    if (action){
+      if (['send-reminder', 'mark-email-delivered'].includes(action.toLowerCase())){
+        actionValue = action;
+      }
     }
     if (localAuthorityFilter) {
-      queryParams += (queryParams.length ? '&' : '?') + `localAuthorityFilter=${localAuthorityFilter}`;
+      if (localAuthorityFilter.trim().length <= 3
+          && localAuthorityFilter.split('').every(character => character >= '0' && character <= '9')) {
+        localAuthorityFilterValue = localAuthorityFilter;
+      }
     }
-    if (status) {
-      queryParams += (queryParams.length ? '&' : '?') + `status=${status}`;
+
+    if (actionValue) {
+      queryParams += `?action=${actionValue}`;
     }
-    if (sortBy) {
-      queryParams += (queryParams.length ? '&' : '?') + `sortBy=${sortBy}`;
+    if (localAuthorityFilterValue) {
+      queryParams += (queryParams.length ? '&' : '?') + `localAuthorityFilter=${localAuthorityFilterValue}`;
     }
-    if (sortOrder) {
-      queryParams += (queryParams.length ? '&' : '?') + `sortOrder=${sortOrder}`;
+    if (statusValue) {
+      queryParams += (queryParams.length ? '&' : '?') + `status=${statusValue}`;
+    }
+    if (sortByValue) {
+      queryParams += (queryParams.length ? '&' : '?') + `sortBy=${sortByValue}`;
+    }
+    if (sortOrderValue) {
+      queryParams += (queryParams.length ? '&' : '?') + `sortOrder=${sortOrderValue}`;
     }
     return queryParams;
   };
