@@ -280,7 +280,7 @@
             clearSearchUrl: app.namedRoutes.build(`reports.${reportKey}.filter.get`),
             reportUrl: app.namedRoutes.build(`reports.${reportKey}.report.post`),
             cancelUrl: app.namedRoutes.build('reports.reports.get'),
-            trials: transformRadioSelectTrialsList(data.data, sortBy, sortOrder),
+            trials: transformRadioSelectTrialsList(data.data, sortBy, sortOrder, true),
             paginationObject,
             backLinkUrl: {
               built: true,
@@ -688,7 +688,7 @@
           return app.namedRoutes.build(`reports.${reportKey}.filter.get`) + (filter ? '?filter=' + filter : '')
         }
         return app.namedRoutes.build('trial-management.trials.detail.get', {
-          trialNumber: req.params.filter, locationCode: req.session.authentication.locCode
+          trialNumber: req.params.filter, locationCode: config.locCode
         });
       }
       if (reportKey === 'daily-utilisation-jurors') {
@@ -710,7 +710,7 @@
         config.date = req.params.filter;
       } else if (reportType.search === 'trial') {
         config.trialNumber = req.params.filter;
-        config.locCode = req.session.authentication.locCode;
+        config.locCode = req.query.courtLocCode || req.session.authentication.locCode;
         if (req.query['currentTrialJurors']){
           config.currentJurorsOnly = req.query['currentTrialJurors'] === 'true';
         };
@@ -973,12 +973,23 @@
         req.session.formFields = req.body;
         return res.redirect(app.namedRoutes.build(`reports.${reportKey}.filter.get`));
       }
+      const separatorIndex = req.body.selectedTrial.lastIndexOf('-');
+      let trialNumber = req.body.selectedTrial;
+      let courtLocCode = req.session.authentication.locCode;
+
+      if (separatorIndex > 0) {
+        trialNumber = req.body.selectedTrial.substring(0, separatorIndex);
+        courtLocCode = req.body.selectedTrial.substring(separatorIndex + 1);
+      }
+
       if (reportType.selectTrialJurors) {
         return res.redirect(
-          app.namedRoutes.build(`reports.${reportKey}.trial-juror-select.get`, { filter: req.body.selectedTrial })
+          app.namedRoutes.build(`reports.${reportKey}.trial-juror-select.get`, { filter: trialNumber })
+            + `?courtLocCode=${encodeURIComponent(courtLocCode)}`
         );
       }
-      return res.redirect(app.namedRoutes.build(`reports.${reportKey}.report.get`, { filter: req.body.selectedTrial }))
+      return res.redirect(app.namedRoutes.build(`reports.${reportKey}.report.get`, { filter: trialNumber })
+        + `?courtLocCode=${encodeURIComponent(courtLocCode)}`);
     }
     if (reportType.search === 'month') {
       if (!req.body.selectMonth) {
@@ -998,7 +1009,7 @@
   const standardReportTrialJurorSelectGet = (app, reportKey) => async(req, res) => {
     const reportType = reportKeys(app, req)[reportKey];
     const trialNumber = req.params.filter;
-    const locCode = req.session.authentication.locCode;
+    const locCode = req.query.courtLocCode || req.session.authentication.locCode;
     let cancelUrl;
     let backLinkUrl;
 
@@ -1018,7 +1029,7 @@
       locCode: locCode,
       processUrl: app.namedRoutes.build(`reports.${reportKey}.trial-juror-select.post`, {
         filter: trialNumber,
-      }),
+      }) + `?courtLocCode=${encodeURIComponent(locCode)}`,
       cancelUrl,
       backLinkUrl: {
         built: true,
@@ -1028,14 +1039,13 @@
   }
 
   const standardReportTrialJurorSelectPost = (app, reportKey) => async(req, res) => {
-    const reportType = reportKeys(app, req)[reportKey];
     const trialNo = req.params.filter;
     const currentTrialJurors = req.body.currentTrialJurors;
-    const locCode = req.session.authentication.locCode;
+    const locCode = req.query.courtLocCode || req.session.authentication.locCode;
     
     return res.redirect(app.namedRoutes.build(`reports.${reportKey}.report.get`, {
-      filter: trialNo
-    }) + `?currentTrialJurors=${currentTrialJurors}`);
+      filter: trialNo,
+    }) + `?currentTrialJurors=${currentTrialJurors}&courtLocCode=${encodeURIComponent(locCode)}`);
     
   }
 
