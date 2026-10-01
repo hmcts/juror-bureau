@@ -94,14 +94,20 @@
     return function(req, res) {
       const { isActive } = req.query;
       const validatorResult = validate(req.body, messagingValidator.trialSearch());
+
+      let activeValue = modUtils.validateQueryParam(req, res, `isActive=${isActive}`);
+
+      if (!(activeValue)) {
+        return;
+      }
             
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
         req.session.formFields = req.body;
-        return res.redirect(app.namedRoutes.build('trial-management.trials.get') + `?isActive=${isActive}`);
+        return res.redirect(app.namedRoutes.build('trial-management.trials.get') + `?isActive=${activeValue}`);
       }
 
-      return res.redirect(app.namedRoutes.build('trial-management.trials.get') + `?isActive=${isActive}&trialNumber=${encodeURIComponent(req.body.searchTrialNumber)}`);
+      return res.redirect(app.namedRoutes.build('trial-management.trials.get') + `?isActive=${activeValue}&trialNumber=${encodeURIComponent(req.body.searchTrialNumber)}`);
     };
   };
 
