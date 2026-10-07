@@ -22,9 +22,9 @@
         Reply to a jury summons
       </h1>
 
-      <p class="govuk-body">This dashboard shows information about how the Reply to a jury summons service is currently performing.</p>
+      <p class="govuk-body-l">This dashboard shows information about how the Reply to a jury summons service is currently performing.</p>
 
-      <hr class="thickLine"/>
+      <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
 
     </div>
   </div>
@@ -32,29 +32,36 @@
   {# Historic metrics #}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <p class="govuk-body" >These figures are since July 2018 when the service launched.</p>
+      <p class="govuk-body">These figures are since July 2018 when the service launched.</p>
     </div>
 
     {% if dashboardData.historicTotals == null %}
-      <div class="govuk-grid-column-full govuk-error-message govuk-!-font-size-24">
-        <p>Error retrieving dashboard data</p>
+      <div class="govuk-grid-column-full" role="alert">
+        <p class="govuk-error-message govuk-!-font-size-24">
+          <span class="govuk-visually-hidden">Error:</span>
+          Error retrieving dashboard data
+        </p>
       </div>
     {% else %}
     
       {% if dashboardData.historicTotals.summonsesSent %}
-        <div class="govuk-grid-column-one-third">
-        <span id="totalSummonsesSentLabel" class="govuk-body govuk-!-font-weight-bold">Total summonses sent</span><br/>
-        <p id="totalSummonsesSentValue" class="govuk-heading-l">{{ dashboardData.historicTotals.summonsesSentFormatted }}</p>
-        </div>
+        <div class="govuk-grid-column-full">
+          <dl class="govuk-grid-row govuk-!-margin-bottom-0">
+            <div class="govuk-grid-column-one-third">
+              <dt id="totalSummonsesSentLabel" class="govuk-body govuk-!-font-weight-bold">Total summonses sent</dt>
+              <dd id="totalSummonsesSentValue" class="govuk-heading-l govuk-!-margin-left-0">{{ dashboardData.historicTotals.summonsesSentFormatted }}</dd>
+            </div>
 
-        <div class="govuk-grid-column-one-third">
-        <span id="totalOnlineRepliesLabel" class="govuk-body govuk-!-font-weight-bold">Number of online replies</span><br/>
-        <p id="totalOnlineRepliesValue" class="govuk-heading-l">{{ dashboardData.historicTotals.onlineRepliesFormatted }}</p>
-        </div>
+            <div class="govuk-grid-column-one-third">
+              <dt id="totalOnlineRepliesLabel" class="govuk-body govuk-!-font-weight-bold">Number of online replies</dt>
+              <dd id="totalOnlineRepliesValue" class="govuk-heading-l govuk-!-margin-left-0">{{ dashboardData.historicTotals.onlineRepliesFormatted }}</dd>
+            </div>
 
-        <div class="govuk-grid-column-one-third">
-        <span id="digitalTakeUpLabel" class="govuk-body govuk-!-font-weight-bold">Digital take-up</span><br/>
-        <p id="digitalTakeUpValue" class="govuk-heading-l">{{ dashboardData.historicTotals.digitalTakeUpPercent }}%</p>
+            <div class="govuk-grid-column-one-third">
+              <dt id="digitalTakeUpLabel" class="govuk-body govuk-!-font-weight-bold">Digital take-up</dt>
+              <dd id="digitalTakeUpValue" class="govuk-heading-l govuk-!-margin-left-0">{{ dashboardData.historicTotals.digitalTakeUpPercent }}%</dd>
+            </div>
+          </dl>
         </div>
       {% endif %}
 
@@ -62,15 +69,15 @@
 
   </div>
 
-  <hr class="thickLine"/>
+  <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
 
   {# Date Range selection / submit #}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <form action="{{ url('dashboard.post') }}" method="post">
 
-        <p class="govuk-body" >
-          These figures are since September 2019 when more detailed reporting was implemented.<br/>
+        <p class="govuk-body">
+          These figures are since September 2019 when more detailed reporting was implemented.<br>
           If you require data before September 2019 please <a href="mailto:Andrew.Singletonbisby@justice.gov.uk" class="govuk-link">contact the product manager</a>, Andrew Singleton Bisby.
         </p>
 
@@ -78,7 +85,7 @@
 
         {% set startMonthError = null %}
         {% set startYearError = null %}
-        {% set startDaterError = null %}
+        {% set startDateError = null %}
         {% if errors.items['startMonth'] %}
           {% set startMonthError = errors.items['startMonth'][0].summary %}
         {% endif %}
@@ -138,14 +145,15 @@
 
         </div>
 
-        <button class="govuk-button govuk-body-l" data-module="govuk-button" id="submitButton">
-          Submit
-        </button>
+        {{ govukButton({
+          text: "Submit",
+          id: "submitButton",
+          attributes: {
+            type: "submit"
+          }
+        }) }}
 
         <input type="hidden" name="_csrf" value="{{ csrftoken }}">
-
-        {{ dashboardData.cumulativeTotals.summonedTotal }}
-        {{ dashboardData.cumulativeTotals.responsesTotal }}
 
       </form>
       
@@ -153,13 +161,7 @@
 
   </div>
 
-  {# Separator #}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      <br/>
-      <hr>
-    </div>
-  </div>
+  <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
 
   {% if dashboardData.summonsesSent %}
 
@@ -168,8 +170,6 @@
       <p class="govuk-body-l">Showing data from {{ dashboardDates.startDateDisplay }} to {{ dashboardDates.endDateDisplay }}</p>
     </div>
   </div>
-
-  <br/>
 
   {# Row 1 #}
   <div class="govuk-grid-row">
@@ -207,13 +207,7 @@
 
   </div>
 
-  {# Separator #}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      <br>
-      <hr>
-    </div>
-  </div>
+  <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
 
   {# Row 2 #}
   <div class="govuk-grid-row">
@@ -250,13 +244,7 @@
 
   </div>
 
-  {# Separator #}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      <br>
-      <hr>
-    </div>
-  </div>
+  <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
 
   {# When were replies received bar chart #}
   <div class="govuk-grid-row">
@@ -278,38 +266,31 @@
     </div>
   </div>
 
-  {# Separator #}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      <br>
-      <br>
-      <hr>
-    </div>
-  </div>
+  <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
   
   {# Levels of citizen satisfaction #}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <div class="govuk-heading-l">Levels of citizen satisfaction</div>
+      <h2 class="govuk-heading-m">Levels of citizen satisfaction</h2>
     </div>
   </div>
 
   <div class="govuk-grid-row">
 
     <div class="govuk-grid-column-one-half">
-      <span id="percCompletingFeedbackLabel" class="govuk-body-xl govuk-!-font-weight-bold">Percentage of citizens completing a feedback form</span></br>
-      <p id="percCompletingFeedbackValue" class="govuk-body-xl">{{surveyData.completedFeedbackPercent}}%</p>
+      <p id="percCompletingFeedbackLabel" class="govuk-body govuk-!-font-weight-bold">Percentage of citizens completing a feedback form</p>
+      <p id="percCompletingFeedbackValue" class="govuk-body">{{ surveyData.completedFeedbackPercent }}%</p>
     </div>
     <div class="govuk-grid-column-one-half">
-      <span id="percSatisfiedVerySatisfiedLabel" class="govuk-body-xl govuk-!-font-weight-bold">Percentage of citizens 'Very satisfied or satisfied'</span></br>
-      <p id="percSatisfiedVerySatisfiedValue" class="govuk-body-xl">{{surveyData.satifiedAndVerySatisfiedPercent}}%</p>
+      <p id="percSatisfiedVerySatisfiedLabel" class="govuk-body govuk-!-font-weight-bold">Percentage of citizens 'Very satisfied or satisfied'</p>
+      <p id="percSatisfiedVerySatisfiedValue" class="govuk-body">{{ surveyData.satifiedAndVerySatisfiedPercent }}%</p>
     </div>
   </div>
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
 
-        {% if surveyData.responsesTotal > 0%}
+        {% if surveyData.responsesTotal > 0 %}
           {{ dashboardChartDoughnut({
             id: "satisfaction",
             chartHeading: "",
@@ -322,33 +303,23 @@
             showTotal: false
           }) }}
         {% else %}
-          <br />
-          <div class="column-full font-large bold" id="smartSurveyErrorMEssage">
-          {% if surveyData.surveyDataError %}
-            <p>No Smart Survey data retrieved</p>
-          {% else %}
-            <p>No Smart Survey data retrieved</p>
-          {% endif %}
-          </div>
+          <p class="govuk-body" id="smartSurveyErrorMessage">No Smart Survey data retrieved</p>
 
         {% endif %}
      
     </div>
   </div>
 
-  {# Separator #}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      <br>
-      <hr>
-    </div>
-  </div>
+  <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
 
   {% else %}
 
     {% if errors %}
-      <div class="govuk-grid-column-full govuk-error-message govuk-!-font-size-24">
-        <p>{{errors.message}}</p>
+      <div class="govuk-grid-column-full" role="alert">
+        <p class="govuk-error-message govuk-!-font-size-24">
+          <span class="govuk-visually-hidden">Error:</span>
+          {{ errors.message }}
+        </p>
       </div>
     {% endif %}
 
