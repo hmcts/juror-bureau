@@ -1,120 +1,68 @@
 {% macro dashboardChartDoughnut(params) %}
+  {% set chartHeading = params.chartHeading or '' %}
+  {% set columnClass = {
+    '1': 'govuk-grid-column-one-half',
+    '2': 'govuk-grid-column-one-half',
+    '3': 'govuk-grid-column-one-third',
+    '4': 'govuk-grid-column-one-quarter',
+    '5': 'dashboard-chart-column-one-fifth'
+  }[params.labels.length] or 'govuk-grid-column-full' %}
 
-  {% set chartHeading = "" %}
-
-  {% set chartColourA = '#28a197' %} {# Turqouse #}
-  {% set chartColourB = '#5694ca' %} {# Blue #}
-  {% set chartColourC = '#b1b4b6' %} {# Mid Grey #}
-  {% set chartColourD = '#f47738' %} {# Orange #}
-  {% set chartColourE = '#d4351c' %} {# Red #}
-
+  {% set chartColours = ['#28a197', '#5694ca', '#b1b4b6', '#f47738', '#d4351c'] %}
   {% if params.labels.length == 1 %}
-    {% set chartColourA = '#5694ca' %} {# Blue #}
-    {% set chartColourB = '#f3f2f1' %} {# Light Grey #}
+    {% set chartColours = ['#5694ca', '#f3f2f1'] %}
+  {% elif params.labels.length == 2 %}
+    {% set chartColours = ['#5694ca', '#f499be'] %}
+  {% elif params.labels.length == 3 %}
+    {% set chartColours = ['#5694ca', '#85994b', '#f499be'] %}
   {% endif %}
 
-  {% if params.labels.length == 2 %}
-    {% set chartColourA = '#5694ca' %} {# Blue #}
-    {% set chartColourB = '#f499be' %} {# Pink #}
-  {% endif %}
-
-  {% if params.values.length == 3 %}
-    {% set chartColourA = '#5694ca' %} {# Blue #}
-    {% set chartColourB = '#85994b' %} {# Light Green #}
-    {% set chartColourC = '#f499be' %} {# Pink #}
-  {% endif %}
-
-  {% if params.chartHeading %}
-    {% set chartHeading = params.chartHeading %}
-  {% endif %}
-
-  <div {%- if params.id %} id="{{params.id}}Details"{% endif %} class="govuk-details {%- if params.classes %} {{ params.classes }}{% endif %}" {%- for attribute, value in params.attributes %} {{attribute}}="{{value}}"{% endfor %}>
-    
-    <div class="govuk-heading-l" id="chartHeading">
+  <div{% if params.id %} id="{{ params.id }}Details"{% endif %} class="govuk-details{% if params.classes %} {{ params.classes }}{% endif %}"{% for attribute, value in params.attributes %} {{ attribute }}="{{ value }}"{% endfor %}>
+    <div class="govuk-heading-m" id="{{ params.id }}ChartHeading">
       {{ chartHeading }}
       {% if params.showTotal %}
-        <p id="formattedTotal">{{ params.totalFormatted }}</p>
-      {% else %}
-      <p>&nbsp;</p>
+        <p id="{{ params.id }}FormattedTotal">{{ params.totalFormatted }}</p>
       {% endif %}
     </div>
-    
-    {% if params.labels.length == 1 %}
-      {% for i in range(0, params.labels.length) -%}
-        <div class="govuk-grid-column-one-half">
-          <p class="govuk-!-font-weight-bold" id="label{{ i + 1  }}">{{ params.labels[i] }}</p>
-          <p class="govuk-!-font-weight-bold" id="percentValue{{ i + 1 }}">{{ params.valuesPerc[i] }}%</p>
-          <p class="" id="formattedValue{{ i + 1 }}">({{ params.valuesFormatted[i] }})</p>
-        </div>
-      {%- endfor %}
-    {% endif %}
-    {% if params.labels.length == 2 %}
-      {% for i in range(0, params.labels.length) -%}
-        <div class="govuk-grid-column-one-half">
-          <p class="govuk-!-font-weight-bold" id="label{{ i + 1  }}">{{ params.labels[i] }}</p>
-          <p class="govuk-!-font-weight-bold" id="percentValue{{ i + 1 }}">{{ params.valuesPerc[i] }}%</p>
-          <p class="" id="formattedValue{{ i + 1 }}">({{ params.valuesFormatted[i] }})</p>
-        </div>
-      {%- endfor %}
-    {% endif %}
-    {% if params.labels.length == 3 %}
-      {% for i in range(0, params.labels.length) -%}
-        <div class="govuk-grid-column-one-third">
-          <p class="govuk-!-font-weight-bold" id="label{{ i + 1 }}">{{ params.labels[i] }}</p>
-          <p class="govuk-!-font-weight-bold" id="percentValue{{ i  + 1}}">{{ params.valuesPerc[i] }}%</p>
-          <p class="" id="formattedValue{{ i + 1}}">({{ params.valuesFormatted[i] }})</p>
-        </div>
-      {%- endfor %}
-    {% endif %}
-    {% if params.labels.length == 4 %}
-      {% for i in range(0, params.labels.length) -%}
-        <div class="govuk-grid-column-one-quarter">
-          <p class="govuk-!-font-weight-bold" id="label{{ i + 1 }}">{{ params.labels[i] }}</p>
-          <p class="govuk-!-font-weight-bold" id="percentValue{{ i  + 1}}">{{ params.valuesPerc[i] }}%</p>
-          <p class="" id="formattedValue{{ i + 1}}">({{ params.valuesFormatted[i] }})</p>
-        </div>
-      {%- endfor %}
-    {% endif %}
-    {% if params.labels.length == 5 %}
-      {% for i in range(0, params.labels.length) -%}
-        <div class="govuk-grid-column-full">
-          <label class="govuk-!-font-weight-bold" id="label{{ i + 1 }}">{{ params.labels[i] }}</label>
-          <label class="govuk-!-font-weight-bold" id="percentValue{{ i  + 1}}">{{ params.valuesPerc[i] }}%</label>
-          <label class="" id="formattedValue{{ i + 1}}">({{ params.valuesFormatted[i] }})</label>
-        </div>
-      {%- endfor %}
-    {% endif %}
 
+    {% for label in params.labels %}
+      <div class="{{ columnClass }}">
+        <p class="govuk-!-font-weight-bold" id="{{ params.id }}Label{{ loop.index }}">{{ label }}</p>
+        <p class="govuk-!-font-weight-bold" id="{{ params.id }}PercentValue{{ loop.index }}">{{ params.valuesPerc[loop.index0] }}%</p>
+        <p id="{{ params.id }}FormattedValue{{ loop.index }}">({{ params.valuesFormatted[loop.index0] }})</p>
+      </div>
+    {% endfor %}
   </div>
 
   <div class="govuk-grid-column-full">
     <div class="canvas-div">
-      <canvas class="dashboard-chart" id="{{params.id}}Chart" name="{{params.id}}Chart"/>
+      <canvas
+        class="dashboard-chart"
+        id="{{ params.id }}Chart"
+        data-labels="{{ params.labels | console }}"
+        data-values="{{ params.values | console }}"
+        data-percentages="{{ params.valuesPerc | console }}"
+        aria-labelledby="{{ params.id }}ChartHeading"
+      ></canvas>
     </div>
   </div>
 
   {% if params.guidanceText %}
-    <p class="govuk-body-m" id="guidanceText">{{ params.guidanceText }}</p>
+    <p class="govuk-body-m" id="{{ params.id }}GuidanceText">{{ params.guidanceText }}</p>
   {% endif %}
 
   <script nonce="{{ params.nonce }}">
-    var labelArr =  ("{{params.labels}}").split(",");
-    var legendArr =  ("{{params.labels}}").split(",");
-    var valueArr =  ("{{params.values}}").split(",");
-    var valueArrFormatted =  ("{{params.valuesFormatted}}").split(",");
-    var percArr =  ("{{params.valuesPerc}}").split(",");
-    var can = document.getElementById('{{params.id}}Chart')
-    var ctx = document.getElementById('{{params.id}}Chart').getContext('2d');
-    //ctx.width  = 0.15;
-    //ctx.height = 0.15;
-    var arrLength = labelArr.length;
-    for (var i = 0; i < arrLength; i++) {
-        legendArr[i] = labelArr[i] + " (" + percArr[i] + "%)";
-    }
+    (function() {
+      var canvas = document.getElementById('{{ params.id }}Chart');
+      var labels = JSON.parse(canvas.dataset.labels);
+      var percentages = JSON.parse(canvas.dataset.percentages);
+      var legendLabels = labels.map(function(label, index) {
+        return label + ' (' + percentages[index] + '%)';
+      });
 
-    Chart.defaults.global.defaultFontSize = 15;
+      Chart.defaults.global.defaultFontSize = 15;
 
-    var dbChart = new Chart(ctx, {
+      new Chart(canvas.getContext('2d'), {
         type: 'doughnut',
         options: {
           legend: {
@@ -127,52 +75,26 @@
           }
         },
         data: {
-            labels: legendArr,
-            datasets: [{
-                data: valueArr,
-                backgroundColor: [
-                    '{{chartColourA}}',
-                    '{{chartColourB}}',
-                    '{{chartColourC}}',
-                    '{{chartColourD}}',
-                    '{{chartColourE}}',
-                ],
-                borderColor: [
-                    'rgba(255, 255, 255, 1)',
-                    'rgba(255, 255, 255, 1)',
-                    'rgba(255, 255, 255, 1)',
-                    'rgba(255, 255, 255, 1)',
-                    'rgba(255, 255, 255, 1)',
-                ],
-                borderWidth: 5
-            }],
-            
+          labels: legendLabels,
+          datasets: [{
+            data: JSON.parse(canvas.dataset.values),
+            backgroundColor: [
+              {% for colour in chartColours %}'{{ colour }}'{% if not loop.last %}, {% endif %}{% endfor %}
+            ],
+            borderColor: '#fff',
+            borderWidth: 5
+          }]
         },
         plugins: [{
-            beforeInit: function(chart) {
-              chart.data.labels.forEach(function(e, i, a) {
-                  if (/\n/.test(e)) {
-                    a[i] = e.split(/\n/);
-                  }
-              });
-            }
+          beforeInit: function(chart) {
+            chart.data.labels.forEach(function(label, index, chartLabels) {
+              if (/\n/.test(label)) {
+                chartLabels[index] = label.split(/\n/);
+              }
+            });
+          }
         }]
-
-    });
-
-    function addCommas(nStr)
-    {
-        nStr += '';
-        x = nStr.split('.');
-        x1 = x[0];
-        x2 = x.length > 1 ? '.' + x[1] : '';
-        var rgx = /(\d+)(\d{3})/;
-        while (rgx.test(x1)) {
-            x1 = x1.replace(rgx, '$1' + ',' + '$2');
-        }
-        return x1 + x2;
-    }
+      });
+    })();
   </script>
-
-
 {% endmacro %}
