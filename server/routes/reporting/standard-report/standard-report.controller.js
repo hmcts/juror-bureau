@@ -1094,7 +1094,10 @@
       app.namedRoutes.build(`reports.${reportKey}.report.get`, {
         filter: trialNo,
       }),
-      { currentTrialJurors },
+      { 
+        currentTrialJurors,
+        courtLocCode: locCode,
+      },
     ));
     
   }
