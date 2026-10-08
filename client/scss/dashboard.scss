@@ -46,6 +46,17 @@
   width: 80%;
 }
 
+.dashboard-chart-column-one-fifth {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0 govuk-spacing(3);
+
+  @include govuk-media-query($from: tablet) {
+    float: left;
+    width: 20%;
+  }
+}
+
 .canvas-deferral-div {
   width: 110%;
   height: 650px;
@@ -56,8 +67,8 @@
 }
 
 .dashboard-reasons-list {
-  //background-color: orange;
   border: 1px solid black;
+  padding-left: 10px;
   width: 400px;
   height: 205px;
   margin-bottom: 10px;
@@ -85,4 +96,3 @@
 hr.thickLine {
   border: 1px solid black;
 }
-

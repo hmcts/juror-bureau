@@ -1,92 +1,79 @@
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+
 {% macro dashboardDateMonthYear(params) %}
+  {% set months = [
+    { value: '01', text: 'January' },
+    { value: '02', text: 'February' },
+    { value: '03', text: 'March' },
+    { value: '04', text: 'April' },
+    { value: '05', text: 'May' },
+    { value: '06', text: 'June' },
+    { value: '07', text: 'July' },
+    { value: '08', text: 'August' },
+    { value: '09', text: 'September' },
+    { value: '10', text: 'October' },
+    { value: '11', text: 'November' },
+    { value: '12', text: 'December' }
+  ] %}
 
-{% set inputErrClass = "" %}
-{% set groupErrClass = "" %}
-{% if params.monthError %}
-  {% set inputMonthErrClass = "govuk-input--error" %}
-  {% set groupErrClass = "govuk-form-group--error" %}
-{% endif %}
-{% if params.yearError %}
-  {% set inputYearErrClass = "govuk-input--error" %}
-  {% set groupErrClass = "govuk-form-group--error" %}
-{% endif %}
-{% if params.dateError %}
-  {% set inputMonthErrClass = "govuk-input--error" %}
-  {% set inputYearErrClass = "govuk-input--error" %}
-  {% set groupErrClass = "govuk-form-group--error" %}
-{% endif %}
+  {% set hasError = params.monthError or params.yearError or params.dateError %}
+  {% set monthError = params.monthError or params.dateError %}
 
+  {% set monthItems = [{ value: '', text: '' }] %}
+  {% for month in months %}
+    {% set monthItems = (monthItems.push({
+      value: month.value,
+      text: month.text,
+      selected: params.monthValue == month.value
+    }), monthItems) %}
+  {% endfor %}
 
-<div class="govuk-form-group {{ groupErrClass }}">
-  <h1 class="govuk-label-wrapper">
-    <label class="govuk-label govuk-label--s" for="{{params.id}}">
-      {{params.label}}
-    </label>
-  </h1>
+  {% set yearItems = [{ value: '', text: '' }] %}
+  {% for year in params.yearList %}
+    {% set yearItems = (yearItems.push({
+      value: year,
+      text: year,
+      selected: params.yearValue == year
+    }), yearItems) %}
+  {% endfor %}
 
-  {% if params.monthError %}
-    <span id="passport-issued-error" class="govuk-error-message">
-      <span class="govuk-visually-hidden">Error:</span> {{params.monthError}}
-    </span>
-  {% endif %}
+  <div class="govuk-form-group{% if hasError %} govuk-form-group--error{% endif %}">
+    <fieldset class="govuk-fieldset" role="group">
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+        {{ params.label }}
+      </legend>
 
-  {% if params.yearError %}
-    <span id="passport-issued-error" class="govuk-error-message">
-      <span class="govuk-visually-hidden">Error:</span> {{params.yearError}}
-    </span>
-  {% endif %}
+      <div class="govuk-date-input" id="{{ params.id }}">
+        <div class="govuk-date-input__item">
+          {{ govukSelect({
+            id: params.prefix + 'Month',
+            name: params.prefix + 'Month',
+            value: params.monthValue,
+            label: {
+              text: 'Month',
+              classes: 'govuk-date-input__label'
+            },
+            items: monthItems,
+            errorMessage: { text: monthError } if monthError else null
+          }) }}
+        </div>
 
-  {% if params.dateError %}
-    <span id="passport-issued-error" class="govuk-error-message">
-      <span class="govuk-visually-hidden">Error:</span> {{params.dateError}}
-    </span>
-  {% endif %}
-
-  <div class="govuk-date-input" id="{{params.id}}">
-    <div class="govuk-date-input__item">
-      <div class="govuk-form-group ">
-        {#
-        <label class="govuk-label govuk-date-input__label" for="{{params.prefix}}Month">
-          Month
-        </label>
-        #}
-
-        {# Month dropdown #}
-        <select class="govuk-select" id="{{params.prefix}}Month" name="{{params.prefix}}Month">
-          <option value="" {% if params.monthValue == '' %}selected{% endif %}></option>
-          <option value="01" {% if params.monthValue == '01' %}selected{% endif %}>January</option>
-          <option value="02" {% if params.monthValue == '02' %}selected{% endif %}>February</option>
-          <option value="03" {% if params.monthValue == '03' %}selected{% endif %}>March</option>
-          <option value="04" {% if params.monthValue == '04' %}selected{% endif %}>April</option>
-          <option value="05" {% if params.monthValue == '05' %}selected{% endif %}>May</option>
-          <option value="06" {% if params.monthValue == '06' %}selected{% endif %}>June</option>
-          <option value="07" {% if params.monthValue == '07' %}selected{% endif %}>July</option>
-          <option value="08" {% if params.monthValue == '08' %}selected{% endif %}>August</option>
-          <option value="09" {% if params.monthValue == '09' %}selected{% endif %}>September</option>
-          <option value="10" {% if params.monthValue == '10' %}selected{% endif %}>October</option>
-          <option value="11" {% if params.monthValue == '11' %}selected{% endif %}>November</option>
-          <option value="12" {% if params.monthValue == '12' %}selected{% endif %}>December</option>
-        </select>
+        <div class="govuk-date-input__item">
+          {{ govukSelect({
+            id: params.prefix + 'Year',
+            name: params.prefix + 'Year',
+            value: params.yearValue,
+            label: {
+              text: 'Year',
+              classes: 'govuk-date-input__label'
+            },
+            items: yearItems,
+            classes: 'govuk-select--error' if params.dateError and not params.yearError else '',
+            describedBy: params.prefix + 'Month-error' if params.dateError and not params.yearError else '',
+            errorMessage: { text: params.yearError } if params.yearError else null
+          }) }}
+        </div>
       </div>
-    </div>
-    <div class="govuk-date-input__item">
-      <div class="govuk-form-group">
-        {#
-        <label class="govuk-label govuk-date-input__label" for="{{params.prefix}}Year">
-          Year
-        </label>
-        #}
-
-        {# Year dropdown #}
-        <select class="govuk-select" id="{{params.prefix}}Year" name="{{params.prefix}}Year">
-          <option value="" {% if params.yearValue == "" %}selected{% endif %}></option>
-          {% for year in params.yearList -%}
-            <option value="{{ year }}" {% if params.yearValue == year %}selected{% endif %}>{{ year }}</option>
-          {%- endfor %}
-        </select>
-      </div>
-    </div>
+    </fieldset>
   </div>
-</div>
-
 {% endmacro %}
