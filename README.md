@@ -12,7 +12,7 @@ We require NodeJS (>=18) and Yarn (corepack is included in recent node).
 
 We recommend using `nvm` to manage your node versions locally, but if you prefer to manage them any other way feel free.
 
-#### Using nvm and yarn 
+#### Using nvm and yarn
 
 [Use nvm's Github to install](https://github.com/nvm-sh/nvm) if you dont have it already.
 
@@ -22,7 +22,7 @@ nvm use 20 # set the current shell to use version 20 of node
 nvm alias default 20 # set the node version 20 to be the default version
 ```
 
-After setting node 20 to be the version of node to use, we need to enable yarn 
+After setting node 20 to be the version of node to use, we need to enable yarn
 
 ```sh
 corepack enable yarn
@@ -73,5 +73,4 @@ The command above assumes the developer has docker installed, so if you do not h
 #### Authentication
 
 This application implements azure AD authentication but can also be used without whilst in development mode. In development mode users will have an email input box (available only in development) to use for authentication. This is assumes the developer has users populated with test email addresses (check with the API & database to make sure all is setup correctly).
-
 
