@@ -7,53 +7,6 @@
 
   describe('Utility Component:', function() {
 
-    it('should force https by redirecting when not on https', function() {
-      var reqStub = {
-          headers: {'x-forwarded-proto': 'http'},
-          get: function(key) {
-            var options = {
-              'Host': 'localhost:3000'
-            };
-
-            if (options.hasOwnProperty(key)) {
-              return options[key];
-            }
-            return;
-          },
-          url: '/'
-        }
-        , resStub = {
-          redirect: function(status, host) {
-            return {
-              status: status,
-              host: host
-            };
-          }
-        }
-        , cb = function() {
-          // Empty Callback
-        }
-        , result = utils.forceHttps(reqStub, resStub, cb);
-
-      expect(result.status).to.equal(302);
-      expect(result.host).to.equal('https://localhost:3000/');
-    });
-
-    it('should not redirect if already on https', function() {
-      var reqStub = {
-          headers: {'x-forwarded-proto': 'https'}
-        }
-        , resStub = {}
-        , cb = function() {
-          // Empty Callback
-          return true;
-        }
-        , result = utils.forceHttps(reqStub, resStub, cb);
-
-      expect(result).to.equal(true);
-    });
-
-
     it('should reject request due to authorisation if username and password are not set for basicAuth', function() {
       var username
         , password
@@ -82,7 +35,7 @@
     // eslint-disable-next-line max-len
     it('should reject request if username and password provided do not match defined values for basicAuth', function() {
       var username = 'admin'
-        , password = 'password'
+        , password = Math.random().toString(36)
         , basicAuthStub = function(req) {
           return {
             name: req.name,
@@ -122,7 +75,7 @@
     // eslint-disable-next-line max-len
     it('should continue normal execution if basicAuth passes', function() {
       var username = 'admin'
-        , password = 'password'
+        , password = Math.random().toString(36)
         , basicAuthStub = function(req) {
           return {
             name: req.name,
@@ -132,7 +85,7 @@
         , basicAuth = utils.basicAuth(Logger.instance, username, password, basicAuthStub)
         , reqStub = {
           name: 'admin',
-          pass: 'password'
+          pass: password
         }
         , resStub = {}
         , cb = function() {

@@ -28,7 +28,12 @@
       });
     }
 
-    return res.render(`electoral-register/${status}-la.njk`, {
+    let template = 'electoral-register/activate-la.njk';
+    if (status === 'deactivate') {
+      template = 'electoral-register/deactivate-la.njk';
+    }
+
+    return res.render(template, {
       localAuthorityInfo,
       postUrl: app.namedRoutes.build('electoral-register.local-authority.change-active-status.get', { laCode, status }),
       cancelUrl: app.namedRoutes.build('electoral-register.local-authority.get', { laCode }),

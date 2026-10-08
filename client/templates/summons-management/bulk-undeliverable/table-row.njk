@@ -9,7 +9,13 @@
     {{ rowData.name.lastName or "-" }}
   </td>
   <td scope="row" class="govuk-table__cell">
-    {{ (rowData.address | safe) if rowData.address else "-" }}
+    {% if rowData.address %}
+      {% for addressLine in rowData.address %}
+        {{ addressLine }}{% if not loop.last %}<br>{% endif %}
+      {% endfor %}
+    {% else %}
+      -
+    {% endif %}
   </td>
   <td scope="row" class="govuk-table__cell">
     {{ rowData.postcode or "-" }}

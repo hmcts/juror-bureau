@@ -27,16 +27,6 @@
   };
 
 
-  /// If non HTTPS request is made this will redirect to HTTPS at the same URL
-  module.exports.forceHttps = function(req, res, next) {
-    if (req.headers['x-forwarded-proto'] !== 'https') {
-      // 302 temporary - this is a feature that can be disabled
-      return res.redirect(302, 'https://' + req.get('Host') + req.url);
-    }
-    return next();
-  };
-
-
   /// Function to sort responses by ascending date.
   /// additionally ensures urgent replies are at top
   ///

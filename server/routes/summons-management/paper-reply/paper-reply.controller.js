@@ -961,7 +961,16 @@
 
   module.exports.postEditName = (app) => async (req, res) => {
     const jurorNumber = req.params['id'];
-    const { action } = req.query;
+    let { action } = req.query;
+    
+    let actionParamValue;
+    if (action) {
+      actionParamValue = modUtils.validateQueryParam(req, res, `?action=${action}`);
+      if (!actionParamValue) {
+        return;
+      }
+    }
+    
     const validatorResult = validate(req.body, paperReplyValidator.jurorName());
 
     if (typeof validatorResult !== 'undefined') {
@@ -970,7 +979,7 @@
 
       return res.redirect(app.namedRoutes.build('paper-reply.edit-name.get', {
         id: jurorNumber,
-      }) + `?action=${action}`);
+      }) + (action ? `?action=${actionParamValue}` : ''));
     }
 
     const { title, firstName, lastName } = req.body;
