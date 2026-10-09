@@ -1,0 +1,70 @@
+@startuml reports.available-list
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant "Reports list" as HomePage <</reports>>
+participant "Available list - by pool" as AvailableListByPool <</reporting>>
+participant "Available list - by date" as AvailableListByDate <</reporting>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant "Available list controller" as AvailableListController <<available-list.controller.js>> #LightYellow
+participant "Standard report controller" as StandardReportController <<standard-report.controller.js>> #LightYellow
+
+''' TEMPLATES
+participant "Available list form" as AvailableListForm <<reporting/available-list/search-by.njk>> #lavender
+participant "Pools list" as PoolsList <<reporting/standard-reports/pool-search.njk>> #lavender
+participant "Standard report" as StandardReport <<reporting/standard-reports/standard-report.njk>>
+
+''' VALIDATORS
+participant "'Report search by' validator" as Validator
+
+
+''' SELECT PAGE
+Actor -> HomePage : Click 'Available list'
+
+' Select renderer
+HomePage -> AvailableListController : call page controller
+
+|||
+AvailableListController -> AvailableListForm : request and build template
+AvailableListController <- AvailableListForm : return HTML
+Actor <- AvailableListController : return and render HTML
+|||
+Actor -> AvailableListForm : submit the form
+AvailableListForm -> AvailableListController : call controller with form data
+AvailableListController -> Validator : validate form data
+
+alt Invalid form data
+  AvailableListController <- Validator : invalid form data
+  AvailableListController -> AvailableListForm : request and build template
+  AvailableListController <- AvailableListForm : return HTML
+  Actor <- AvailableListController : return and render HTML with error messages
+end
+|||
+
+AvailableListController <- Validator : valid form data
+
+alt Search by pool
+
+  AvailableListController -> PoolsList : request and build template
+  AvailableListController <- PoolsList : return HTML
+  Actor <- AvailableListController : return and render HTML
+
+  Actor -> PoolsList : select a pool
+  PoolsList -> StandardReportController : call controller with pool data
+  StandardReportController -> StandardReport : request and build template
+  StandardReportController <- StandardReport : return HTML
+  Actor <- StandardReportController : report displayed by standard renderer
+
+else Search by date
+
+  AvailableListController -> StandardReportController : redirect to standard report controller with date data
+  StandardReportController -> StandardReport : request and build template
+  StandardReportController <- StandardReport : return HTML
+  Actor <- StandardReportController : report displayed by standard renderer
+
+end
