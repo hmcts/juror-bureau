@@ -339,7 +339,7 @@ module.exports.postCheckJuror = function(app) {
       },
     });
 
-    return res.send(`${req.session.checkedJurors.length}`);
+    return res.status(200).json(req.session.checkedJurors.length);
   };
 };
 
