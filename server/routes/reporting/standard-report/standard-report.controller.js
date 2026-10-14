@@ -1085,6 +1085,7 @@
   }
 
   const standardReportTrialJurorSelectPost = (app, reportKey) => async(req, res) => {
+    const reportType = reportKeys(app, req)[reportKey];
     const trialNo = req.params.filter;
     const currentTrialJurors = req.body.currentTrialJurors;
     const locCode = req.query.courtLocCode || req.session.authentication.locCode;
