@@ -1,0 +1,138 @@
+{% macro responseTimeByCourtChart(params) %}
+  {% set chartId = params.id or 'responseTimeByCourtChart' %}
+
+  <div class="chart-container">
+    <canvas
+      id="{{ chartId }}"
+      name="{{ chartId }}"
+      aria-label="Response times by court or group"
+      role="img">
+    </canvas>
+  </div>
+
+  <script nonce="{{ params.nonce }}">
+    (function() {
+      var canvas = document.getElementById('{{ chartId }}');
+      var chartData = JSON.parse('{{ params.data | dump | safe }}');
+      var compare = {{ params.compare | dump | safe }};
+      var dateRangeLabelA = {{ params.dateRangeLabelA | dump | safe }};
+      var dateRangeLabelB = {{ params.dateRangeLabelB | dump | safe }};
+
+      if (!canvas || typeof Chart === 'undefined') {
+        return;
+      }
+
+      var courtsOrGroups = chartData.courtsOrGroups || [];
+      var labels = courtsOrGroups.map(function(courtOrGroup) {
+        return courtOrGroup.name;
+      });
+      var periodA = courtsOrGroups.map(function(courtOrGroup) {
+        return courtOrGroup.periods.period_a || {};
+      });
+      var datasets = [
+        {
+          label: compare ? 'Within 7 days (' + dateRangeLabelA + ')' : 'Within 7 days',
+          stack: 'period-a',
+          data: periodA.map(function(period) { return period.within7DaysPercent || 0; }),
+          backgroundColor: '#1d70b8'
+        },
+        {
+          label: compare ? 'Within 14 days (' + dateRangeLabelA + ')' : 'Within 14 days',
+          stack: 'period-a',
+          data: periodA.map(function(period) { return period.within14DaysPercent || 0; }),
+          backgroundColor: '#28a197'
+        },
+        {
+          label: compare ? 'Within 21 days (' + dateRangeLabelA + ')' : 'Within 21 days',
+          stack: 'period-a',
+          data: periodA.map(function(period) { return period.within21DaysPercent || 0; }),
+          backgroundColor: '#f47738'
+        },
+        {
+          label: compare ? 'Over 21 days (' + dateRangeLabelA + ')' : 'Over 21 days',
+          stack: 'period-a',
+          data: periodA.map(function(period) { return period.over21DaysPercent || 0; }),
+          backgroundColor: '#d4351c'
+        }
+      ];
+
+      if (compare) {
+        var periodB = courtsOrGroups.map(function(courtOrGroup) {
+          return courtOrGroup.periods.period_b || {};
+        });
+
+        datasets = datasets.concat([
+          {
+            label: 'Within 7 days (' + dateRangeLabelB + ')',
+            stack: 'period-b',
+            data: periodB.map(function(period) { return period.within7DaysPercent || 0; }),
+            backgroundColor: '#1d70b873'
+          },
+          {
+            label: 'Within 14 days (' + dateRangeLabelB + ')',
+            stack: 'period-b',
+            data: periodB.map(function(period) { return period.within14DaysPercent || 0; }),
+            backgroundColor: '#28a19773'
+          },
+          {
+            label: 'Within 21 days (' + dateRangeLabelB + ')',
+            stack: 'period-b',
+            data: periodB.map(function(period) { return period.within21DaysPercent || 0; }),
+            backgroundColor: '#f4773873'
+          },
+          {
+            label: 'Over 21 days (' + dateRangeLabelB + ')',
+            stack: 'period-b',
+            data: periodB.map(function(period) { return period.over21DaysPercent || 0; }),
+            backgroundColor: '#d4351c73'
+          }
+        ]);
+      }
+
+      new Chart(canvas.getContext('2d'), {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: datasets
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          legend: {
+            display: true,
+            position: 'bottom',
+            labels: {
+              fontStyle: 'normal',
+              fontColor: '#000',
+              padding: 16
+            }
+          },
+          scales: {
+            xAxes: [{
+              stacked: true,
+              scaleLabel: {
+                display: false,
+                labelString: 'Court or group'
+              }
+            }],
+            yAxes: [{
+              stacked: true,
+              ticks: {
+                beginAtZero: true,
+                max: 100,
+                callback: function(value) {
+                  return value + '%';
+                }
+              },
+              scaleLabel: {
+                display: false,
+                labelString: 'Percentage'
+              }
+            }]
+          }
+        }
+      });
+    })();
+  </script>
+{% endmacro %}
+

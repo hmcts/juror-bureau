@@ -1,0 +1,22 @@
+{% from "govuk/components/table/macro.njk" import govukTable %}
+
+<div class="govuk-grid-row">
+
+  <div class="moj-page-header-actions">
+    <div class="govuk-grid-column-full govuk-body">
+      {% if responseTypeTableData.rows | length %}
+        {{ govukTable({
+          id: "responseTypeTable",
+          caption: "Response type",
+          captionClasses: "govuk-visually-hidden",
+          head: responseTypeTableData.head,
+          rows: responseTypeTableData.rows
+        }) }}
+
+      {% else %}
+        <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-top-3">
+        <h2>Response type - no data</h2>
+      {% endif %}
+    </div>
+  </div>
+  
