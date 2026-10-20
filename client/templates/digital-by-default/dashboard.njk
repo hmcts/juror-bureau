@@ -1,0 +1,208 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/pagination/macro.njk" import govukPagination %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+
+{% from "moj/components/alert/macro.njk" import mojAlert %}
+{% from "moj/components/interruption-card/macro.njk" import interruptionCard %}
+{% from "custom-components/date-picker/macro.njk" import datePicker %}
+
+
+{% from "digital-by-default/time-period/macro.njk" import dbdTimePeriod %}
+
+{% from "includes/csrf.njk" import csrfProtection %}
+
+{% block page_title %}{{ serviceName }} - Digital by default dashboard{% endblock %}
+{% block page_identifier %}Digital by default dashboard{% endblock %}
+
+{% set currentApp = "System administration" %} 
+{% set nav = "digitalByDefaultDashboard" %}
+
+{% block containerStart %}
+  {% if bannerMessage %}
+    {{ mojAlert({
+      variant: "success",
+      html: bannerMessage,
+      iconFallbackText: "Success",
+      dismissible: true,
+      classes: "govuk-!-margin-top-6"
+    }) }}
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      <h1 class="govuk-heading-l govuk-!-margin-bottom-6">Performance dashboard</h1>
+
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      <p class="govuk-body">{{dataUpdateMessage}}</p>
+
+    </div>
+  </div>
+
+  <form method="post" action="{{ postRoute }}" id="localAuthorityFilterForm">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        {{ govukSelect({
+          id: "select-filterGroup",
+          name: "select-filterGroup",
+          label: {
+            text: "View data by"
+          },
+          items: [
+            {
+              value: "allCourts",
+              text: "All courts",
+              selected: dashboardFormData.filterGroup === "allCourts" or not dashboardFormData.filterGroup
+            },
+            {
+              value: "allGroups",
+              text: "All groups (" + courtGroups[0].groupName + ", " + courtGroups[1].groupName + ", " + courtGroups[2].groupName + ")",
+              selected: dashboardFormData.filterGroup === "allGroups"
+            },
+            {
+              value: 'group1',
+              text: courtGroups[0].groupName + ' - ' + courtGroups[0].groupDescription,
+              selected: dashboardFormData.filterGroup === "group1"
+            },
+            {
+              value: 'group2',
+              text: courtGroups[1].groupName + ' - ' + courtGroups[1].groupDescription,
+              selected: dashboardFormData.filterGroup === "group2"
+            },
+            {
+              value: 'group3',
+              text: courtGroups[2].groupName + ' - ' + courtGroups[2].groupDescription,
+              selected: dashboardFormData.filterGroup === "group3"
+            }
+          ]
+        }) }}
+      </div>
+    </div>
+
+    {{ dbdTimePeriod({
+      id: "timePeriodA",
+      name: "timePeriodA",
+      labelText: "Time period",
+      quarterRangeDesc: "Last quarter (" + lastQuarterRangeDesc + ")",
+      timePeriod: dashboardFormData.timePeriodA,
+      customDateFrom: dashboardFormData.customDateFromA,
+      customDateTo: dashboardFormData.customDateToA,
+      customDateFromError: errors.items["custom-date-from-timePeriodA"][0].details if errors.items["custom-date-from-timePeriodA"] else undefined,
+      customDateToError: errors.items["custom-date-to-timePeriodA"][0].details if errors.items["custom-date-to-timePeriodA"] else undefined,
+      nonce: nonce,
+      data: {
+        lastQuarterRangeDesc: lastQuarterRangeDesc
+      }
+    }) }} 
+
+    {% set comparisonTimePeriodHTML %}
+    {{ dbdTimePeriod({
+      id: "timePeriodB",
+      name: "timePeriodB",
+      labelText: "Time period",
+      quarterRangeDesc: "Previous quarter (" + prevQuarterRangeDesc + ")",
+      timePeriod: dashboardFormData.timePeriodB,
+      customDateFrom: dashboardFormData.customDateFromB,
+      customDateTo: dashboardFormData.customDateToB,
+      customDateFromError: errors.items["custom-date-from-timePeriodB"][0].details if errors.items["custom-date-from-timePeriodB"] else undefined,
+      customDateToError: errors.items["custom-date-to-timePeriodB"][0].details if errors.items["custom-date-to-timePeriodB"] else undefined,
+      nonce: nonce,
+      data: {
+        lastQuarterRangeDesc: lastQuarterRangeDesc
+      }
+    }) }} 
+    {% endset %}
+
+    {{ govukCheckboxes({
+      name: "dateRangeCompare",
+      classes: "govuk-checkboxes--small",
+      hint: {
+        text: "Data comparison"
+      },
+      items: [
+        {
+          value: "dateRangeCompare",
+          text: "Compare with another time period",
+          checked: dashboardFormData.dateRangeCompare === true,
+          conditional: {
+            html: comparisonTimePeriodHTML
+          }
+        }
+      ]
+    }) }}
+
+
+
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        {{ govukButton({
+          type: "submit",
+          text: "Submit",
+          classes: "govuk-button--primary mod-justify-end"
+        }) }}
+      </div>
+    </div>
+
+    {{ csrfProtection(csrftoken) }}
+  </form>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% if dashboardData %}
+        <div class="govuk-inset-text">
+          Showing data for the time period {{displayDateRange.dateRangeLabelA}}
+          {% if displayDateRange.dateRangeB %}
+            compared with {{displayDateRange.dateRangeLabelB}}</br>
+            The change column shows the difference (current period minus comparison period).
+          {% endif %}   
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds govuk-body">
+      {% include "./_partials/response-rate-section/response-rate-section.njk" %}
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds govuk-body">
+      {% include "./_partials/response-time-section/response-time-section.njk" %}
+    </div>
+  </div>
+  
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds govuk-body">
+      {% include "./_partials/age-demographic-section/age-demographic-section.njk" %}
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+
+  <script src="{{ assetPath if assetPath else '/' }}js/accessible-autocomplete.min.js"></script>
+  <script src="{{ assetPath }}js/electoral-register.js"></script>
+  {% include "includes/datepicker.njk" %}
+
+{% endblock %}
