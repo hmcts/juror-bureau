@@ -118,7 +118,6 @@
       // Create user object for JWT
       apiUserObj = {
         login: 'AUTO',
-        userLevel: '1',
         daysToExpire: 6,
         passwordWarning: true,
         staff: {
@@ -387,7 +386,6 @@
       // Create user object for JWT
       apiUserObj = {
         login: 'AUTO',
-        userLevel: '1',
         daysToExpire: 6,
         passwordWarning: true,
         staff: {
