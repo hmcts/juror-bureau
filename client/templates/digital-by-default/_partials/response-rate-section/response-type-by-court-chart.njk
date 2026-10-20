@@ -1,0 +1,116 @@
+{% macro responseTypeByCourtChart(params) %}
+  {% set chartId = params.id or 'responseTypeByCourtChart' %}
+
+  <div class="chart-container">
+    <canvas
+      id="{{ chartId }}"
+      name="{{ chartId }}"
+      aria-label="Response rate and digital responses by court or group"
+      role="img">
+    </canvas>
+  </div>
+
+  <script nonce="{{ params.nonce }}">
+    (function() {
+      var canvas = document.getElementById('{{ chartId }}');
+      var chartData = JSON.parse('{{ params.data | dump | safe }}');
+      var compare = {{ params.compare | dump | safe }};
+      var dateRangeLabelA = {{ params.dateRangeLabelA | dump | safe }};
+      var dateRangeLabelB = {{ params.dateRangeLabelB | dump | safe }};
+
+      if (!canvas || typeof Chart === 'undefined') {
+        return;
+      }
+
+      var courtsOrGroups = chartData.courtsOrGroups || [];
+      var labels = courtsOrGroups.map(function(courtOrGroup) {
+        return courtOrGroup.name;
+      });
+      var periodA = courtsOrGroups.map(function(courtOrGroup) {
+        return courtOrGroup.periods.period_a || {};
+      });
+      var datasets = [
+        {
+          label: compare ? 'Response rate (' + dateRangeLabelA + ')' : 'Response rate',
+          data: periodA.map(function(period) {
+            return period.responseRatePercent || 0;
+          }),
+          backgroundColor: '#1d70b8'
+        },
+        {
+          label: compare ? 'Digital responses (' + dateRangeLabelA + ')' : 'Digital responses',
+          data: periodA.map(function(period) {
+            return period.digitalResponsesPercent || 0;
+          }),
+          backgroundColor: '#28a197'
+        }
+      ];
+
+      if (compare) {
+        var periodB = courtsOrGroups.map(function(courtOrGroup) {
+          return courtOrGroup.periods.period_b || {};
+        });
+
+        datasets.push(
+          {
+            label: 'Response rate (' + dateRangeLabelB + ')',
+            data: periodB.map(function(period) {
+              return period.responseRatePercent || 0;
+            }),
+            backgroundColor: '#1d70b873'
+          },
+          {
+            label: 'Digital responses (' + dateRangeLabelB + ')',
+            data: periodB.map(function(period) {
+              return period.digitalResponsesPercent || 0;
+            }),
+            backgroundColor: '#28a19773'
+          }
+        );
+      }
+
+      new Chart(canvas.getContext('2d'), {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: datasets
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          legend: {
+            display: true,
+            position: 'bottom',
+            labels: {
+              fontStyle: 'normal',
+              fontColor: '#000',
+              padding: 16
+            }
+          },
+          scales: {
+            xAxes: [{
+              scaleLabel: {
+                display: false,
+                labelString: 'Court or group'
+              }
+            }],
+            yAxes: [{
+              ticks: {
+                beginAtZero: true,
+                max: 100,
+                callback: function(value) {
+                  return value + '%';
+                }
+              },
+              scaleLabel: {
+                display: false,
+                labelString: 'Percentage'
+              }
+            }]
+          }
+        }
+      });
+    })();
+  </script>
+{% endmacro %}
+

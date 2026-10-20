@@ -1,0 +1,42 @@
+.chart-container {
+    position: relative;
+    height: 340px;
+    margin-bottom: 30px;
+    padding: 20px;
+    border: 1px solid #b1b4b6;
+    background: #ffffff;
+  }
+  .chart-container--tall {
+    height: 420px;
+  }
+  .dashboard-section {
+    margin-bottom: 50px;
+    padding-bottom: 50px;
+    border-bottom: 2px solid #b1b4b6;
+  }
+  .dashboard-section:last-child {
+    border-bottom: none;
+  }
+  .govuk-table__header--numeric,
+  .govuk-table__cell--numeric {
+    text-align: right;
+  }
+  .govuk-table th[scope="row"] {
+    font-weight: normal;
+  }
+  .comp-col {
+    display: none;
+  }
+  .change-pos {
+    color: #00703c;
+    font-weight: bold;
+  }
+  .change-neg {
+    color: #d4351c;
+    font-weight: bold;
+  }
+  .change-zero {
+    color: #0B0C0C;
+  }
+
+
