@@ -225,7 +225,8 @@
       return res.status(404).send('Response rate data not found');
     }
 
-    res.set('Content-Disposition', 'attachment; filename=response-rate.csv');
+    const downloadDate = moment().format('YYYYMMDD');
+    res.set('Content-Disposition', `attachment; filename=response-rates-${downloadDate}.csv`);
     res.type('csv');
     return res.send(buildTableCsv(tableData));
   };
@@ -237,7 +238,8 @@
       return res.status(404).send('Response time data not found');
     }
 
-    res.set('Content-Disposition', 'attachment; filename=response-times.csv');
+    const downloadDate = moment().format('YYYYMMDD');
+    res.set('Content-Disposition', `attachment; filename=response-times-${downloadDate}.csv`);
     res.type('csv');
     return res.send(buildTableCsv(tableData));
   };
@@ -246,10 +248,11 @@
     const tableData = req.session.digitalByDefaultAgeDemographicTableData;
 
     if (!tableData) {
-      return res.status(404).send('Age demographic data not found');
+      return res.status(404).send('Age demographics data not found');
     }
 
-    res.set('Content-Disposition', 'attachment; filename=age-demographic.csv');
+    const downloadDate = moment().format('YYYYMMDD');
+    res.set('Content-Disposition', `attachment; filename=age-demographics-${downloadDate}.csv`);
     res.type('csv');
     return res.send(buildTableCsv(tableData));
   };
