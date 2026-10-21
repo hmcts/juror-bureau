@@ -1,6 +1,7 @@
 {% macro ageDemographicsByCourtChart(params) %}
   {% set chartId = params.id or 'ageDemographicsByCourtChart' %}
 
+  <h3 class="govuk-heading-m">Age demographics by court</h3>
   <div class="chart-container">
     <canvas
       id="{{ chartId }}"
