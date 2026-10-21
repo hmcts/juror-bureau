@@ -5,7 +5,7 @@
 
     <div class="moj-page-header-actions">
         <div class="moj-page-header-actions__title">
-            <h2 class="govuk-heading-m">Age demographics</h2>
+            <h2 class="govuk-heading-l">Age demographics</h2>
         </div>
         <div class="moj-page-header-actions__actions">
             <button type="button" id="download-age-demographic-csv" class="govuk-button govuk-button--secondary" data-download-url="{{ ageDemographicCsvRoute }}">
@@ -15,31 +15,27 @@
     </div>
 
     {# Age demographics by court chart #}
-    <div class="govuk-grid-row">
-        {{ ageDemographicsByCourtChart({
-            data: ageDemographicsChartData,
-            compare: dashboardFormData.dateRangeCompare,
-            dateRangeLabelA: displayDateRange.dateRangeLabelA,
-            dateRangeLabelB: displayDateRange.dateRangeLabelB,
-            nonce: nonce
+    {{ ageDemographicsByCourtChart({
+        data: ageDemographicsChartData,
+        compare: dashboardFormData.dateRangeCompare,
+        dateRangeLabelA: displayDateRange.dateRangeLabelA,
+        dateRangeLabelB: displayDateRange.dateRangeLabelB,
+        nonce: nonce
+    }) }}
+
+    {% if ageDemographicTableData.rows | length %}
+        {{ govukTable({
+        id: "ageDemographicTable",
+        caption: "Age demographics",
+        captionClasses: "govuk-visually-hidden",
+        head: ageDemographicTableData.head,
+        rows: ageDemographicTableData.rows
         }) }}
-    </div>
 
-    <div class="govuk-grid-row">
-        {% if ageDemographicTableData.rows | length %}
-            {{ govukTable({
-            id: "ageDemographicTable",
-            caption: "Age demographics",
-            captionClasses: "govuk-visually-hidden",
-            head: ageDemographicTableData.head,
-            rows: ageDemographicTableData.rows
-            }) }}
-
-        {% else %}
-            <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-top-3">
-            <h2>Age demographics - no data found</h2>
-        {% endif %}
-    </div>
+    {% else %}
+        <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-top-3">
+        <h2>Age demographics - no data found</h2>
+    {% endif %}
 
 </div>
 
