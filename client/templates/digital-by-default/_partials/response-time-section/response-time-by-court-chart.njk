@@ -1,6 +1,8 @@
 {% macro responseTimeByCourtChart(params) %}
   {% set chartId = params.id or 'responseTimeByCourtChart' %}
 
+  <h3 class="govuk-heading-m">Response times by court</h3>
+  
   <div class="chart-container">
     <canvas
       id="{{ chartId }}"

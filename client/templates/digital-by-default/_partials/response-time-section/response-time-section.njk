@@ -2,11 +2,9 @@
 {% from "./response-time-by-court-chart.njk" import responseTimeByCourtChart %}
 
 <div class="dashboard-section">
-
-
     <div class="moj-page-header-actions">
         <div class="moj-page-header-actions__title">
-            <h2 class="govuk-heading-m">Response times</h2>
+            <h2 class="govuk-heading-l">Response times</h2>
         </div>
         <div class="moj-page-header-actions__actions">
             <button type="button" id="download-response-times-csv" class="govuk-button govuk-button--secondary" data-download-url="{{ responseTimeCsvRoute }}">
@@ -16,31 +14,27 @@
     </div>
 
     {# Response times by court chart #}
-    <div class="govuk-grid-row">
-        {{ responseTimeByCourtChart({
-            data: responseTimesChartData,
-            compare: dashboardFormData.dateRangeCompare,
-            dateRangeLabelA: displayDateRange.dateRangeLabelA,
-            dateRangeLabelB: displayDateRange.dateRangeLabelB,
-            nonce: nonce
+    {{ responseTimeByCourtChart({
+        data: responseTimesChartData,
+        compare: dashboardFormData.dateRangeCompare,
+        dateRangeLabelA: displayDateRange.dateRangeLabelA,
+        dateRangeLabelB: displayDateRange.dateRangeLabelB,
+        nonce: nonce
+    }) }}
+
+    {% if responseTimeTableData.rows | length %}
+        {{ govukTable({
+        id: "responseTimeTable",
+        caption: "Response times",
+        captionClasses: "govuk-visually-hidden",
+        head: responseTimeTableData.head,
+        rows: responseTimeTableData.rows
         }) }}
-    </div>
 
-    <div class="govuk-grid-row">
-        {% if responseTimeTableData.rows | length %}
-            {{ govukTable({
-            id: "responseTimeTable",
-            caption: "Response times",
-            captionClasses: "govuk-visually-hidden",
-            head: responseTimeTableData.head,
-            rows: responseTimeTableData.rows
-            }) }}
-
-        {% else %}
-            <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-top-3">
-            <h2>Response times - no data found</h2>
-        {% endif %}
-    </div>
+    {% else %}
+        <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-top-3">
+        <h2>Response times - no data found</h2>
+    {% endif %}
 
 </div>
 
