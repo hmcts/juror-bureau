@@ -18,8 +18,8 @@
 
 {% from "includes/csrf.njk" import csrfProtection %}
 
-{% block page_title %}{{ serviceName }} - Digital by default dashboard{% endblock %}
-{% block page_identifier %}Digital by default dashboard{% endblock %}
+{% block page_title %}{{ serviceName }} - Digital performance dashboard{% endblock %}
+{% block page_identifier %}Digital performance dashboard{% endblock %}
 
 {% set currentApp = "System administration" %} 
 {% set nav = "digitalByDefaultDashboard" %}
@@ -100,6 +100,7 @@
       id: "timePeriodA",
       name: "timePeriodA",
       labelText: "Time period",
+      legendText: "Select time range A",
       quarterRangeDesc: "Last quarter (" + lastQuarterRangeDesc + ")",
       timePeriod: dashboardFormData.timePeriodA,
       customDateFrom: dashboardFormData.customDateFromA,
@@ -117,6 +118,7 @@
       id: "timePeriodB",
       name: "timePeriodB",
       labelText: "Time period",
+      legendText: "Select time range B",
       quarterRangeDesc: "Previous quarter (" + prevQuarterRangeDesc + ")",
       timePeriod: dashboardFormData.timePeriodB,
       customDateFrom: dashboardFormData.customDateFromB,
