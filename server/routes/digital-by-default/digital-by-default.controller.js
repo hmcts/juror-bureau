@@ -21,7 +21,6 @@
     req.session.digitalByDefaultDashboardForm = dashboardFormData;
 
     if (dashboardData) {
-      //console.log('INFO digital-by-default dashboard session data: ', JSON.stringify(dashboardData));
       delete req.session.digitalByDefaultDashboardData;
     } else if (!tmpErrors || Object.keys(tmpErrors).length === 0) {
       dashboardData = await fetchDashboardData(app, req, dashboardFormData);
@@ -71,10 +70,9 @@
       },
     ].map(courtGroup => ({
       ...courtGroup,
-      groupDescription: getGroupDescription(req, courtGroup.locationCodes),
+      groupDescription: getGroupDescription(courtGroup.locationCodes),
     }));
 
-    //const responseRateTable = transformResponseRates(dashboardData);
     const flattenedDashboardData = parseAPIResponse(dashboardData?.apiResult);
     const totalResponsesChartData = getTotalResponsesChartData(flattenedDashboardData);
     const responseTypeChartData = getResponseTypeChartData(flattenedDashboardData);
@@ -181,23 +179,22 @@
     delete req.session.errors;
 
     const dashboardApiParams = buildDashboardApiParams(req.session.digitalByDefaultDashboardForm);
-    //console.log('INFO dashboardApiParams: ', dashboardApiParams);
+    console.log('INFO dbd DashboardApiParams: ', dashboardApiParams);
 
     let dashboardAPIResult;
     try {
       dashboardAPIResult = await digitalByDefaultDashboardDAO.post(req, dashboardApiParams);
       
-      console.log('INFO ---------------------------------------------','');
-      console.log('INFO digital-by-default dashboard API result: ', JSON.stringify(dashboardAPIResult));
-      console.log('INFO ---------------------------------------------','');
+      if (process.env.NODE_ENV === 'development') {
+        console.log('INFO dbd dashboard API result: ', JSON.stringify(dashboardAPIResult));
+      }
 
       const flattenedDashboardData = parseAPIResponse(dashboardAPIResult);
 
-      console.log('INFO ---------------------------------------------','');
-      console.log('INFO flattened digital-by-default dashboard data: ', JSON.stringify(flattenedDashboardData));
-      console.log('INFO ---------------------------------------------','');
+      if (process.env.NODE_ENV === 'development') {
+        console.log('INFO dbd flattened digital-by-default dashboard data: ', JSON.stringify(flattenedDashboardData));
+      }
 
-      
       req.session.digitalByDefaultDashboardData = {
         apiParams: dashboardApiParams,
         apiResult: dashboardAPIResult,
@@ -635,13 +632,13 @@
 
     for (let index = 0; index < dashboardDataA.length; index++) {
       const row = dashboardDataA[index];
-      const onlineResponseTimesA = row.onlineResponseTimes || {};
+      const responseTimesA = row.responseTimesPercent || {};
 
       let locationOrGroupText = '';
-      let within7Days = nullNumeric(onlineResponseTimesA.within7Days);
-      let within14Days = nullNumeric(onlineResponseTimesA.within14Days);
-      let within21Days = nullNumeric(onlineResponseTimesA.within21Days);
-      let over21Days = nullNumeric(onlineResponseTimesA.over21Days);
+      let within7Days = nullNumeric(responseTimesA.within7DaysPercent);
+      let within14Days = nullNumeric(responseTimesA.within14DaysPercent);
+      let within21Days = nullNumeric(responseTimesA.within21DaysPercent);
+      let over21Days = nullNumeric(responseTimesA.over21DaysPercent);
       let within7DaysChange = 0;
       let within14DaysChange = 0;
       let within21DaysChange = 0;
@@ -914,12 +911,14 @@
     return {
       dateRangeA: formatRange(dateRangeA),
       dateRangeB: formatRange(dateRangeB),
-      dateRangeLabelA: getDateRangeDesc(dateRangeA, formData.timePeriodA),
-      dateRangeLabelB: getDateRangeDesc(dateRangeB, formData.timePeriodB),
-    };
+      dateRangeLabelA: getDateRangeDesc(dateRangeA, formData.timePeriodA, 'A'),
+      dateRangeLabelB: getDateRangeDesc(dateRangeB, formData.timePeriodB, 'B'),
+      dateRangeDashboardDescA: getDateRangeDashboardDesc(dateRangeA, formData.timePeriodA, 'A'),
+      dateRangeDashboardDescB: getDateRangeDashboardDesc(dateRangeB, formData.timePeriodB, 'B'),
+    };  
   };
 
-  const getDateRangeDesc = (dateRange, timePeriod) => {
+  const getDateRangeDesc = (dateRange, timePeriod, customRangeName) => {
 
     let dateRangeDesc = '';
 
@@ -931,10 +930,41 @@
     let endDateObj = moment(dateRange.endDate, ['YYYYMMDD', 'DD/MM/YYYY', 'D/M/YYYY'], true);
 
     if (timePeriod === 'customRange'){
-      dateRangeDesc = 'Custom range';
+      dateRangeDesc = 'Custom range' + (customRangeName ? ' ' + customRangeName : '');
     } else {
       if (timePeriod === 'range1'){
         dateRangeDesc = 'Last 30 days';
+      }
+      if (timePeriod === 'range2'){
+        dateRangeDesc = startDateObj.format('MMM') + ' - ' + endDateObj.format('MMM YYYY');
+      }
+      if (timePeriod === 'range3'){
+        dateRangeDesc = startDateObj.format('MMM YYYY') + ' - ' + endDateObj.format('MMM YYYY');
+      }
+      if (timePeriod === 'range4'){
+        dateRangeDesc = startDateObj.format('MMM YYYY') + ' - ' + endDateObj.format('MMM YYYY');
+      }
+    }
+
+    return dateRangeDesc
+  };
+
+  const getDateRangeDashboardDesc = (dateRange, timePeriod, customRangeName) => {
+
+    let dateRangeDesc = '';
+
+    if (dateRange == null) {
+      return '';
+    }
+
+    let startDateObj = moment(dateRange.startDate, ['YYYYMMDD', 'DD/MM/YYYY', 'D/M/YYYY'], true);
+    let endDateObj = moment(dateRange.endDate, ['YYYYMMDD', 'DD/MM/YYYY', 'D/M/YYYY'], true);
+
+    if (timePeriod === 'customRange'){
+      dateRangeDesc = 'Custom range' + (customRangeName ? ' ' + customRangeName : '') + ' (' + startDateObj.format('DD/MM/YYYY') + ' - ' + endDateObj.format('DD/MM/YYYY') + ')';
+    } else {
+      if (timePeriod === 'range1'){
+        dateRangeDesc = 'Last 30 days (' + startDateObj.format('DD/MM/YYYY') + ' - ' + endDateObj.format('DD/MM/YYYY') + ')';
       }
       if (timePeriod === 'range2'){
         dateRangeDesc = startDateObj.format('MMM') + ' - ' + endDateObj.format('MMM YYYY');
@@ -957,9 +987,7 @@
     try {
 
       const dashboardAPIResult = await digitalByDefaultDashboardDAO.post(req, dashboardApiParams);
-      //console.log('INFO digital-by-default dashboard API result: ', JSON.stringify(dashboardAPIResult));
-      const flattenedDashboardData = parseAPIResponse(dashboardAPIResult);
-      //console.log('INFO flattened digital-by-default dashboard data: ', JSON.stringify(flattenedDashboardData));
+      //const flattenedDashboardData = parseAPIResponse(dashboardAPIResult);
 
       return {
         apiParams: dashboardApiParams,
@@ -1007,13 +1035,9 @@
     };
   };
 
-  const getGroupDescription = (req, locationCodes) => {
-    const courts = req.session.dashboardCourtsList || [];
-
+  const getGroupDescription = locationCodes => {
     return locationCodes
-      .map(locationCode => courts.find(court => String(court.locationCode) === String(locationCode)))
-      .filter(Boolean)
-      .map(court => capitalizeCourtName(court.locationName))
+      .map(locationCode => getCourtName(Number(locationCode)))
       .join(', ');
   };
 
@@ -1042,7 +1066,7 @@
         courtName = 'Chester';
         break;
       case 403:
-        courtName = 'Kingston-U-Hull';
+        courtName = 'Kingston-upon-Hull';
         break;
       case 443:
         courtName = 'Norwich';
@@ -1051,10 +1075,10 @@
         courtName = 'Cardiff';
         break;
       case 478:
-        courtName = 'Newport (Isle of Wight)';
+        courtName = 'Isle of Wight';
         break;
       case 441:
-        courtName = 'Newport S. Wales';
+        courtName = 'Newport S Wales';
         break;
       case 453:
         courtName = 'Snaresbrook';
