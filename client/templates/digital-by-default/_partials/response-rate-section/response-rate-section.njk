@@ -15,6 +15,26 @@
         </div>
     </div>
 
+    <h3 class="govuk-heading-m">Response rates by month jurors were summoned</h3>
+
+    {# Monthly response rates table #}
+    {% if monthlyResponseRatesTableData.rows | length %}
+        {{ govukTable({
+        id: "responseRatesTable",
+        caption: "Monthly response rates",
+        captionClasses: "govuk-visually-hidden",
+        head: monthlyResponseRatesTableData.head,
+        rows: monthlyResponseRatesTableData.rows
+        }) }}
+    {% else %}
+        <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-top-3">
+        <h2>Monthly response rates - no data found</h2>
+    {% endif %}
+
+    {% if monthlyResponseRatesTableData.cohortMessage %}
+        <p>* At the last data refresh, this cohort was summoned within the last 6 weeks. Its response rate may still increase because of the lag between jurors being summoned and responding.</p>
+    {% endif %}
+
     {# Total responses by court chart #}
     {{ responseTotalByCourt({
         data: totalResponsesChartData,
@@ -34,7 +54,7 @@
         nonce: nonce
     }) }}
 
-    {# Response rates table #}
+    {# Response type by court table #}
     {% if responseTypeTableData.rows | length %}
         {{ govukTable({
         id: "responseTypeTable",
