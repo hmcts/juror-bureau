@@ -78,6 +78,14 @@
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          tooltips: {
+            callbacks: {
+              label: function(tooltipItem, data) {
+                var dataset = data.datasets[tooltipItem.datasetIndex];
+                return dataset.label + ': ' + tooltipItem.yLabel + '%';
+              }
+            }
+          },
           legend: {
             display: true,
             position: 'bottom',
