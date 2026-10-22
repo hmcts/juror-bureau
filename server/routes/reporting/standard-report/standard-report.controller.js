@@ -675,7 +675,7 @@
         queryParams.currentTrialJurors = req.query.currentTrialJurors;
       }
 
-      return addURLQueryParams(reportType, url, queryParams);
+      return addURLQueryParams(reportType, url, queryParams, req);
     };
 
     const buildBackLinkUrl = function() {
@@ -690,13 +690,24 @@
       }
       if (reportType.search === 'trial') {
         if (reportType.selectTrialJurors) {
-          return app.namedRoutes.build(`reports.${reportKey}.trial-juror-select.get`, { filter: req.params.filter });
+          return addURLQueryParams(
+            reportType,
+            app.namedRoutes.build(`reports.${reportKey}.trial-juror-select.get`, {
+              filter: req.params.filter,
+            }),
+            { courtLocCode: config.locCode },
+            req,
+          );
         }
         if (reportKey === 'jury-cost-bill' || reportKey === 'trial-attendance') {
           return addURLQueryParams(
             reportType,
             app.namedRoutes.build(`reports.${reportKey}.filter.get`),
-            filter ? { filter } : {},
+            {
+              ...(filter ? { filter } : {}),
+              courtLocCode: config.locCode,
+            },
+            req,
           );
         }
         return app.namedRoutes.build('trial-management.trials.detail.get', {
@@ -1011,23 +1022,20 @@
         req.session.formFields = req.body;
         return res.redirect(app.namedRoutes.build(`reports.${reportKey}.filter.get`));
       }
-      const separatorIndex = req.body.selectedTrial.lastIndexOf('-');
-      let trialNumber = req.body.selectedTrial;
-      let courtLocCode = req.session.authentication.locCode;
+      const { trialNumber, courtLocCode } = getTrialSelection(
+        req.body.selectedTrial,
+        req.session.authentication.locCode,
+      );
+      const routeName = reportType.selectTrialJurors
+        ? `reports.${reportKey}.trial-juror-select.get`
+        : `reports.${reportKey}.report.get`;
 
-      if (separatorIndex > 0) {
-        trialNumber = req.body.selectedTrial.substring(0, separatorIndex);
-        courtLocCode = req.body.selectedTrial.substring(separatorIndex + 1);
-      }
-
-      if (reportType.selectTrialJurors) {
-        return res.redirect(
-          app.namedRoutes.build(`reports.${reportKey}.trial-juror-select.get`, { filter: trialNumber })
-            + `?courtLocCode=${encodeURIComponent(courtLocCode)}`
-        );
-      }
-      return res.redirect(app.namedRoutes.build(`reports.${reportKey}.report.get`, { filter: trialNumber })
-        + `?courtLocCode=${encodeURIComponent(courtLocCode)}`);
+      return res.redirect(addURLQueryParams(
+        reportType,
+        app.namedRoutes.build(routeName, { filter: trialNumber }),
+        { courtLocCode },
+        req,
+      ));
     }
     if (reportType.search === 'month') {
       if (!req.body.selectMonth) {
@@ -1064,7 +1072,11 @@
       backLinkUrl = addURLQueryParams(
         reportType,
         app.namedRoutes.build(`reports.${reportKey}.filter.get`),
-        req.params.filter ? { filter: req.params.filter } : {},
+        {
+          ...(req.params.filter ? { filter: req.params.filter } : {}),
+          courtLocCode: locCode,
+        },
+        req,
       );
     }
     
@@ -1073,9 +1085,14 @@
       reportName: reportType.title,
       trialNumber: trialNumber,
       locCode: locCode,
-      processUrl: app.namedRoutes.build(`reports.${reportKey}.trial-juror-select.post`, {
-        filter: trialNumber,
-      }) + `?courtLocCode=${encodeURIComponent(locCode)}`,
+      processUrl: addURLQueryParams(
+        reportType,
+        app.namedRoutes.build(`reports.${reportKey}.trial-juror-select.post`, {
+          filter: trialNumber,
+        }),
+        { courtLocCode: locCode },
+        req,
+      ),
       cancelUrl,
       backLinkUrl: {
         built: true,
@@ -1095,19 +1112,22 @@
       app.namedRoutes.build(`reports.${reportKey}.report.get`, {
         filter: trialNo,
       }),
-      { 
-        currentTrialJurors,
-        courtLocCode: locCode,
-      },
+      { currentTrialJurors, courtLocCode: locCode },
+      req,
     ));
     
   }
 
-  function addURLQueryParams(reportType, url, additionalQueryParams = {}) {
+  function addURLQueryParams(reportType, url, additionalQueryParams = {}, req) {
     const queryParams = {
       ..._.clone(reportType.queryParams),
       ...additionalQueryParams,
     };
+
+    if (queryParams.courtLocCode === req?.session?.authentication?.locCode) {
+      delete queryParams.courtLocCode;
+    }
+
     if (url.includes('?')) {
       url
         .split('?')[1]
@@ -1124,6 +1144,19 @@
 
     return url + `${serializedQueryParams ? `${url.includes('?') ? '&' : '?'}${serializedQueryParams}` : ''}`;
   }
+
+  const getTrialSelection = (selectedTrial, defaultLocCode) => {
+    const separatorIndex = selectedTrial.lastIndexOf('-');
+
+    if (separatorIndex < 1) {
+      return { trialNumber: selectedTrial, courtLocCode: defaultLocCode };
+    }
+
+    return {
+      trialNumber: selectedTrial.substring(0, separatorIndex),
+      courtLocCode: selectedTrial.substring(separatorIndex + 1),
+    };
+  };
 
   module.exports = {
     standardFilterGet,

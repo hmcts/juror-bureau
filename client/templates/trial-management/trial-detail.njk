@@ -72,10 +72,12 @@
   }
 %}
 
+{% set trialCourtQuery = "?courtLocCode=" + locationCode if locationCode !== authentication.locCode else "" %}
+
 {% set standardPrintMenuItems = [
   {
     text: "Ballot cards",
-    href: url("reports.ballot-cards.report.print", { ballotType: "trial", filter: trial.trialNumber }),
+    href: url("reports.ballot-cards.report.print", { ballotType: "trial", filter: trial.trialNumber }) + trialCourtQuery,
     classes: "govuk-button--secondary",
     attributes: {
       target: "_blank"
@@ -83,22 +85,22 @@
   },
   {
     text: "Panel list (summary)",
-    href: url("reports.panel-summary.trial-juror-select.get", { "filter": trial.trialNumber }) + "?courtLocCode=" + locationCode,
+    href: url("reports.panel-summary.trial-juror-select.get", { "filter": trial.trialNumber }) + trialCourtQuery,
     classes: "govuk-button--secondary"
   },
   {
     text: "Panel list (detailed)",
-    href: url("reports.panel-detail.trial-juror-select.get", { "filter": trial.trialNumber }) + "?courtLocCode=" + locationCode,
+    href: url("reports.panel-detail.trial-juror-select.get", { "filter": trial.trialNumber }) + trialCourtQuery,
     classes: "govuk-button--secondary"
   },
   {
     text: "Panel member status report",
-    href: url("reports.panel-members-status.trial-juror-select.get", { "filter": trial.trialNumber }) + "?courtLocCode=" + locationCode,
+    href: url("reports.panel-members-status.trial-juror-select.get", { "filter": trial.trialNumber }) + trialCourtQuery,
     classes: "govuk-button--secondary"
   },
   {
     text: "Trial attendance report",
-    href: url("reports.trial-attendance.trial-juror-select.get", { "filter": trial.trialNumber }) + "?courtLocCode=" + locationCode,
+    href: url("reports.trial-attendance.trial-juror-select.get", { "filter": trial.trialNumber }) + trialCourtQuery,
     classes: "govuk-button--secondary"
   }
 ]%}
@@ -198,7 +200,7 @@
           items: [
             {
               text: "Jury list",
-              href: url("reports.jury-list.trial-juror-select.get", {'filter': trial.trialNumber}) + "?courtLocCode=" + locationCode,
+              href: url("reports.jury-list.trial-juror-select.get", {'filter': trial.trialNumber}) + trialCourtQuery,
               classes: "govuk-button--secondary"
             }
           ].concat(standardPrintMenuItems) if trial.isJuryEmpanelled else standardPrintMenuItems,
