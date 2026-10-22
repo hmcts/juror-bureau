@@ -100,6 +100,7 @@
       req.session.digitalByDefaultDashboardForm.dateRangeCompare
     );
 
+    const monthlyResponseRatesTableData = getMonthlyResponseRatesTableData(dashboardData?.apiResult)
 
     const displayDateRange = getDisplayDateRange(dashboardFormData);
 
@@ -127,6 +128,7 @@
       dashboardData,
       displayDateRange,
       totalResponsesChartData,
+      monthlyResponseRatesTableData,
       responseTypeChartData,
       responseTimesChartData,
       ageDemographicsChartData,
@@ -510,6 +512,52 @@
 
 
   // Functions to return table data
+
+  const getMonthlyResponseRatesTableData = apiResponse => {
+
+    const monthlyResponseRates = apiResponse.monthlyResponseRates || [];
+    const groupNames = Object.keys(monthlyResponseRates[0]?.groupResponseRatePercent || {});
+
+    const table = {
+      head: [],
+      rows: [],
+      cohortMessage: false
+    };
+
+    table.head = [
+      { id: 'month', text: 'Month jurors were summoned' },
+    ];
+    groupNames.forEach(groupName => {
+      let groupNameDisplay = getCourtLocationsByGroup(groupName).groupName;
+      table.head.push({ id: groupName, text: groupNameDisplay + ' response rate', format: 'numeric' });
+    });
+
+    monthlyResponseRates.map(monthlyResponseRate => {
+      const groupResponseRatePercent = monthlyResponseRate.groupResponseRatePercent || {};
+
+      let dateObj = moment(monthlyResponseRate.month, ['YYYYMMDD', 'YYYYMM'], true);
+      let monthDesc = dateObj.isValid() ? dateObj.format('MMMM YYYY') : '';
+      
+      let cohort = monthlyResponseRate.recentCohort;
+      if (cohort === true){
+        monthDesc = monthDesc + ' *';
+        table.cohortMessage = true;
+      }
+
+      const monthRow = [
+        {id: 'month', text: monthDesc},
+      ];
+
+      groupNames.forEach(groupName => {
+        monthRow.push({id: groupName, text: groupResponseRatePercent[groupName] + '%' ?? '', format: 'numeric' });
+      });
+
+      table.rows.push(monthRow);
+
+    });
+    return table;
+  };
+
   const getResponseTypeTableData = (req, dashboardData, filterType, isComparison ) => {
 
     const dashboardDataA = dashboardData.filter(row => row.period === 'period_a');
