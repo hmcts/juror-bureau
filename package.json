@@ -4,7 +4,7 @@
   "private": true,
   "description": "Juror Bureau frontend application",
   "engines": {
-    "node": ">=22"
+    "node": ">=22.23.4"
   },
   "main": "server/index.js",
   "scripts": {
