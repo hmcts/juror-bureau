@@ -1,0 +1,50 @@
+@startuml reports.daily-utilisation
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant "Daily utilisation form page" as DailyUtilisationPage <</reporting/daily-utilisation>>
+participant "Confirm daily utilisation" as ConfirmDailyUtilisation <</reporting/daily-utilisation/confirm>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant "Daily utilisation controller" as DailyUtilisationController <<daily-utilisation.controller.js>> #LightYellow
+participant "Standard report controller" as StandardReportController <<standard-report.controller.js>> #LightYellow
+
+''' TEMPLATES
+participant "Standard report" as StandardReport <<reporting/standard-reports/standard-report.njk>> #lavender
+
+''' VALIDATORS
+participant "'Daily utilisation' validator" as Validator
+
+''' SELECT PAGE
+Actor -> DailyUtilisationPage : fill form and submit
+DailyUtilisationPage -> DailyUtilisationController : call page controller
+DailyUtilisationController -> Validator : validate form data
+
+alt Invalid form data
+
+  DailyUtilisationController <- Validator : invalid form data
+  DailyUtilisationController -> DailyUtilisationPage : request and build template
+  DailyUtilisationController <- DailyUtilisationPage : return HTML
+  Actor <- DailyUtilisationController : return and render HTML with error messages
+
+end
+|||
+
+DailyUtilisationController <- Validator : valid form data
+
+DailyUtilisationController -> ConfirmDailyUtilisation : request and build template
+DailyUtilisationController <- ConfirmDailyUtilisation : return HTML
+Actor <- DailyUtilisationController : return and render HTML
+|||
+
+Actor -> ConfirmDailyUtilisation : confirm daily utilisation
+ConfirmDailyUtilisation -> DailyUtilisationController : call page controller
+DailyUtilisationController -> StandardReportController : redirect to standard report controller
+
+StandardReportController -> StandardReport : request and build template
+StandardReportController <- StandardReport : return HTML
+Actor <- StandardReportController : report displayed by standard renderer
