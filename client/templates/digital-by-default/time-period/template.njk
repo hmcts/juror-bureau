@@ -1,0 +1,114 @@
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "custom-components/date-picker/macro.njk" import datePicker %}
+
+
+<div class="govuk-form-group {% if params.errorMessage %}govuk-form-group--error{% endif %}">
+
+  <p id="event-name-error" class="govuk-error-message">
+    {{ params.errorMessage.text }}
+  </p>
+
+  <div id="dbd-{{ params.id }}" class="{{ params.classes }}" name="dbd-{{ params.name }}" data-content="{{ params.data | console }}"></div>
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+
+            {% set rangeSelectHtml %}
+            {{ govukSelect({
+                id: "select-" + params.id,
+                name: "select-" + params.id,
+                label: {
+                    text: params.labelText,
+                    classes: "govuk-label govuk-label--s"
+                },
+                items: [
+                {
+                    value: "range1",
+                    text: "Last 30 days",
+                    selected: params.timePeriod === "range1" or not params.timePeriod
+                },
+                {
+                    value: "range2",
+                    text: params.quarterRangeDesc,
+                    selected: params.timePeriod === "range2"
+                },
+                {
+                    value: "range3",
+                    text: "Last 6 months",
+                    selected: params.timePeriod === "range3"
+                },
+                {
+                    value: "range4",
+                    text: "Last 12 months",
+                    selected: params.timePeriod === "range4"
+                }
+                ]
+            }) }}
+            {% endset %}
+
+            {% set customDateRangeHtml %}
+            <div id="custom-date-range-{{ params.id }}" class="govuk-grid-row govuk-!-margin-bottom-2">
+                <div class="govuk-grid-column-one-quarter">
+                    {{ datePicker({
+                        id: "custom-date-from-" + params.id,
+                        label: {
+                        text: "From"
+                        },
+                        hint: "For example, 1/1/2026",
+                        dateValue: params.customDateFrom,
+                        dateError: params.customDateFromError
+                    }) }}
+                </div>
+                <div class="govuk-grid-column-one-quarter">
+                    {{ datePicker({
+                        id: "custom-date-to-" + params.id,
+                        label: {
+                        text: "To"
+                        },
+                        hint: "For example, 31/3/2026",
+                        dateValue: params.customDateTo,
+                        dateError: params.customDateToError
+                    }) }}
+                </div>
+            </div>
+            {% endset %}
+
+            {{ govukRadios({    
+                name: "radioTimeRange-" + params.id,
+                fieldset: {
+                    legend: {
+                    text: params.legendText,
+                    isPageHeading: false,
+                    classes: "govuk-fieldset__legend--m"
+                    }
+                },
+                hint: {
+                    text: "Choose a preset period or enter a custom date range."
+                },
+                items: [
+                    {
+                    value: "presetPeriod",
+                    text: "Preset period",
+                    checked: params.timePeriod !== "customRange",
+                    conditional: {
+                        html: rangeSelectHtml
+                    }
+                    },
+                    {
+                    value: "customDateRange",
+                    text: "Custom date range",
+                    checked: params.timePeriod === "customRange",
+                    conditional: {
+                        html: customDateRangeHtml
+                    }
+                    }
+                ]
+            }) }}
+
+        </div>
+    </div>
+
+</div>
+
+

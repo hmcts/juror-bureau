@@ -1,0 +1,78 @@
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "./response-total-by-court-chart.njk" import responseTotalByCourt %}
+{% from "./response-type-by-court-chart.njk" import responseTypeByCourtChart %}
+
+<div class="dashboard-section">
+
+    <div class="moj-page-header-actions">
+        <div class="moj-page-header-actions__title">
+            <h2 class="govuk-heading-l">Response rates</h2>
+        </div>
+        <div class="moj-page-header-actions__actions">
+            <button type="button" id="download-response-rate-csv" class="govuk-button govuk-button--secondary" data-download-url="{{ responseRateCsvRoute }}">
+                Download CSV
+            </button>
+        </div>
+    </div>
+
+    <h3 class="govuk-heading-m">Response rates by month jurors were summoned</h3>
+
+    {# Monthly response rates table #}
+    {% if monthlyResponseRatesTableData.rows | length %}
+        {{ govukTable({
+        id: "responseRatesTable",
+        caption: "Monthly response rates",
+        captionClasses: "govuk-visually-hidden",
+        head: monthlyResponseRatesTableData.head,
+        rows: monthlyResponseRatesTableData.rows
+        }) }}
+    {% else %}
+        <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-top-3">
+        <h2>Monthly response rates - no data found</h2>
+    {% endif %}
+
+    {% if monthlyResponseRatesTableData.cohortMessage %}
+        <p>* At the last data refresh, this cohort was summoned within the last 6 weeks. Its response rate may still increase because of the lag between jurors being summoned and responding.</p>
+    {% endif %}
+
+    {# Total responses by court chart #}
+    {{ responseTotalByCourt({
+        data: totalResponsesChartData,
+        compare: dashboardFormData.dateRangeCompare,
+        dateRangeLabelA: displayDateRange.dateRangeLabelA,
+        dateRangeLabelB: displayDateRange.dateRangeLabelB,
+        nonce: nonce
+        })
+    }}
+
+    {# Response type by court chart #}
+    {{ responseTypeByCourtChart({
+        data: responseTypeChartData,
+        compare: dashboardFormData.dateRangeCompare,
+        dateRangeLabelA: displayDateRange.dateRangeLabelA,
+        dateRangeLabelB: displayDateRange.dateRangeLabelB,
+        nonce: nonce
+    }) }}
+
+    {# Response type by court table #}
+    {% if responseTypeTableData.rows | length %}
+        {{ govukTable({
+        id: "responseTypeTable",
+        caption: "Response type",
+        captionClasses: "govuk-visually-hidden",
+        head: responseTypeTableData.head,
+        rows: responseTypeTableData.rows
+        }) }}
+
+    {% else %}
+        <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-top-3">
+        <h2>Response rates - no data found</h2>
+    {% endif %}
+
+</div>
+
+<script nonce="{{ nonce }}">
+    document.getElementById('download-response-rate-csv').addEventListener('click', function() {
+        window.location.href = this.dataset.downloadUrl;
+    });
+</script>

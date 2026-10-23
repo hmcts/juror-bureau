@@ -474,7 +474,7 @@
       }
       , dateError = false;
 
-    if (moment(attributes.startDate, 'YYYY-MM-DD', true).isValid() === false){
+    if (moment(attributes.startDate, 'DD/MM/YYYY', true).isValid() === false){
       dateError = true;
       message.details = 'Check the start date';
       message.summary = 'Check the start date';
@@ -500,11 +500,11 @@
     startDate = attributes.startDate;
     endDate = attributes.endDate;
 
-    if (moment(endDate, 'YYYY-MM-DD', true).isValid() === false){
+    if (moment(endDate, 'DD/MM/YYYY', true).isValid() === false){
       message.details='Check the end date';
       message.summary='Check the end date';
-    } else if (moment(startDate, 'YYYY-MM-DD', true).isValid() === true){
-      if (moment(moment(endDate, 'YYYY-MM-DD', true)).isBefore(moment(startDate, 'YYYY-MM-DD', true))) {
+    } else if (moment(startDate, 'DD/MM/YYYY', true).isValid() === true){
+      if (moment(moment(endDate, 'DD/MM/YYYY', true)).isBefore(moment(startDate, 'DD/MM/YYYY', true))) {
         message.details='Check the end date is not earlier than the start date';
         message.summary='Check the end date is not earlier than the start date';
       }

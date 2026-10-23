@@ -1,0 +1,125 @@
+{% macro ageDemographicsByCourtChart(params) %}
+  {% set chartId = params.id or 'ageDemographicsByCourtChart' %}
+
+  <h3 class="govuk-heading-m">Age demographics by court</h3>
+  <div class="chart-container">
+    <canvas
+      id="{{ chartId }}"
+      name="{{ chartId }}"
+      aria-label="Age demographics by court or group"
+      role="img">
+    </canvas>
+  </div>
+
+  <script nonce="{{ params.nonce }}">
+    (function() {
+      var canvas = document.getElementById('{{ chartId }}');
+      var chartData = JSON.parse('{{ params.data | dump | safe }}');
+      var compare = {{ params.compare | dump | safe }};
+      var dateRangeLabelA = {{ params.dateRangeLabelA | dump | safe }};
+      var dateRangeLabelB = {{ params.dateRangeLabelB | dump | safe }};
+
+      if (!canvas || typeof Chart === 'undefined') {
+        return;
+      }
+
+      var courtsOrGroups = chartData.courtsOrGroups || [];
+      var labels = courtsOrGroups.map(function(courtOrGroup) {
+        return courtOrGroup.name;
+      });
+      var periodA = courtsOrGroups.map(function(courtOrGroup) {
+        return courtOrGroup.periods.period_a || {};
+      });
+      var ageRanges = [
+        { key: 'lessThan18Percent', label: 'Less than 18', colour: '#912b88' },
+        { key: 'age18To30Percent', label: '18 to 30', colour: '#1d70b8' },
+        { key: 'age31To40Percent', label: '31 to 40', colour: '#28a197' },
+        { key: 'age41To50Percent', label: '41 to 50', colour: '#00703c' },
+        { key: 'age51To60Percent', label: '51 to 60', colour: '#f47738' },
+        { key: 'age61To70Percent', label: '61 to 70', colour: '#d4351c' },
+        { key: 'age71To75Percent', label: '71 to 75', colour: '#4c6272' },
+        { key: 'over75Percent', label: 'Over 75', colour: '#6f777b' }
+      ];
+
+      var datasets = ageRanges.map(function(ageRange) {
+        return {
+          label: compare ? ageRange.label + ' (' + dateRangeLabelA + ')' : ageRange.label,
+          stack: 'period-a',
+          data: periodA.map(function(period) {
+            return period[ageRange.key] || 0;
+          }),
+          backgroundColor: ageRange.colour
+        };
+      });
+
+      if (compare) {
+        var periodB = courtsOrGroups.map(function(courtOrGroup) {
+          return courtOrGroup.periods.period_b || {};
+        });
+
+        datasets = datasets.concat(ageRanges.map(function(ageRange) {
+          return {
+            label: ageRange.label + ' (' + dateRangeLabelB + ')',
+            stack: 'period-b',
+            data: periodB.map(function(period) {
+              return period[ageRange.key] || 0;
+            }),
+            backgroundColor: ageRange.colour + '73'
+          };
+        }));
+      }
+
+      new Chart(canvas.getContext('2d'), {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: datasets
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          tooltips: {
+            callbacks: {
+              label: function(tooltipItem, data) {
+                var dataset = data.datasets[tooltipItem.datasetIndex];
+                return dataset.label + ': ' + tooltipItem.yLabel + '%';
+              }
+            }
+          },
+          legend: {
+            display: true,
+            position: 'bottom',
+            labels: {
+              fontStyle: 'normal',
+              fontColor: '#000',
+              padding: 16
+            }
+          },
+          scales: {
+            xAxes: [{
+              stacked: true,
+              scaleLabel: {
+                display: false,
+                labelString: 'Court or group'
+              }
+            }],
+            yAxes: [{
+              stacked: true,
+              ticks: {
+                beginAtZero: true,
+                max: 100,
+                callback: function(value) {
+                  return value + '%';
+                }
+              },
+              scaleLabel: {
+                display: false,
+                labelString: 'Percentage'
+              }
+            }]
+          }
+        }
+      });
+    })();
+  </script>
+{% endmacro %}
