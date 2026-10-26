@@ -6,7 +6,7 @@
   'use strict';
 
   var errors = require('./../components/errors')
-    , Router = require('named-routes')
+    , Router = require('../lib/named-routes')
     , router = new Router();
   const auth = require('../components/auth');
 
@@ -73,13 +73,20 @@
         return errors(req, res, 200);
       });
 
-    app.route('/health/*')
+    app.route('/health/*splat')
       .get(function(req, res) {
         return errors(req, res, 200);
       });
 
     // All undefined asset or api routes should return a 404
-    app.route('/:url(api|auth|components|app|bower_components|assets)/*')
+    app.route([
+      '/api/{*splat}',
+      '/auth/{*splat}',
+      '/components/{*splat}',
+      '/app/{*splat}',
+      '/bower_components/{*splat}',
+      '/assets/{*splat}',
+    ])
       .get(function(req, res) {
         return errors(req, res, 404);
       });
@@ -87,7 +94,7 @@
   
 
     // Reaching this point implys to URL matches have been made, we can render standard 404.
-    app.route('/*')
+    app.route('/{*splat}')
       .get(function(req, res) {
         return errors(req, res, 404);
       });
