@@ -39,9 +39,10 @@
         , currentPage = req.query['page'] || 1
         , sortBy = req.query['sortBy'] || 'name'
         , sortOrder = req.query['sortOrder'] || 'ascending';
+      const query = { ...req.query };
       let courtsToDisplay;
 
-      delete req.query['isActive'];
+      delete query['isActive'];
       delete req.session.createUser;
 
       try {
@@ -83,27 +84,27 @@
 
         const searchOpts = {};
 
-        if (req.query.userName) {
-          payload['user_name'] = req.query.userName;
-          searchOpts['userName'] = req.query.userName;
-          sortUrlPrefix = `${sortUrlPrefix}&userName=${req.query.userName}`;
+        if (query.userName) {
+          payload['user_name'] = query.userName;
+          searchOpts['userName'] = query.userName;
+          sortUrlPrefix = `${sortUrlPrefix}&userName=${query.userName}`;
         };
-        if (req.query.court) {
-          payload['court'] = req.query.court;
-          sortUrlPrefix = `${sortUrlPrefix}&court=${req.query.court}`;
-          const courtObj = req.session.adminCourts.find((c) => c.locationCode === req.query.court);
+        if (query.court) {
+          payload['court'] = query.court;
+          sortUrlPrefix = `${sortUrlPrefix}&court=${query.court}`;
+          const courtObj = req.session.adminCourts.find((c) => c.locationCode === query.court);
 
           searchOpts['court'] = transformCourtName(courtObj);
         };
-        if (req.query.userType) {
-          payload['user_type'] = req.query.userType;
-          searchOpts['userType'] = req.query.userType;
-          sortUrlPrefix = `${sortUrlPrefix}&userType=${req.query.userType}`;
+        if (query.userType) {
+          payload['user_type'] = query.userType;
+          searchOpts['userType'] = query.userType;
+          sortUrlPrefix = `${sortUrlPrefix}&userType=${query.userType}`;
         };
-        if (req.query.roles) {
-          payload['roles'] = req.query.roles.split(',');
-          searchOpts['roles'] = req.query.roles;
-          sortUrlPrefix = `${sortUrlPrefix}&roles=${req.query.roles}`;
+        if (query.roles) {
+          payload['roles'] = query.roles.split(',');
+          searchOpts['roles'] = query.roles;
+          sortUrlPrefix = `${sortUrlPrefix}&roles=${query.roles}`;
         }
 
 
@@ -122,8 +123,8 @@
         }
         let queryString = '';
 
-        if (!_.isEmpty(req.query)) {
-          queryString = '&' + new URLSearchParams(req.query).toString();
+        if (!_.isEmpty(query)) {
+          queryString = '&' + new URLSearchParams(query).toString();
         }
 
         return res.render('administration/users/users.njk', {
@@ -153,34 +154,35 @@
 
   module.exports.postSearchUsers = function(app) {
     return async function(req, res) {
+      const query = { ...req.query };
       const buildUrl = function(body) {
         let queryString = '';
 
         if (body.userName) {
-          req.query['userName'] = body.userName;
+          query['userName'] = body.userName;
         }
         if (body.locationCode) {
-          req.query['court'] = body.locationCode;
+          query['court'] = body.locationCode;
         }
         if (body.userType) {
-          req.query['userType'] = body.userType;
+          query['userType'] = body.userType;
         }
         if (body.roles) {
-          req.query['roles'] = body.roles;
+          query['roles'] = body.roles;
         }
 
-        if (!_.isEmpty(req.query)) {
-          const queryParams = new URLSearchParams(req.query);
+        if (!_.isEmpty(query)) {
+          const queryParams = new URLSearchParams(query);
           queryParams.delete('page');
           queryString = '?' + queryParams.toString();
         }
         return app.namedRoutes.build('administration.users.get') + queryString;
       };
 
-      delete req.query.userName;
-      delete req.query.court;
-      delete req.query.userType;
-      delete req.query.roles
+      delete query.userName;
+      delete query.court;
+      delete query.userType;
+      delete query.roles;
 
       matchUserCourt(req.session.adminCourts, {courtNameOrLocation: req.body.courtSearch})
         .then(function(court) {
@@ -210,8 +212,6 @@
       const radioUrl =  app.namedRoutes.build('administration.court-bureau.users.get', {
         location: isCourtManager(req, res) ? 'court' : 'bureau',
       });
-
-      delete req.query['isActive'];
 
       try {
         let pagination;
