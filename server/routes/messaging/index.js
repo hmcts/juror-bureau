@@ -5,6 +5,7 @@
   const sendController = require('./send-messages.controller');
   const exportController = require('./export-contact-details.controller');
   const { isCourtUser } = require('../../components/auth/user-type');
+  const { exportContactDetails } = require('../../components/route-parameter-constraints');
 
   module.exports = function(app) {
     app.get('/messaging/send',
@@ -178,21 +179,24 @@
       exportController.postCheckJuror(app),
     );
 
-    app.get('/messaging/:message(export-contact-details)/trials',
+    app.get('/messaging/:message/trials',
       'messaging.export-contacts.trials.get',
+      exportContactDetails,
       auth.verify,
       isCourtUser,
       sendController.getSelectTrial(app),
     );
-    app.post('/messaging/:message(export-contact-details)/trials',
+    app.post('/messaging/:message/trials',
       'messaging.export-contacts.trials.post',
+      exportContactDetails,
       auth.verify,
       isCourtUser,
       sendController.postSelectTrial(app),
     );
 
-    app.post('/messaging/:message(export-contact-details)/trials/filter',
+    app.post('/messaging/:message/trials/filter',
       'messaging.export-contacts.trials.filter.post',
+      exportContactDetails,
       auth.verify,
       isCourtUser,
       sendController.postFilterTrial(app),

@@ -5,6 +5,7 @@ const failedToAttendController = require('./juror-update.failed-to-attend.contro
 const auth = require('../../../components/auth/');
 const disqualifyController = require('./juror-update.disqualify.controller');
 const respondedController = require('./juror-update.responded.controller');
+const { grantOrRefuse } = require('../../../components/route-parameter-constraints');
 
 module.exports = function(app) {
 
@@ -29,12 +30,14 @@ module.exports = function(app) {
     'juror.update.deferral.pools.post',
     auth.verify,
     controller.postDeferralPools(app));
-  app.get('/juror-management/juror/:jurorNumber/update/deferral/:letter(grant|refuse)/letter'
+  app.get('/juror-management/juror/:jurorNumber/update/deferral/:letter/letter'
     , 'juror.update.deferral.letter.get'
+    , grantOrRefuse
     , auth.verify
     , controller.getDeferralLetter(app));
-  app.post('/juror-management/juror/:jurorNumber/update/deferral/:letter(grant|refuse)/letter'
+  app.post('/juror-management/juror/:jurorNumber/update/deferral/:letter/letter'
     , 'juror.update.deferral.letter.post'
+    , grantOrRefuse
     , auth.verify
     , controller.postDeferralLetter(app));
 
