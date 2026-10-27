@@ -6,7 +6,7 @@
   'use strict';
 
   var errors = require('./../components/errors')
-    , Router = require('../lib/named-routes')
+    , Router = require('named-routes')
     , router = new Router();
   const auth = require('../components/auth');
 
