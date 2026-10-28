@@ -100,7 +100,10 @@
       req.session.digitalByDefaultDashboardForm.dateRangeCompare
     );
 
-    const monthlyResponseRatesTableData = getMonthlyResponseRatesTableData(dashboardData?.apiResult)
+    const monthlyResponseRatesTableData = getMonthlyResponseRatesTableData(
+      dashboardData?.apiResult,
+      dashboardFormData.filterGroup
+    );
 
     const displayDateRange = getDisplayDateRange(dashboardFormData);
 
@@ -513,10 +516,17 @@
 
   // Functions to return table data
 
-  const getMonthlyResponseRatesTableData = apiResponse => {
+  const getMonthlyResponseRatesTableData = (apiResponse, filterGroup = 'allCourts') => {
 
     const monthlyResponseRates = apiResponse.monthlyResponseRates || [];
-    const groupNames = Object.keys(monthlyResponseRates[0]?.groupResponseRatePercent || {});
+    const groupNamesByFilter = {
+      allCourts: ['allCourts'],
+      allGroups: ['group1', 'group2', 'group3'],
+      group1: ['group1'],
+      group2: ['group2'],
+      group3: ['group3'],
+    };
+    const groupNames = groupNamesByFilter[filterGroup] || [];
 
     const table = {
       head: [],
@@ -549,7 +559,9 @@
       ];
 
       groupNames.forEach(groupName => {
-        monthRow.push({id: groupName, text: groupResponseRatePercent[groupName] + '%' ?? '', format: 'numeric' });
+        const groupRate = groupResponseRatePercent[groupName];
+        const groupRateText = groupRate === null || groupRate === undefined ? '-' : `${groupRate}%`;
+        monthRow.push({id: groupName, text: groupRateText, format: 'numeric' });
       });
 
       table.rows.push(monthRow);
