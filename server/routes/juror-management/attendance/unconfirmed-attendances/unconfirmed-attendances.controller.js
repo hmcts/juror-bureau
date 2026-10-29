@@ -11,6 +11,7 @@
   module.exports.getUnconfirmedAttendances = function(app) {
     return async function(req, res) {
       const { date } = req.query;
+      const encodedDate = date ? encodeURIComponent(date) : null;
       const selectedDate = date ? new Date(date) : new Date();
       const locCode = req.session.authentication.locCode;
 
@@ -32,7 +33,7 @@
             built: true,
             url: app.namedRoutes.build('juror-management.attendance.get', {
               status: 'in-waiting'
-            }) + `${date ? `?date=${date}` : ''}`,
+            }) + `${encodedDate ? `?date=${encodedDate}` : ''}`,
           },
           bannerMessage
         });
@@ -55,6 +56,7 @@
     return async function(req, res) {
       const { jurorNumber } = req.params;
       const { date } = req.query;
+      const encodedDate = date ? encodeURIComponent(date) : null;
       const checkInTimeHour = req.body.checkInTimeHour;
       const checkInTimeMinute = req.body.checkInTimeMinute;
       const checkInTimePeriod = req.body.checkInTimePeriod;
@@ -91,7 +93,11 @@
       if (!_.isEmpty(completeValidatorResult)) {
         req.session.errors = completeValidatorResult;
         req.session.formFields = req.body;
-        return res.redirect(app.namedRoutes.build('juror-management.attendance.unconfirmed-attendances.update.get', { jurorNumber }) + `${date ? `?date=${date}` : ''}`);
+        return res.redirect(
+          app.namedRoutes.build('juror-management.attendance.unconfirmed-attendances.update.get', {
+            jurorNumber,
+          }) + `${encodedDate ? `?date=${encodedDate}` : ''}`,
+        );
       }
 
       const payload = {
@@ -107,7 +113,10 @@
 
         req.session.bannerMessage = `Attendance confirmed for juror <a href='${app.namedRoutes.build('juror-record.overview.get', { jurorNumber })}' class='govuk-link'>${jurorNumber}</a>`;
 
-        return res.redirect(app.namedRoutes.build('juror-management.attendance.unconfirmed-attendances.get') + `${date ? `?date=${date}` : ''}`);
+        return res.redirect(
+          app.namedRoutes.build('juror-management.attendance.unconfirmed-attendances.get')
+          + `${encodedDate ? `?date=${encodedDate}` : ''}`,
+        );
       } catch (err) {
         app.logger.crit('Failed to confirm juror\'s attendance', {
           auth: req.session.authentication,
@@ -118,7 +127,11 @@
         if (err.statusCode === 422 && err.error?.statusCode === 'code=INVALID_JUROR_STATUS') {
           req.session.errors = makeManualError('status', err.error?.message || 'Invalid juror status');
           req.session.formFields = req.body;
-          return res.redirect(app.namedRoutes.build('juror-management.attendance.unconfirmed-attendances.update.get', { jurorNumber }) + `${date ? `?date=${date}` : ''}`);
+          return res.redirect(
+            app.namedRoutes.build('juror-management.attendance.unconfirmed-attendances.update.get', {
+              jurorNumber,
+            }) + `${encodedDate ? `?date=${encodedDate}` : ''}`,
+          );
         }
 
         return res.render('_errors/generic', { err });
