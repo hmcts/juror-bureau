@@ -1,0 +1,92 @@
+{% macro responseTotalByCourt(params) %}
+  {% set chartId = params.id or 'responseTotalByCourtChart' %}
+
+  {% set chartColourA = '#28a197' %} {# Turqouse #}
+  {% set chartColourB = '#5694ca' %} {# Blue #}
+
+  <h3 class="govuk-heading-m">Total responses by court</h3>
+  
+  <div class="chart-container">
+    <canvas
+      id="{{ chartId }}"
+      name="{{ chartId }}"
+      aria-label="Total responses by court"
+      role="img">
+    </canvas>
+  </div>
+
+  <script nonce="{{ params.nonce }}">
+    (function() {
+      var canvas = document.getElementById('{{ chartId }}');
+      var chartData = JSON.parse('{{ params.data | dump | safe }}');
+      var compare = {{ params.compare | dump | safe }};
+      var dateRangeLabelA = {{ params.dateRangeLabelA | dump | safe }};
+      var dateRangeLabelB = {{ params.dateRangeLabelB | dump | safe }};
+
+      if (!canvas || typeof Chart === 'undefined') {
+        return;
+      }
+
+      var courtsOrGroups = chartData.courtsOrGroups || [];
+      var labels = courtsOrGroups.map(function(courtOrGroup) {
+        return courtOrGroup.name;
+      });
+      var periodAValues = courtsOrGroups.map(function(courtOrGroup) {
+        return courtOrGroup.periods.period_a || 0;
+      });
+      var datasets = [{
+        label: compare ? 'Total responses (' + dateRangeLabelA + ')' : 'Total responses',
+        data: periodAValues,
+        backgroundColor: '#1d70b8'
+      }];
+
+      if (compare) {
+        datasets.push({
+          label: 'Total responses (' + dateRangeLabelB + ')',
+          data: courtsOrGroups.map(function(courtOrGroup) {
+            return courtOrGroup.periods.period_b || 0;
+          }),
+          backgroundColor: '#1d70b873'
+        });
+      }
+
+      new Chart(canvas.getContext('2d'), {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: datasets
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          legend: {
+            display: true,
+            position: 'bottom',
+            labels: {
+              fontStyle: 'normal',
+              fontColor: '#000',
+              padding: 16
+            }
+          },
+          scales: {
+            xAxes: [{
+              scaleLabel: {
+                display: false,
+                labelString: 'Court or group'
+              }
+            }],
+            yAxes: [{
+              ticks: {
+                beginAtZero: true
+              },
+              scaleLabel: {
+                display: false,
+                labelString: 'Total responses'
+              }
+            }]
+          }
+        }
+      });
+    })();
+  </script>
+{% endmacro %}

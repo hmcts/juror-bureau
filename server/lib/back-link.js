@@ -10,8 +10,7 @@ const whitelistedUrls = [
   '/search',
   '/inbox',
   '/pending',
-  '/completed',
-  '/date-picker/bank-holidays',
+  '/completed'
 ];
 
 const bypassUrls = [
@@ -34,6 +33,7 @@ const bypassUrls = [
   '/juror-management/approve-expenses/view-expenses/',
   '/on-call/confirm',
   '/on-call/validate',
+  '/date-picker/bank-holidays'
 ];
 
 const assetUrls = [

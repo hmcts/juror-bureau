@@ -14,7 +14,7 @@ module.exports.printPoolBallotCards = (app) => {
     });
 
     const config = {
-      locCode: req.session.authentication.locCode,
+      locCode: req.query.courtLocCode || req.session.authentication.locCode,
     };
 
     if (ballotType === 'trial') {

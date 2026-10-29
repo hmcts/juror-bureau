@@ -73,6 +73,7 @@
   //     fontSize?: number, // Font size for report
   //     totalsRow?: (data: any, isPrint?: boolean) => any[], // Custom totals row
   //     columnWidths?: (string | number)[], // Custom column widths
+  //     fitColumnsToPage?: boolean, // Size print columns equally to fit the available page width
   //     filterBackLinkUrl?: string, // Backlink URL for filter page
   //     backUrl?: string, // Backlink URL for report page
   //     defaultSortColumn?: string, // Default column to sort by
@@ -379,6 +380,7 @@
           totals: !courtUser,
         },
         printLandscape: true,
+        fitColumnsToPage: true,
       },
       'persons-attending-summary': {
         title: 'Persons attending (summary)',
