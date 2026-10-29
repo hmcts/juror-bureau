@@ -3,9 +3,19 @@
 
   const _ = require('lodash');
   const { dateFilter, toSentenceCase } = require('../../components/filters');
-  const { makeManualError, paginationBuilder } = require('../../lib/mod-utils');
+  const { makeManualError, paginationBuilder, validateQueryParam } = require('../../lib/mod-utils');
   const { erLocalAuthorityStatusDAO, localAuthoritiesDAO, erUploadStats } = require('../../objects/electoral-register');
   const PAGE_SIZE = 20;
+
+  const validateElectoralRegisterQueryParam = (req, res, paramName, paramValue) => {
+    if (typeof paramValue === 'undefined' || paramValue === '') {
+      return '';
+    }
+
+    // Prevent the shared query parser from truncating a submitted value at '='.
+    const value = typeof paramValue === 'string' && !paramValue.includes('=') ? paramValue : '';
+    return validateQueryParam(req, res, `?${paramName}=${value}`);
+  };
 
   module.exports.getDashboard = app => async (req, res) => {
     const { localAuthorityFilter, status, sortBy, sortOrder } = req.query;
@@ -138,28 +148,68 @@
   };
 
   module.exports.postLocalAuthorityFilter = app => (req, res) => {
-    const { status, sortBy, sortOrder } = req.query;
+    const { sortBy, sortOrder } = req.query;
     const localAuthorityCode = req.session.localAuthorities.find(
       la => la.localAuthorityName === req.body.localAuthorityFilter
     )?.localAuthorityCode;
+    const localAuthorityCodeValue = validateElectoralRegisterQueryParam(
+      req, res, 'electoralRegisterLocalAuthorityFilter', localAuthorityCode
+    );
+    if (localAuthorityCodeValue === null) {
+      return;
+    }
+    const sortByValue = validateElectoralRegisterQueryParam(req, res, 'electoralRegisterSortBy', sortBy);
+    if (sortByValue === null) {
+      return;
+    }
+    const sortOrderValue = validateElectoralRegisterQueryParam(req, res, 'electoralRegisterSortOrder', sortOrder);
+    if (sortOrderValue === null) {
+      return;
+    }
 
     delete req.session.erDashboardData;
 
     return res.redirect(
-      app.namedRoutes.build('electoral-register.get') + buildQueryParams('all', localAuthorityCode, sortBy, sortOrder)
+      app.namedRoutes.build('electoral-register.get')
+        + buildQueryParams('all', localAuthorityCodeValue, sortByValue, sortOrderValue)
     );
   };
 
   module.exports.getFilterUploadStatus = app => async (req, res) => {
     const { localAuthorityFilter, status } = req.query;
+    const localAuthorityFilterValue = validateElectoralRegisterQueryParam(
+      req, res, 'electoralRegisterLocalAuthorityFilter', localAuthorityFilter
+    );
+    if (localAuthorityFilterValue === null) {
+      return;
+    }
+    const statusValue = validateElectoralRegisterQueryParam(req, res, 'electoralRegisterStatus', status);
+    if (statusValue === null) {
+      return;
+    }
+
     delete req.session.erDashboardData;
     return res.redirect(
-      app.namedRoutes.build('electoral-register.get') + buildQueryParams(status, localAuthorityFilter)
+      app.namedRoutes.build('electoral-register.get') + buildQueryParams(statusValue, localAuthorityFilterValue)
     );
   };
 
   module.exports.postSelectedLocalAuthorities = app => (req, res) => {
     const { action, status, localAuthorityFilter } = req.query;
+    const actionValue = validateElectoralRegisterQueryParam(req, res, 'electoralRegisterAction', action);
+    if (actionValue === null) {
+      return;
+    }
+    const statusValue = validateElectoralRegisterQueryParam(req, res, 'electoralRegisterStatus', status);
+    if (statusValue === null) {
+      return;
+    }
+    const localAuthorityFilterValue = validateElectoralRegisterQueryParam(
+      req, res, 'electoralRegisterLocalAuthorityFilter', localAuthorityFilter
+    );
+    if (localAuthorityFilterValue === null) {
+      return;
+    }
 
     if (
       !req.session.erDashboardData?.checkedLocalAuthorities ||
@@ -167,7 +217,7 @@
     ) {
       req.session.errors = makeManualError('selectedAuthorities', 'At least one authority must be selected');
       return res.redirect(
-        app.namedRoutes.build('electoral-register.get') + buildQueryParams(status, localAuthorityFilter)
+        app.namedRoutes.build('electoral-register.get') + buildQueryParams(statusValue, localAuthorityFilterValue)
       );
     }
 
@@ -179,14 +229,14 @@
 
     req.session.checkedLaCodes = selectedAuthorities; // Store selected local authority codes in session for use in subsequent flows
 
-    switch (action) {
+    switch (actionValue) {
       case 'send-reminder':
         return res.redirect(app.namedRoutes.build('electoral-register.send-reminder.get'));
       case 'mark-email-delivered':
         return res.redirect(app.namedRoutes.build('electoral-register.mark-email-delivered.get'));
       default:
         return res.redirect(
-          app.namedRoutes.build('electoral-register.get') + buildQueryParams(status, localAuthorityFilter)
+          app.namedRoutes.build('electoral-register.get') + buildQueryParams(statusValue, localAuthorityFilterValue)
         );
     }
   };
@@ -417,4 +467,5 @@
     }
     return queryParams;
   };
+
 })();

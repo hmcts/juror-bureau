@@ -1618,6 +1618,20 @@
         break;
       case 'courtsearch':
         isParamValid = /^[a-z0-9]+$/i.test(paramValue);
+      case 'electoralregisterstatus':
+        isParamValid = ['not-uploaded', 'uploaded', 'all'].includes(paramValue);
+        break;
+      case 'electoralregisterlocalauthorityfilter':
+        isParamValid = /^\d{3}$/.test(paramValue);
+        break;
+      case 'electoralregistersortby':
+        isParamValid = ['localAuthorityName', 'uploadStatus', 'lastUploadDate'].includes(paramValue);
+        break;
+      case 'electoralregistersortorder':
+        isParamValid = ['ascending', 'descending'].includes(paramValue);
+        break;
+      case 'electoralregisteraction':
+        isParamValid = ['send-reminder', 'mark-email-delivered'].includes(paramValue);
         break;
       default:
         isParamValid = false;
