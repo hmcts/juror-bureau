@@ -23,6 +23,7 @@
 
       try {
         attendanceDate = req.query.date ? req.query.date : req.session.attendanceListDate;
+        const encodedAttendanceDate = encodeURIComponent(attendanceDate);
 
         const body = {
           commonData: {
@@ -58,15 +59,16 @@
         } else if (req.url.includes('attendance/unconfirmed-attendances')) {
           processUrl = app.namedRoutes.build('juror-management.attendance.unconfirmed-attendances.update.post', {
             jurorNumber: juror.jurorNumber,
-          }) + '?date=' + attendanceDate;
-          cancelUrl = app.namedRoutes.build('juror-management.attendance.unconfirmed-attendances.get') + '?date=' + attendanceDate;
+          }) + '?date=' + encodedAttendanceDate;
+          cancelUrl = app.namedRoutes.build('juror-management.attendance.unconfirmed-attendances.get')
+            + '?date=' + encodedAttendanceDate;
         } else {
           processUrl = app.namedRoutes.build('juror-management.attendance.change-times.post', {
             jurorNumber: juror.jurorNumber,
           });
           cancelUrl = app.namedRoutes.build('juror-management.attendance.get', {
             status: 'in-waiting'
-          }) + '?date=' + attendanceDate;
+          }) + '?date=' + encodedAttendanceDate;
           deleteUrl = app.namedRoutes.build('juror-management.attendance.delete-attendance.get', {
             jurorNumber: juror.jurorNumber,
           });
@@ -137,6 +139,8 @@
 
       delete req.session.attendanceDate;
 
+      const encodedAttendanceDate = encodeURIComponent(attendanceDate);
+
       // Set up links for correct journey flow
       if (req.url.includes('record')) {
         invalidUrl = app.namedRoutes.build('juror-record.attendance.change-times.post', {
@@ -148,10 +152,10 @@
       } else {
         invalidUrl = app.namedRoutes.build('juror-management.attendance.change-times.get', {
           jurorNumber,
-        }) + '?date=' + attendanceDate;
+        }) + '?date=' + encodedAttendanceDate;
         redirectUrl = app.namedRoutes.build('juror-management.attendance.get', {
           status: 'in-waiting'
-        }) + '?date=' + attendanceDate;
+        }) + '?date=' + encodedAttendanceDate;
       }
 
       let validatorResult = validate({
