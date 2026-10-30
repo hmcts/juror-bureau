@@ -1616,6 +1616,9 @@
       case 'action':
         isParamValid = ['fix', 'new'].includes(paramValue);
         break;
+      case 'courtsearch':
+        isParamValid = /^[a-z0-9]+$/i.test(paramValue);
+        break;
       default:
         isParamValid = false;
     }
