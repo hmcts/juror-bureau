@@ -4,6 +4,7 @@
   const _ = require('lodash');
   const validate = require('validate.js');
   const modUtils = require('../../lib/mod-utils');
+  const moment = require('moment');
   const {
     exportContactDetailsValidator,
     detailsToExportValidator,
@@ -435,13 +436,16 @@
 
     switch (searchBy) {
     case 'jurorNumber':
-      queryParams = `?searchBy=jurorNumber&jurorNumber=${query.jurorNumber}`;
+      const validJurorNumber = modUtils.validateQueryParam(null, null, `?jurorNumber=${query.jurorNumber}`, null);
+      queryParams = `?searchBy=jurorNumber&jurorNumber=${validJurorNumber}`;
       break;
     case 'jurorName':
-      queryParams = `?searchBy=jurorName&jurorName=${query.jurorName}`;
+      const validJurorName = modUtils.validateQueryParam(null, null, `?jurorName=${query.jurorName}`, null);
+      queryParams = `?searchBy=jurorName&jurorName=${validJurorName}`;
       break;
     case 'pool':
-      queryParams = `?searchBy=pool&poolNumber=${query.poolNumber}`;
+      const validPoolNumber = modUtils.validateQueryParam(null, null, `?poolNumber=${query.poolNumber}`, null);
+      queryParams = `?searchBy=pool&poolNumber=${validPoolNumber}`;
       break;
     case 'court':
       queryParams = `?searchBy=court&courtName=${query.courtName}`;
@@ -449,17 +453,20 @@
       break;
     case 'date':
       if (query.dateDeferredTo) {
-        queryParams = `?searchBy=date&dateDeferredTo=${dateFilter(query.dateDeferredTo, 'DD/MM/yyyy', 'yyyy-MM-DD')}`;
+        const validDateDeferredTo = moment(query.dateDeferredTo, ['DD/MM/YYYY','YYYY-MM-DD'], true).isValid() ? query.dateDeferredTo : null;
+        queryParams = `?searchBy=date&dateDeferredTo=${dateFilter(validDateDeferredTo, 'DD/MM/yyyy', 'yyyy-MM-DD')}`;
       }
       if (query.nextDueAtCourtDate) {
-        queryParams = `?searchBy=date&nextDueAtCourtDate=${dateFilter(query.nextDueAtCourtDate, 'DD/MM/yyyy', 'yyyy-MM-DD')}`;
+        const validNextDueAtCourtDate = moment(query.nextDueAtCourtDate, ['DD/MM/YYYY','YYYY-MM-DD'], true).isValid() ? query.nextDueAtCourtDate : null;
+        queryParams = `?searchBy=date&nextDueAtCourtDate=${dateFilter(validNextDueAtCourtDate, 'DD/MM/yyyy', 'yyyy-MM-DD')}`;
       }
       break;
     case 'postcode':
       queryParams = `?searchBy=postcode&postcode=${query.postcode}`;
       break;
     case 'trial':
-      queryParams = `?searchBy=trial&trialNumber=${encodeURIComponent(query.trialNumber)}`;
+      const validTrialNumber = modUtils.validateQueryParam(null, null, `?trialNumber=${query.trialNumber}`, null);
+      queryParams = `?searchBy=trial&trialNumber=${encodeURIComponent(validTrialNumber)}`;
       break;
     }
 
