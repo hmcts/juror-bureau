@@ -82,6 +82,7 @@
 
   module.exports.getJurorsList = function(app) {
     return async function(req, res) {
+      const query = { ...req.query };
       const {
         searchBy,
         jurorNumber,
@@ -94,10 +95,10 @@
         trialNumber,
         sortBy,
         sortOrder,
-      } = req.query;
+      } = query;
       const isEmpty = v => !v || v === '';
       const tmpErrors = _.clone(req.session.errors);
-      const currentPage = req.query.page || 1;
+      const currentPage = query.page || 1;
 
       delete req.session.errors;
 
@@ -115,12 +116,12 @@
         return res.redirect(app.namedRoutes.build('messaging.export-contacts.get'));
       }
 
-      if (req.query.clearFilters === 'true') {
-        delete req.query.include;
-        delete req.query.showOnly;
+      if (query.clearFilters === 'true') {
+        delete query.include;
+        delete query.showOnly;
       }
 
-      const urlPrefix = buildQueryParams(searchBy, req.query);
+      const urlPrefix = buildQueryParams(searchBy, query);
 
       const clearFiltersUrl = app.namedRoutes.build('messaging.export-contacts.jurors.get') + urlPrefix
         + '&clearFilters=true';
@@ -145,8 +146,8 @@
           filterUrl,
           clearFiltersUrl,
           submitUrl,
-          showOnly: req.query.showOnly ? req.query.showOnly.split(',') : [],
-          include: req.query.include ? req.query.include.split(','): [],
+          showOnly: query.showOnly ? query.showOnly.split(',') : [],
+          include: query.include ? query.include.split(','): [],
           backLinkUrl: {
             built: true,
             url: app.namedRoutes.build('messaging.export-contacts.get'),
@@ -160,7 +161,7 @@
       };
 
       const locCode = req.session.authentication.locCode;
-      const payload = buildSearchPayload(req.query, currentPage);
+      const payload = buildSearchPayload(query, currentPage);
       let jurorsList;
       let formatedList;
       let pagination;
@@ -196,24 +197,26 @@
 
   module.exports.postJurorsFilter = function(app) {
     return function(req, res) {
-      delete req.query.include;
-      delete req.query.showOnly;
+      const query = { ...req.query };
+
+      delete query.include;
+      delete query.showOnly;
 
       if (req.body) {
         if (req.body.include) {
-          req.query.include = req.body.include;
-          req.query.showFilter = 'true';
+          query.include = req.body.include;
+          query.showFilter = 'true';
         }
         if (req.body.showOnly) {
-          req.query.showOnly = req.body.showOnly;
-          req.query.showFilter = 'true';
+          query.showOnly = req.body.showOnly;
+          query.showFilter = 'true';
         }
       }
 
       // on applying filters clear jurors checked
       req.session.messaging.checkedJurors = [];
 
-      const queryParams = buildQueryParams(req.query.searchBy, req.query);
+      const queryParams = buildQueryParams(query.searchBy, query);
 
       return res.redirect(app.namedRoutes.build('messaging.export-contacts.jurors.get') + queryParams);
     };
