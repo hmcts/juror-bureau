@@ -172,6 +172,8 @@
           manualResponseCount =
             onlineResponseCount - response.autoProcessedResponseData.autoProcessedOnlineResponseTotal;
 
+          console.log('\n\nDashboard response data:\n', response, '\n\n');
+
           dashboardData = {
             historicTotals: getHistoricTotals(response),
             summonsesSent: {
@@ -209,7 +211,10 @@
               automaticPercent: Math.round(response.autoProcessedResponseData.percentAutoProcessedOnlineResponses),
               manualCount: manualResponseCount,
               manualFormatted: manualResponseCount.toLocaleString(),
-              manualPercent: getPercentageValue(onlineResponseCount, manualResponseCount),
+              manualPercent: getPercentageValue(response.autoProcessedResponseData.summonedTotal, manualResponseCount),
+              summonedCount: response.autoProcessedResponseData.summonedTotal - response.autoProcessedResponseData.autoProcessedOnlineResponseTotal - manualResponseCount,
+              summonedFormatted: (response.autoProcessedResponseData.summonedTotal - response.autoProcessedResponseData.autoProcessedOnlineResponseTotal - manualResponseCount).toLocaleString(),
+              summonedPercent: getPercentageValue(response.autoProcessedResponseData.summonedTotal, response.autoProcessedResponseData.summonedTotal - response.autoProcessedResponseData.autoProcessedOnlineResponseTotal - manualResponseCount)
             },
             timeReceived: {
               within7DaysDigital: response.mandatoryKpis.onlineResponsesOverTime.within7Days,
