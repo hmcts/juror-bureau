@@ -229,11 +229,11 @@
 
     {# How many online replies were automatically processed? #}
     <div class="govuk-grid-column-one-half">
-      {{ dashboardAutoProcessed({
+      {{ dashboardChartDoughnut({
         id: "automaticallyProcessed",
         nonce: nonce,
         chartHeading: "How many online replies were automatically processed?",
-        labels: ["Automatically processed"],
+        labels: ["Automatically processed", "Not/Manually processed"],
         values: [dashboardData.automaticallyProcessed.automaticCount, dashboardData.automaticallyProcessed.manualCount],
         valuesFormatted: [dashboardData.automaticallyProcessed.automaticFormatted, dashboardData.automaticallyProcessed.manualFormatted],
         valuesPerc: [dashboardData.automaticallyProcessed.automaticPercent, dashboardData.automaticallyProcessed.manualPercent],
