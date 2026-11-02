@@ -232,11 +232,11 @@
       {{ dashboardChartDoughnut({
         id: "automaticallyProcessed",
         nonce: nonce,
-        chartHeading: "How many online replies were automatically processed?",
-        labels: ["Automatically processed", "Manually processed", "Not recieved"],
-        values: [dashboardData.automaticallyProcessed.automaticCount, dashboardData.automaticallyProcessed.manualCount, dashboardData.automaticallyProcessed.summonedCount],
-        valuesFormatted: [dashboardData.automaticallyProcessed.automaticFormatted, dashboardData.automaticallyProcessed.manualFormatted, dashboardData.automaticallyProcessed.summonedFormatted],
-        valuesPerc: [dashboardData.automaticallyProcessed.automaticPercent, dashboardData.automaticallyProcessed.manualPercent, dashboardData.automaticallyProcessed.summonedPercent],
+        chartHeading: "How many online replies were automatically processed as a percentage of summonses sent?",
+        labels: ["Automatically processed", "Not auto processed"],
+        values: [dashboardData.automaticallyProcessed.automaticCount, dashboardData.automaticallyProcessed.summonedCount],
+        valuesFormatted: [dashboardData.automaticallyProcessed.automaticFormatted, dashboardData.automaticallyProcessed.summonedFormatted],
+        valuesPerc: [dashboardData.automaticallyProcessed.automaticPercent, dashboardData.automaticallyProcessed.summonedPercent],
         showSubTotals: true,
         showTotal: false
       }) }}

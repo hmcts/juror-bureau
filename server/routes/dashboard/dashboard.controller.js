@@ -209,12 +209,12 @@
               automaticCount: response.autoProcessedResponseData.autoProcessedOnlineResponseTotal,
               automaticFormatted: response.autoProcessedResponseData.autoProcessedOnlineResponseTotal.toLocaleString(),
               automaticPercent: Math.round(response.autoProcessedResponseData.percentAutoProcessedOnlineResponses),
-              manualCount: manualResponseCount,
-              manualFormatted: manualResponseCount.toLocaleString(),
-              manualPercent: getPercentageValue(response.autoProcessedResponseData.summonedTotal, manualResponseCount),
-              summonedCount: response.autoProcessedResponseData.summonedTotal - response.autoProcessedResponseData.autoProcessedOnlineResponseTotal - manualResponseCount,
-              summonedFormatted: (response.autoProcessedResponseData.summonedTotal - response.autoProcessedResponseData.autoProcessedOnlineResponseTotal - manualResponseCount).toLocaleString(),
-              summonedPercent: getPercentageValue(response.autoProcessedResponseData.summonedTotal, response.autoProcessedResponseData.summonedTotal - response.autoProcessedResponseData.autoProcessedOnlineResponseTotal - manualResponseCount)
+              // manualCount: manualResponseCount,
+              // manualFormatted: manualResponseCount.toLocaleString(),
+              // manualPercent: getPercentageValue(response.autoProcessedResponseData.summonedTotal, manualResponseCount),
+              summonedCount: response.autoProcessedResponseData.summonedTotal - response.autoProcessedResponseData.autoProcessedOnlineResponseTotal,
+              summonedFormatted: (response.autoProcessedResponseData.summonedTotal - response.autoProcessedResponseData.autoProcessedOnlineResponseTotal).toLocaleString(),
+              summonedPercent: getPercentageValue(response.autoProcessedResponseData.summonedTotal, response.autoProcessedResponseData.summonedTotal - response.autoProcessedResponseData.autoProcessedOnlineResponseTotal )
             },
             timeReceived: {
               within7DaysDigital: response.mandatoryKpis.onlineResponsesOverTime.within7Days,
