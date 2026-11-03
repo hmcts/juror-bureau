@@ -12,8 +12,7 @@
       return '';
     }
 
-    // Prevent the shared query parser from truncating a submitted value at '='.
-    const value = typeof paramValue === 'string' && !paramValue.includes('=') ? paramValue : '';
+    const value = typeof paramValue === 'string' ? paramValue : '';
     return validateQueryParam(req, res, `?${paramName}=${value}`);
   };
 
