@@ -1618,6 +1618,7 @@
         break;
       case 'courtsearch':
         isParamValid = /^[a-z0-9]+$/i.test(paramValue);
+        break;
       case 'electoralregisterstatus':
         isParamValid = ['not-uploaded', 'uploaded', 'all'].includes(paramValue);
         break;
@@ -1636,6 +1637,8 @@
       default:
         isParamValid = false;
     }
+
+    console.log(`\n\nValidating query param: ${paramName}=${paramValue}, isValid: ${isParamValid}\n\n`);
 
     if (isParamValid) {
       return encodeURIComponent(paramValue);

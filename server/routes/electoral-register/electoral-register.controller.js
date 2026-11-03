@@ -20,6 +20,18 @@
   module.exports.getDashboard = app => async (req, res) => {
     const { localAuthorityFilter, status, sortBy, sortOrder } = req.query;
 
+    const filters = [
+      ['electoralRegisterLocalAuthorityFilter', localAuthorityFilter],
+      ['electoralRegisterStatus', status],
+      ['electoralRegisterSortBy', sortBy],
+      ['electoralRegisterSortOrder', sortOrder],
+    ];
+    for (const [paramName, paramValue] of filters) {
+      if (validateElectoralRegisterQueryParam(req, res, paramName, paramValue) === null) {
+        return;
+      }
+    }
+
     const tmpErrors = _.clone(req.session.errors);
     const bannerMessage = _.clone(req.session.bannerMessage);
 
