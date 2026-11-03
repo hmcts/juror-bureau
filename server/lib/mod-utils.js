@@ -1638,8 +1638,6 @@
         isParamValid = false;
     }
 
-    console.log(`\n\nValidating query param: ${paramName}=${paramValue}, isValid: ${isParamValid}\n\n`);
-
     if (isParamValid) {
       return encodeURIComponent(paramValue);
     }
