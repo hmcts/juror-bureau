@@ -1,5 +1,4 @@
 const express = require('express');
-const nunjucks = require('express-nunjucks').default;
 const njk = require('nunjucks');
 const csrf = require('csurf');
 const helmet = require('helmet');
@@ -43,6 +42,9 @@ module.exports = async (app) => {
   // Ensure provided environment values are lowercase
   env = env.toLowerCase();
   useAuth = useAuth.toLowerCase();
+
+  // Preserve Express 4 query parsing behaviour. Express 5 defaults to the simple parser.
+  app.set('query parser', 'extended');
 
   // rate limiting
   const limiter = rateLimit({
@@ -127,18 +129,20 @@ module.exports = async (app) => {
     path.join(app.get('appPath'), 'templates'),
   ]);
 
+  const njkEnvironment = njk.configure(app.get('views'), {
+    autoescape: true,
+    watch: true,
+    noCache: true,
+    express: app,
+  });
+
   // add moj filters
-  // mojFilters = Object.assign(mojFilters);
   Object.keys(mojFilters).forEach((filterName) => {
     filters[filterName] = mojFilters[filterName];
   });
 
-  nunjucks(app, {
-    autoescape: true,
-    watch: true,
-    noCache: true,
-    filters: filters,
-    loader: njk.FileSystemLoader, // Use synchronous loader templates
+  Object.keys(filters).forEach((filterName) => {
+    njkEnvironment.addFilter(filterName, filters[filterName]);
   });
 
   // Send data to all views

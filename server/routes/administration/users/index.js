@@ -4,6 +4,7 @@
   const auth = require('../../../components/auth');
   const controller = require('./users.controller');
   const { isSystemAdministrator, isManager } = require('../../../components/auth/user-type');
+  const { courtOrBureau } = require('../../../components/route-parameter-constraints');
 
   module.exports = function(app) {
     require('./create-users')(app);
@@ -17,8 +18,9 @@
       controller.getUsers(app),
     );
 
-    app.get('/administration/:location(court|bureau)/users',
+    app.get('/administration/:location/users',
       'administration.court-bureau.users.get',
+      courtOrBureau,
       auth.verify,
       isManager,
       controller.getCourtBureauUsers(app),
