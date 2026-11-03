@@ -47,6 +47,7 @@
     return async function(req, res) {
       const { jurorNumber, locCode } = req.params;
       const { attendanceDates, smartcardAmount } = req.body;
+      const encodedAttendanceDates = encodeURIComponent(attendanceDates);
 
       const validatorResult = validate(req.body, smartcardSpendValidator());
 
@@ -59,7 +60,7 @@
             jurorNumber,
             locCode,
           },
-        ) + `?dates=${attendanceDates}`);
+        ) + `?dates=${encodedAttendanceDates}`);
       }
 
       const body = {
@@ -103,7 +104,7 @@
             jurorNumber,
             locCode,
           },
-        ) + `?dates=${attendanceDates}`);
+        ) + `?dates=${encodedAttendanceDates}`);
       }
     };
   };
