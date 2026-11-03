@@ -15,6 +15,7 @@
   const { printDocuments } = require('./print.controller');
   const auth = require('../../components/auth');
   const { isCourtUser } = require('../../components/auth/user-type');
+  const { summonsReminders } = require('../../components/route-parameter-constraints');
 
   const {
     getDocumentForm,
@@ -74,13 +75,15 @@
       auth.verify,
       getStatusChanged(app));
 
-    app.get('/documents/:document(summons-reminders)/letters-list/validation',
+    app.get('/documents/:document/letters-list/validation',
       'documents.summons-reminder-validation.get',
+      summonsReminders,
       auth.verify,
       getSummonsReminderValidation(app));
 
-    app.post('/documents/:document(summons-reminders)/letters-list/validation',
+    app.post('/documents/:document/letters-list/validation',
       'documents.summons-reminder-validation.post',
+      summonsReminders,
       auth.verify,
       postSummonsReminderValidation(app));
 
