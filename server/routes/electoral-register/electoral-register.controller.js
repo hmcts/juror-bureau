@@ -7,29 +7,30 @@
   const { erLocalAuthorityStatusDAO, localAuthoritiesDAO, erUploadStats } = require('../../objects/electoral-register');
   const PAGE_SIZE = 20;
 
-  const validateElectoralRegisterQueryParam = (req, res, paramName, paramValue) => {
-    if (typeof paramValue === 'undefined' || paramValue === '') {
-      return '';
-    }
+  const validateElectoralRegisterQuery = (req, res, params) => {
+    const validated = {};
+    for (const [name, value] of Object.entries(params)) {
+      if (typeof value === 'undefined' || value === '') {
+        validated[name] = value;
+        continue;
+      }
 
-    const value = typeof paramValue === 'string' ? paramValue : '';
-    return validateQueryParam(req, res, `?${paramName}=${value}`);
+      const paramValue = typeof value === 'string' ? value : '';
+      validated[name] = validateQueryParam(req, res, `?electoralRegister${name}=${paramValue}`);
+      if (validated[name] === null) {
+        return null;
+      }
+    }
+    return validated;
   };
 
   module.exports.getDashboard = app => async (req, res) => {
-    const { localAuthorityFilter, status, sortBy, sortOrder } = req.query;
-
-    const filters = [
-      ['electoralRegisterLocalAuthorityFilter', localAuthorityFilter],
-      ['electoralRegisterStatus', status],
-      ['electoralRegisterSortBy', sortBy],
-      ['electoralRegisterSortOrder', sortOrder],
-    ];
-    for (const [paramName, paramValue] of filters) {
-      if (validateElectoralRegisterQueryParam(req, res, paramName, paramValue) === null) {
-        return;
-      }
+    const filters = validateElectoralRegisterQuery(req, res,
+      _.pick(req.query, ['localAuthorityFilter', 'status', 'sortBy', 'sortOrder']));
+    if (!filters) {
+      return;
     }
+    const { localAuthorityFilter, status, sortBy, sortOrder } = filters;
 
     const tmpErrors = _.clone(req.session.errors);
     const bannerMessage = _.clone(req.session.bannerMessage);
@@ -159,68 +160,47 @@
   };
 
   module.exports.postLocalAuthorityFilter = app => (req, res) => {
-    const { sortBy, sortOrder } = req.query;
     const localAuthorityCode = req.session.localAuthorities.find(
       la => la.localAuthorityName === req.body.localAuthorityFilter
     )?.localAuthorityCode;
-    const localAuthorityCodeValue = validateElectoralRegisterQueryParam(
-      req, res, 'electoralRegisterLocalAuthorityFilter', localAuthorityCode
-    );
-    if (localAuthorityCodeValue === null) {
+    const filters = validateElectoralRegisterQuery(req, res, {
+      localAuthorityFilter: localAuthorityCode,
+      ..._.pick(req.query, ['sortBy', 'sortOrder']),
+    });
+    if (!filters) {
       return;
     }
-    const sortByValue = validateElectoralRegisterQueryParam(req, res, 'electoralRegisterSortBy', sortBy);
-    if (sortByValue === null) {
-      return;
-    }
-    const sortOrderValue = validateElectoralRegisterQueryParam(req, res, 'electoralRegisterSortOrder', sortOrder);
-    if (sortOrderValue === null) {
-      return;
-    }
+    const { localAuthorityFilter, sortBy, sortOrder } = filters;
 
     delete req.session.erDashboardData;
 
     return res.redirect(
       app.namedRoutes.build('electoral-register.get')
-        + buildQueryParams('all', localAuthorityCodeValue, sortByValue, sortOrderValue)
+        + buildQueryParams('all', localAuthorityFilter, sortBy, sortOrder)
     );
   };
 
   module.exports.getFilterUploadStatus = app => async (req, res) => {
-    const { localAuthorityFilter, status } = req.query;
-    const localAuthorityFilterValue = validateElectoralRegisterQueryParam(
-      req, res, 'electoralRegisterLocalAuthorityFilter', localAuthorityFilter
-    );
-    if (localAuthorityFilterValue === null) {
+    const filters = validateElectoralRegisterQuery(req, res,
+      _.pick(req.query, ['localAuthorityFilter', 'status']));
+    if (!filters) {
       return;
     }
-    const statusValue = validateElectoralRegisterQueryParam(req, res, 'electoralRegisterStatus', status);
-    if (statusValue === null) {
-      return;
-    }
+    const { localAuthorityFilter, status } = filters;
 
     delete req.session.erDashboardData;
     return res.redirect(
-      app.namedRoutes.build('electoral-register.get') + buildQueryParams(statusValue, localAuthorityFilterValue)
+      app.namedRoutes.build('electoral-register.get') + buildQueryParams(status, localAuthorityFilter)
     );
   };
 
   module.exports.postSelectedLocalAuthorities = app => (req, res) => {
-    const { action, status, localAuthorityFilter } = req.query;
-    const actionValue = validateElectoralRegisterQueryParam(req, res, 'electoralRegisterAction', action);
-    if (actionValue === null) {
+    const filters = validateElectoralRegisterQuery(req, res,
+      _.pick(req.query, ['action', 'status', 'localAuthorityFilter']));
+    if (!filters) {
       return;
     }
-    const statusValue = validateElectoralRegisterQueryParam(req, res, 'electoralRegisterStatus', status);
-    if (statusValue === null) {
-      return;
-    }
-    const localAuthorityFilterValue = validateElectoralRegisterQueryParam(
-      req, res, 'electoralRegisterLocalAuthorityFilter', localAuthorityFilter
-    );
-    if (localAuthorityFilterValue === null) {
-      return;
-    }
+    const { action, status, localAuthorityFilter } = filters;
 
     if (
       !req.session.erDashboardData?.checkedLocalAuthorities ||
@@ -228,7 +208,7 @@
     ) {
       req.session.errors = makeManualError('selectedAuthorities', 'At least one authority must be selected');
       return res.redirect(
-        app.namedRoutes.build('electoral-register.get') + buildQueryParams(statusValue, localAuthorityFilterValue)
+        app.namedRoutes.build('electoral-register.get') + buildQueryParams(status, localAuthorityFilter)
       );
     }
 
@@ -240,14 +220,14 @@
 
     req.session.checkedLaCodes = selectedAuthorities; // Store selected local authority codes in session for use in subsequent flows
 
-    switch (actionValue) {
+    switch (action) {
       case 'send-reminder':
         return res.redirect(app.namedRoutes.build('electoral-register.send-reminder.get'));
       case 'mark-email-delivered':
         return res.redirect(app.namedRoutes.build('electoral-register.mark-email-delivered.get'));
       default:
         return res.redirect(
-          app.namedRoutes.build('electoral-register.get') + buildQueryParams(statusValue, localAuthorityFilterValue)
+          app.namedRoutes.build('electoral-register.get') + buildQueryParams(status, localAuthorityFilter)
         );
     }
   };
@@ -426,57 +406,9 @@
   };
 
   const buildQueryParams = (status, localAuthorityFilter, sortBy, sortOrder, action) => {
-    let queryParams = '';
-
-    let statusValue='';
-    let localAuthorityFilterValue='';
-    let sortByValue='';
-    let sortOrderValue='';
-    let actionValue='';
-
-    if (status) {
-      if (['not-uploaded', 'uploaded', 'all'].includes(status.toLowerCase())){
-        statusValue = status;
-      }
-    }
-    if (sortBy){
-      if (['localauthorityname', 'uploadstatus', 'lastuploaddate'].includes(sortBy.toLowerCase())){
-        sortByValue = sortBy;
-      }
-    }
-    if(sortOrder){
-      if (['ascending', 'descending'].includes(sortOrder.toLowerCase())){
-        sortOrderValue = sortOrder;
-      }
-    }
-    if (action){
-      if (['send-reminder', 'mark-email-delivered'].includes(action.toLowerCase())){
-        actionValue = action;
-      }
-    }
-    if (localAuthorityFilter) {
-      if (localAuthorityFilter.trim().length <= 3
-          && localAuthorityFilter.split('').every(character => character >= '0' && character <= '9')) {
-        localAuthorityFilterValue = localAuthorityFilter;
-      }
-    }
-
-    if (actionValue) {
-      queryParams += `?action=${actionValue}`;
-    }
-    if (localAuthorityFilterValue) {
-      queryParams += (queryParams.length ? '&' : '?') + `localAuthorityFilter=${localAuthorityFilterValue}`;
-    }
-    if (statusValue) {
-      queryParams += (queryParams.length ? '&' : '?') + `status=${statusValue}`;
-    }
-    if (sortByValue) {
-      queryParams += (queryParams.length ? '&' : '?') + `sortBy=${sortByValue}`;
-    }
-    if (sortOrderValue) {
-      queryParams += (queryParams.length ? '&' : '?') + `sortOrder=${sortOrderValue}`;
-    }
-    return queryParams;
+    const params = { action, localAuthorityFilter, status, sortBy, sortOrder };
+    const query = new URLSearchParams(Object.entries(params).filter(([, value]) => value)).toString();
+    return query ? '?' + query : '';
   };
 
 })();
