@@ -340,7 +340,8 @@
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
-        req.session.addCitizensError = true;
+        if (err.statusCode === 422 && err.error?.code === 'COULD_NOT_FIND_ENOUGH_VOTERS') {
+          const message = 'Not enough eligible jurors found to add to this pool';
 
         return res.redirect(
           app.namedRoutes.build('coroner-pool.postcodes.get', {
