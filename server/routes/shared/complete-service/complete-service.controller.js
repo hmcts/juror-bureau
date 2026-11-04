@@ -132,15 +132,18 @@
       });
     } else if (typeof req.params.jurorNumber !== 'undefined') {
       if (req.url.includes('reporting')) {
+
+        const encodedCompleteServiceLastDate = req.session.completeServiceLastDate ? encodeURIComponent(req.session.completeServiceLastDate) : '';
+
         failValidationUrl = app.namedRoutes.build('reports.incomplete-service.complete.get', {
           jurorNumber: req.params.jurorNumber,
-        }) + `${req.session.completeServiceLastDate ? `?lastAttendanceDate=${req.session.completeServiceLastDate}` : ''}`;
+        }) + `${encodedCompleteServiceLastDate ? `?lastAttendanceDate=${encodedCompleteServiceLastDate}` : ''}`;
         successUrl = app.namedRoutes.build('reports.incomplete-service.report.get', {
           filter: req.session.reportSearch,
         });
         errorUrl = app.namedRoutes.build('reports.incomplete-service.complete.get', {
           jurorNumber: req.params.jurorNumber,
-        }) + `${req.session.completeServiceLastDate ? `?lastAttendanceDate=${req.session.completeServiceLastDate}` : ''}`;
+        }) + `${encodedCompleteServiceLastDate ? `?lastAttendanceDate=${encodedCompleteServiceLastDate}` : ''}`;
       } else {
         failValidationUrl = app.namedRoutes.build('juror.update.complete-service.get', {
           jurorNumber: req.params.jurorNumber,
