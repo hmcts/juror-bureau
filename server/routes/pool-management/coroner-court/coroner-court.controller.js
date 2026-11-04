@@ -341,7 +341,7 @@
         });
 
         if (err.statusCode === 422 && err.error?.code === 'COULD_NOT_FIND_ENOUGH_VOTERS') {
-          const message = 'Not enough eligible voters found to create a pool';
+          const message = 'Not enough eligible jurors found to create a pool';
 
           req.session.errors = {
             coronerPostcodes: [{
