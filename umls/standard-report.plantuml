@@ -1,0 +1,145 @@
+@startuml standard-report
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant "Reports page" as ReportsPage <</reports>>
+participant "Statistics page" as StatisticsPage <</statistics>>
+
+participant "Report filters" as FilterPage <</reporting/{report-name}>>
+participant "Standard report renderer" as ReportPage <</reporting/{report-name}/report/{filters}>>
+
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant "Standard report controller" as Controller <<standard-report.controller.js>> #LightYellow
+participant "Report definitions" as Definitions <<definitions.js>> #LightYellow
+
+''' DAOs
+participant "Pool seach object" as PoolDAO <<poolSearchObject.post()>> #LightYellow
+participant "Juror seach object" as JurorDAO <<searchJurorRecordDAO.post()>> #LightYellow
+participant "Court seach object" as CourtDAO <<fetchCourtsDAO.get()>> #LightYellow
+participant "Trial seach object" as TrialDAO <<trialsListDAO.post()>> #LightYellow
+
+''' TEMPLATES
+participant "Pool filter template" as PoolTemplate <<reporting/standard-reports/pool-search.njk>> #lavender
+participant "Juror search filter template" as JurorTemplate <<reporting/standard-reports/juror-search.njk>> #lavender
+participant "Court search filter template" as CourtTemplate <<reporting/standard-reports/court-select.njk>> #lavender
+participant "Date range filter template" as DateTemplate <<reporting/standard-reports/date-search.njk>> #lavender
+participant "Trial search filter template" as TrialTemplate <<reporting/standard-reports/trial-select.njk>> #lavender
+participant "Standard report template" as Template <<reporting/standard-reports/search-by/postponed.njk>> #lavender
+
+participant "'Report Search By' Validator" as Validator
+participant "Backend Controller" as API
+
+alt
+  Actor -> ReportsPage : Click report name
+  ReportsPage -> Controller : call controller
+else
+  Actor -> StatisticsPage : Click report name
+  StatisticsPage -> Controller : call controller
+end
+
+' Select renderer
+ref over Controller : Filter render start
+Controller o-> Definitions : fetch report rendering template
+Controller <- Definitions : return metadata
+
+Group Report search type
+else Pool search
+  alt With search conditions
+    Controller -> Validator : check search validation
+    Controller <- Validator : validator response
+  end
+  alt Valid search criteria
+    Controller -> PoolDAO : build request object
+    PoolDAO -> API : send backend request
+    PoolDAO <- API : OK response
+    Controller <- PoolDAO : integrate search results
+  end
+  Controller -> PoolTemplate : request and build template
+  Controller <- PoolTemplate : return HTML
+  FilterPage <- Controller : return HTML
+  Actor <- Controller : return and render HTML
+  |||
+else Juror number search
+  alt With search conditions
+    Controller -> Validator : check search validation
+    Controller <- Validator : validator response
+  end
+  alt Valid search criteria
+    Controller -> JurorDAO : build request object
+    JurorDAO -> API : send backend request
+    JurorDAO <- API : OK response
+    Controller <- JurorDAO : integrate search results
+  end
+  Controller -> JurorTemplate : request and build template
+  Controller <- JurorTemplate : return HTML
+  FilterPage <- Controller : return HTML
+  Actor <- Controller : return and render HTML
+  |||
+else Court number search
+  Controller -> CourtDAO : build request object
+  CourtDAO -> API : send backend request
+  CourtDAO <- API : OK response
+  Controller <- CourtDAO : integrate search results
+  Controller -> CourtTemplate : request and build template
+  Controller <- CourtTemplate : return HTML
+  FilterPage <- Controller : return HTML
+  Actor <- Controller : return and render HTML
+  |||
+else Date range
+  alt With search conditions
+    Controller -> Validator : check search validation
+    Controller <- Validator : validator response
+  end
+  Controller -> DateTemplate : request and build template
+  Controller <- DateTemplate : return HTML
+  FilterPage <- Controller : return HTML
+  Actor <- Controller : return and render HTML
+  |||
+else Trial search
+  alt With search conditions
+    Controller -> Validator : check search validation
+    Controller <- Validator : validator response
+  end
+    alt Valid search criteria
+    Controller -> TrialDAO : build request object
+    TrialDAO -> API : send backend request
+    TrialDAO <- API : OK response
+    Controller <- TrialDAO : integrate search results
+  end
+  Controller -> TrialTemplate : request and build template
+  Controller <- TrialTemplate : return HTML
+  FilterPage <- Controller : return HTML
+  Actor <- Controller : return and render HTML
+  |||
+end
+
+Actor -> FilterPage : submit form details
+
+Alt Form submission is filter search
+  FilterPage ->o Controller : return to filter render start
+  |||
+else Form submission is for a report
+  FilterPage -> Controller : call controller
+  |||
+end
+
+Controller -> Validator : validation form
+
+alt Validation fails
+  Controller o<-- Validator : return to filter page with error message
+  |||
+end
+|||
+
+Controller -> Template : request and build template
+Controller <- PoolTemplate : return HTML
+Controller -> Definitions : fetch bespoke report adjustments
+Controller <- Definitions : inject adjustments into report HTML
+
+ReportPage <- Controller : return HTML
+Actor <- ReportPage : return and render HTML
