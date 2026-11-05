@@ -7,20 +7,23 @@
   const auth = require('../../../../components/auth');
   const { getExpenseCountDAO } = require('../../../../objects/expense-record');
   const { postDraftAudit, getDraftAudit } = require('../../../reporting/audit.controller');
+  const { expenseStatus } = require('../../../../components/route-parameter-constraints');
 
   module.exports = function(app) {
 
     // eslint-disable-next-line max-len
-    app.get('/juror-management/unpaid-attendance/expense-record/:jurorNumber/:locCode/:status(draft|for-approval|for-reapproval|approved)',
+    app.get('/juror-management/unpaid-attendance/expense-record/:jurorNumber/:locCode/:status',
       'juror-management.unpaid-attendance.expense-record.get',
+      expenseStatus,
       auth.verify,
       getExpenseCountDAO.get(app),
       controller.getExpensesList(app),
     );
 
     // eslint-disable-next-line max-len
-    app.post('/juror-management/unpaid-attendance/expense-record/:jurorNumber/:locCode/:status(draft|for-approval|for-reapproval|approved)',
+    app.post('/juror-management/unpaid-attendance/expense-record/:jurorNumber/:locCode/:status',
       'juror-management.unpaid-attendance.expense-record.post',
+      expenseStatus,
       auth.verify,
       controller.postExpensesList(app),
     );

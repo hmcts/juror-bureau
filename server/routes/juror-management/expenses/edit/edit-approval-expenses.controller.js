@@ -225,6 +225,12 @@
       const { status, jurorNumber, locCode } = req.params;
       const { date, page } = req.query;
       const dates = req.session.editApprovalDates;
+      const encodedDate = encodeURIComponent(date);
+      const encodedPage = encodeURIComponent(page);
+      const encodedPreviousDate = encodeURIComponent(dates[page - 2]);
+      const encodedPreviousPage = encodeURIComponent(page - 1);
+      const encodedNextDate = encodeURIComponent(dates[page]);
+      const encodedNextPage = encodeURIComponent(+page + 1);
       const cancelUrl = app.namedRoutes.build('juror-management.edit-expense.get', {
         jurorNumber,
         locCode,
@@ -238,12 +244,12 @@
           jurorNumber,
           locCode,
           status,
-        }) + `?date=${dates[page - 2]}&page=${page - 1}`,
+        }) + `?date=${encodedPreviousDate}&page=${encodedPreviousPage}`,
         nextLink: app.namedRoutes.build('juror-management.edit-expense.edit.get', {
           jurorNumber,
           locCode,
           status,
-        }) + `?date=${dates[page]}&page=${+page + 1}`,
+        }) + `?date=${encodedNextDate}&page=${encodedNextPage}`,
       };
 
       const postUrls = {
@@ -251,17 +257,17 @@
           jurorNumber,
           locCode,
           status,
-        }) + `?date=${date}&page=${page}&action=next`,
+        }) + `?date=${encodedDate}&page=${encodedPage}&action=next`,
         saveAndBackUrl: app.namedRoutes.build('juror-management.edit-expense.edit.post', {
           jurorNumber,
           locCode,
           status,
-        }) + `?date=${date}&page=${page}&action=back`,
+        }) + `?date=${encodedDate}&page=${encodedPage}&action=back`,
         applyToAllUrl: app.namedRoutes.build('juror-management.edit-expense.apply-to-all.post', {
           jurorNumber,
           locCode,
           status,
-        }) + `?date=${date}&page=${page}`,
+        }) + `?date=${encodedDate}&page=${encodedPage}`,
       };
 
       const tmpErrors = _.clone(req.session.errors);
@@ -361,6 +367,10 @@
       const { date, page, action, ['travel-over-limit']: travelOverLimit } = req.query;
 
       const nextDate = req.session.editApprovalDates[+page];
+      const encodedDate = encodeURIComponent(date);
+      const encodedPage = encodeURIComponent(page);
+      const encodedNextDate = encodeURIComponent(nextDate);
+      const encodedNextPage = encodeURIComponent(+page + 1);
 
       const nonAttendanceDay = !!req.body.nonAttendance;
       let validatorResult;
@@ -386,7 +396,7 @@
           jurorNumber,
           locCode,
           status,
-        }) + `?date=${date}&page=${page}`);
+        }) + `?date=${encodedDate}&page=${encodedPage}`);
       }
 
       const data = buildDataPayload(req.body, nonAttendanceDay);
@@ -421,19 +431,19 @@
             jurorNumber,
             locCode,
             status,
-          }) + `?date=${date}&page=${page}`;
+          }) + `?date=${encodedDate}&page=${encodedPage}`;
           let continueUrl = app.namedRoutes.build('juror-management.edit-expense.edit.post', {
             jurorNumber,
             locCode,
             status,
-          }) + `?date=${date}&page=${page}&action=back&travel-over-limit=true`;
+          }) + `?date=${encodedDate}&page=${encodedPage}&action=back&travel-over-limit=true`;
 
           if (action === 'next') {
             continueUrl = app.namedRoutes.build('juror-management.edit-expense.edit.post', {
               jurorNumber,
               locCode,
               status,
-            }) + `?date=${date}&page=${page}&action=next&travel-over-limit=true`;
+            }) + `?date=${encodedDate}&page=${encodedPage}&action=next&travel-over-limit=true`;
           }
 
           req.session.editExpenseTravelOverLimit[date].continueUrl = continueUrl;
@@ -445,7 +455,7 @@
           return res.redirect(app.namedRoutes.build('juror-management.enter-expenses.travel-over-limit.get', {
             jurorNumber,
             locCode,
-          }) + '?date=' + date);
+          }) + '?date=' + encodedDate);
         }
       }
 
@@ -480,7 +490,7 @@
             jurorNumber,
             locCode,
             status,
-          }) + `?date=${date}&page=${page}`);
+          }) + `?date=${encodedDate}&page=${encodedPage}`);
         }
 
         app.logger.crit('Failed to recalculate the totals for an updated expense', {
@@ -527,7 +537,7 @@
           jurorNumber,
           locCode,
           status,
-        }) + `?date=${nextDate}&page=${+page + 1}`;
+        }) + `?date=${encodedNextDate}&page=${encodedNextPage}`;
       }
 
       if (action === 'back' || !nextDate) {
@@ -556,11 +566,13 @@
       const { jurorNumber, locCode, status } = req.params;
       const page = parseInt(req.query['page']) || 1;
       const date = req.query.date;
+      const encodedDate = encodeURIComponent(date);
+      const encodedPage = encodeURIComponent(page);
       let redirectUrl = app.namedRoutes.build('juror-management.edit-expense.edit.get', {
         jurorNumber,
         locCode,
         status,
-      }) + `?date=${date}&page=${page}`;
+      }) + `?date=${encodedDate}&page=${encodedPage}`;
 
       if (req.query.action === 'apply-default-loss') {
         try {

@@ -26,6 +26,7 @@
         const tmpErrors = _.clone(req.session.errors);
 
         const { documentSearchBy, jurorNumber, jurorName, postcode, poolDetails, page, sortBy, sortOrder } = req.query;
+        const query = { ...req.query };
         let searchBy, paginationObject;
 
         delete req.session.errors;
@@ -88,8 +89,8 @@
 
         delete req.session.statusChangedList;
 
-        delete req.query.sortBy;
-        delete req.query.sortOrder;
+        delete query.sortBy;
+        delete query.sortOrder;
 
         return res.render('documents/_common/letters-list.njk', {
           pageIdentifier: modUtils.getLetterIdentifier(document),
@@ -112,7 +113,7 @@
             count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
             items: tmpErrors,
           },
-          queryString: new URLSearchParams(req.query).toString(),
+          queryString: new URLSearchParams(query).toString(),
         });
       } catch (err) {
         app.logger.crit('Failed to retrive letters: ', {
