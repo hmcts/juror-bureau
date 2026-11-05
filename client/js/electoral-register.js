@@ -57,25 +57,6 @@ function checkRequest(laCode, isChecking) {
 
 $(document).ready(() => {
   $('[name="status"]').on('change', function() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const localAuthorityFilter = urlParams.get('localAuthorityFilter') || '';
-    const status = $(this).val();
-    const validStatuses = ['not-uploaded', 'uploaded', 'all'];
-    
-    let validLocalAuthorityFilter = true;
-    
-    if (localAuthorityFilter && localAuthorityFilter.length > 0) {
-      if (!(localAuthorityFilter.length === 3 
-        && [...localAuthorityFilter].every(character => character >= '0' && character <= '9'))){
-          validLocalAuthorityFilter = false;
-      }
-    }
-    if (!validStatuses.includes(status)
-      || !validLocalAuthorityFilter) {
-      return;
-    }
-
-    window.location.href = '/electoral-register/filter-status?status=' + encodeURIComponent(status)
-    + `${localAuthorityFilter ? `&localAuthorityFilter=${encodeURIComponent(localAuthorityFilter)}` : ''}`;
+    document.getElementById('statusFilterForm').submit();
   });
 });
