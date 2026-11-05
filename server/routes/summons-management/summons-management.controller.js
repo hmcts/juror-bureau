@@ -542,7 +542,7 @@
 
     let dateOfBirth = jurorDetails.newDateOfBirth ?? jurorDetails.dateOfBirth;
     if (type === 'paper') {
-      dateOfBirth = dateFilter(jurorDetails.data.newDateOfBirth ?? jurorDetails.data.dateOfBirth, 'yyyy-mm-DD', 'DD/MM/YYYY');
+      dateOfBirth = dateFilter((jurorDetails.data.newDateOfBirth ?? jurorDetails.data.dateOfBirth), 'yyyy-MM-DD', 'DD/MM/YYYY');
     }
 
     return res.render('juror-management/_common/ineligible-age.njk', {
@@ -554,9 +554,9 @@
         id,
         type,
       }),
-      newServiceStartDate: dateFilter(deferralDate, 'yyyy-mm-DD', 'DD/MM/YYYY'),
+      newServiceStartDate: dateFilter(deferralDate, 'yyyy-MM-DD', 'DD/MM/YYYY'),
       dob: dateOfBirth,
-      yearsOld: moment(deferralDate, 'yyyy-mm-DD').diff(moment(dateOfBirth, 'DD/MM/YYYY'), 'years'),
+      yearsOld: moment(deferralDate, 'yyyy-MM-DD').diff(moment(dateOfBirth, 'DD/MM/YYYY'), 'years'),
     });
   };
 
