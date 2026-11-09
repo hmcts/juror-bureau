@@ -104,6 +104,9 @@
         markEmailDelivered:
           app.namedRoutes.build('electoral-register.post') +
           buildQueryParams(status, localAuthorityFilter, sortBy, sortOrder, 'mark-email-delivered'),
+        initialErEmail:
+          app.namedRoutes.build('electoral-register.post') +
+          buildQueryParams(status, localAuthorityFilter, sortBy, sortOrder, 'initial-er-email'),
       },
       actionRoutes: {
         setDeadline: app.namedRoutes.build('electoral-register.set-deadline.get'),
@@ -161,6 +164,11 @@
   module.exports.postSelectedLocalAuthorities = app => (req, res) => {
     const { action, status, localAuthorityFilter } = req.query;
 
+    console.log('Post selected local authorities action triggered');
+    console.log('Action:', action);
+    console.log('Status:', status);
+    console.log('Local authority filter:', localAuthorityFilter);
+
     if (
       !req.session.erDashboardData?.checkedLocalAuthorities ||
       req.session.erDashboardData?.checkedLocalAuthorities.length === 0
@@ -184,6 +192,10 @@
         return res.redirect(app.namedRoutes.build('electoral-register.send-reminder.get'));
       case 'mark-email-delivered':
         return res.redirect(app.namedRoutes.build('electoral-register.mark-email-delivered.get'));
+      case 'initial-er-email':
+        console.log('Initial ER email action triggered');
+        console.log('Selected authorities:', req.session.checkedLaCodes);
+        return res.redirect(app.namedRoutes.build('electoral-register.initial-er-email.get'));
       default:
         return res.redirect(
           app.namedRoutes.build('electoral-register.get') + buildQueryParams(status, localAuthorityFilter)
@@ -389,7 +401,7 @@
       }
     }
     if (action){
-      if (['send-reminder', 'mark-email-delivered'].includes(action.toLowerCase())){
+      if (['send-reminder', 'mark-email-delivered', 'initial-er-email'].includes(action.toLowerCase())){
         actionValue = action;
       }
     }
