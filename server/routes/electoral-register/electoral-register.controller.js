@@ -164,11 +164,6 @@
   module.exports.postSelectedLocalAuthorities = app => (req, res) => {
     const { action, status, localAuthorityFilter } = req.query;
 
-    console.log('Post selected local authorities action triggered');
-    console.log('Action:', action);
-    console.log('Status:', status);
-    console.log('Local authority filter:', localAuthorityFilter);
-
     if (
       !req.session.erDashboardData?.checkedLocalAuthorities ||
       req.session.erDashboardData?.checkedLocalAuthorities.length === 0
@@ -193,8 +188,6 @@
       case 'mark-email-delivered':
         return res.redirect(app.namedRoutes.build('electoral-register.mark-email-delivered.get'));
       case 'initial-er-email':
-        console.log('Initial ER email action triggered');
-        console.log('Selected authorities:', req.session.checkedLaCodes);
         return res.redirect(app.namedRoutes.build('electoral-register.initial-er-email.get'));
       default:
         return res.redirect(

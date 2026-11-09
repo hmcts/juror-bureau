@@ -30,7 +30,6 @@
         return res.render('_errors/generic', { err });
       }
     } else {
-      console.log('Bulk initial ER email flow');
       laCodes = req.session.checkedLaCodes;
     }
 
