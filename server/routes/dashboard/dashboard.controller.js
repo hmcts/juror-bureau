@@ -156,7 +156,8 @@
             , repliedTotal
             , jurorReponseCount = 0
             , onlineResponseCount = 0
-            , manualResponseCount;
+            , manualResponseCount
+            , noResponseCount;
 
           app.logger.info('Fetched and parsed dashboard totals: ', {
             auth: req.session.authentication,
@@ -171,8 +172,8 @@
           onlineResponseCount = response.mandatoryKpis.onlineResponsesTotal;
           manualResponseCount =
             onlineResponseCount - response.autoProcessedResponseData.autoProcessedOnlineResponseTotal;
-
-          console.log('\n\nDashboard response data:\n', response, '\n\n');
+          noResponseCount = 
+            response.autoProcessedResponseData.summonedTotal - response.autoProcessedResponseData.autoProcessedOnlineResponseTotal - manualResponseCount;
 
           dashboardData = {
             historicTotals: getHistoricTotals(response),
@@ -212,9 +213,9 @@
               manualCount: manualResponseCount,
               manualFormatted: manualResponseCount.toLocaleString(),
               manualPercent: getPercentageValue(response.autoProcessedResponseData.summonedTotal, manualResponseCount),
-              noResponseCount: response.autoProcessedResponseData.summonedTotal - response.autoProcessedResponseData.autoProcessedOnlineResponseTotal - manualResponseCount,
-              noResponseFormatted: (response.autoProcessedResponseData.summonedTotal - response.autoProcessedResponseData.autoProcessedOnlineResponseTotal - manualResponseCount).toLocaleString(),
-              noResponsePercent: getPercentageValue(response.autoProcessedResponseData.summonedTotal, response.autoProcessedResponseData.summonedTotal - response.autoProcessedResponseData.autoProcessedOnlineResponseTotal - manualResponseCount)
+              noResponseCount: noResponseCount,
+              noResponseFormatted: noResponseCount.toLocaleString(),
+              noResponsePercent: getPercentageValue(response.autoProcessedResponseData.summonedTotal, noResponseCount)
             },
             timeReceived: {
               within7DaysDigital: response.mandatoryKpis.onlineResponsesOverTime.within7Days,
