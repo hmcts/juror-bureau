@@ -212,9 +212,9 @@
               manualCount: manualResponseCount,
               manualFormatted: manualResponseCount.toLocaleString(),
               manualPercent: getPercentageValue(response.autoProcessedResponseData.summonedTotal, manualResponseCount),
-              // summonedCount: response.autoProcessedResponseData.summonedTotal - response.autoProcessedResponseData.autoProcessedOnlineResponseTotal,
-              // summonedFormatted: (response.autoProcessedResponseData.summonedTotal - response.autoProcessedResponseData.autoProcessedOnlineResponseTotal).toLocaleString(),
-              // summonedPercent: getPercentageValue(response.autoProcessedResponseData.summonedTotal, response.autoProcessedResponseData.summonedTotal - response.autoProcessedResponseData.autoProcessedOnlineResponseTotal )
+              noResponseCount: response.autoProcessedResponseData.summonedTotal - response.autoProcessedResponseData.autoProcessedOnlineResponseTotal - manualResponseCount,
+              noResponseFormatted: (response.autoProcessedResponseData.summonedTotal - response.autoProcessedResponseData.autoProcessedOnlineResponseTotal - manualResponseCount).toLocaleString(),
+              noResponsePercent: getPercentageValue(response.autoProcessedResponseData.summonedTotal, response.autoProcessedResponseData.summonedTotal - response.autoProcessedResponseData.autoProcessedOnlineResponseTotal - manualResponseCount)
             },
             timeReceived: {
               within7DaysDigital: response.mandatoryKpis.onlineResponsesOverTime.within7Days,
