@@ -1,0 +1,145 @@
+(() => {
+  'use strict';
+
+  const { makeManualError } = require('../../../lib/mod-utils');
+  const { localAuthorityInfoDAO, initialErEmailDAO } = require('../../../objects/electoral-register');
+
+  module.exports.getInitialErEmail = (app) => async (req, res) => {
+    const indivdualLaFlow = req.url.includes('/local-authority/');
+    const { laCode } = req.params;
+
+    let localAuthorityInfo;
+    let laCodes;
+    let cancelUrl = app.namedRoutes.build('electoral-register.get');
+    let postUrl = app.namedRoutes.build('electoral-register.initial-er-email.post');
+    if (indivdualLaFlow) {
+      cancelUrl = app.namedRoutes.build('electoral-register.local-authority.get', { laCode });
+      postUrl = app.namedRoutes.build('electoral-register.local-authority.initial-er-email.post', { laCode });
+      try {
+        localAuthorityInfo = await localAuthorityInfoDAO.get(req, laCode);
+        app.logger.info('Fetched local authority information for sending reminder', {
+          auth: req.session.authentication,
+          laCode
+        })
+      } catch (err) {
+        app.logger.crit('Error fetching local authority information for sending reminder', {
+          auth: req.session.authentication,
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+        
+        return res.render('_errors/generic', { err });
+      }
+    } else {
+      console.log('Bulk initial ER email flow');
+      laCodes = req.session.checkedLaCodes;
+    }
+
+    return res.render('electoral-register/initial-er-email.njk', {
+      indivdualLaFlow,
+      noLocalAuthorities: laCodes?.length || 0,
+      localAuthorityInfo,
+      cancelUrl,
+      postUrl,
+      backLinkUrl: {
+        built: true,
+        url: app.namedRoutes.build('electoral-register.get'),
+      }
+    });
+  };
+
+  module.exports.postInitialErEmail = (app) => async (req, res) => {
+    const indivdualLaFlow = req.url.includes('/local-authority/');
+    const { laCode } = req.params;
+    const laCodes = indivdualLaFlow ? [laCode] : req.session.checkedLaCodes;
+
+    if (!laCodes?.length) {
+      req.session.errors = makeManualError('selectedAuthorities', 'At least one authority must be selected');
+      return res.redirect(app.namedRoutes.build('electoral-register.get'));
+    }
+    
+    delete req.session.checkedLaCodes; // Clear checked LA codes from session after use
+
+    let response;
+    try {
+      response = await initialErEmailDAO.post(req, { laCodes });
+    } catch (err) {
+      app.logger.crit('Failed to send initial ER email to local authority', {
+        auth: req.session.authentication,
+        laCodes,
+        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+      });
+
+      return res.render('_errors/generic', { err });
+    }
+
+    app.logger.info('Sent initial ER email to local authorities', {
+      auth: req.session.authentication,
+      laCodes,
+    });
+
+    if (response.failedNotifications?.length) {
+      const failedLaErrors = {};
+      if (indivdualLaFlow) {
+        app.logger.crit('Failed to send initial ER email to local authority in individual LA flow', {
+          auth: req.session.authentication,
+          laCode,
+          errors: response.failedNotifications.map(failure => ({laCode: failure.laCode, failureReason: failure.failureReason})),
+        });
+
+        response.failedNotifications.forEach(failure => {
+          failedLaErrors[`${failure.laCode}${failure.emailAddress ? `-${failure.emailAddress}` : ''}`] = [{
+            summary: errorMessageMapping(failure),
+            details: errorMessageMapping(failure),
+          }];
+        });
+      } else {
+        app.logger.crit('Failed to send initial ER email to local authorities', {
+          auth: req.session.authentication,
+          laCode,
+          errors: response.failedNotifications.map(failure => ({laCode: failure.laCode, failureReason: failure.failureReason})),
+        });
+        
+        // Only show one error per LA in the bulk flow
+        response.failedNotifications.forEach(failure => {
+          if (!failedLaErrors[failure.laCode]) {
+            failedLaErrors[failure.laCode] = [{
+            summary: `Failed to send one or more initial ER emails to ${failure.laName || (`LA code ${failure.laCode}`)}.`,
+            details: `Failed to send one or more initial ER emails to ${failure.laName || (`LA code ${failure.laCode}`)}.`,
+          }];
+          }
+        });
+      }
+      req.session.errors = failedLaErrors;
+      if (response.totalLaCodesRequested - response.failedNotifications.length > 0) {
+        req.session.bannerMessage = `Initial ER emails sent to ${response.totalLaCodesRequested - response.failedNotifications.length} 
+          local ${response.totalLaCodesRequested - response.failedNotifications.length > 1 ? 'authorities' : 'authority'}.`;
+      }
+    }
+
+    if (indivdualLaFlow) {
+      if (!response.failedNotifications?.length) {
+        req.session.bannerMessage = 'Initial ER email sent.';
+      }
+      return res.redirect(app.namedRoutes.build('electoral-register.local-authority.get', { laCode }));
+    }
+
+    if (!response.failedNotifications?.length) {
+      req.session.bannerMessage = `Initial ER emails sent to ${response.totalLaCodesRequested} 
+        local ${response.totalLaCodesRequested > 1 ? 'authorities' : 'authority'}.`;
+    }
+    return res.redirect(app.namedRoutes.build('electoral-register.get'));
+  };
+
+  const errorMessageMapping = (failure) => {
+    const mappings = {
+      NOTIFY_API_ERROR: `Failed to send initial ER email to ${failure.emailAddress}: Email failed to send via GOV.UK Notify`,
+      LA_NOT_FOUND: `Failed to send initial ER email to ${failure.laCode}: Local authority not found`,
+      NO_USERS_FOR_LA: `Failed to send initial ER email to ${failure.laName}: Local authority exists but has no users`,
+      EMAIL_ADDRESS_BLANK: `Failed to send initial ER email to ${failure.laName}: User has no email address`,
+      USER_INACTIVE: `Failed to send initial ER email to ${failure.emailAddress}: User is inactive`,
+      UNEXPECTED_ERROR: `Failed to send initial ER email to ${failure.emailAddress}: An unexpected error occurred`
+    }
+    return mappings[failure.failureReason] || "An unknown error occurred";
+  };
+
+})();

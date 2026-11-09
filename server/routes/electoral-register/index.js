@@ -12,6 +12,7 @@
     require('./set-deadline')(app);
     require('./send-reminder')(app);
     require('./mark-email-delivered')(app);
+    require('./initial-er-email')(app);
 
     app.get(
       '/electoral-register',

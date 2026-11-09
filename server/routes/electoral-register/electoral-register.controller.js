@@ -3,34 +3,12 @@
 
   const _ = require('lodash');
   const { dateFilter, toSentenceCase } = require('../../components/filters');
-  const { makeManualError, paginationBuilder, validateQueryParam } = require('../../lib/mod-utils');
+  const { makeManualError, paginationBuilder } = require('../../lib/mod-utils');
   const { erLocalAuthorityStatusDAO, localAuthoritiesDAO, erUploadStats } = require('../../objects/electoral-register');
   const PAGE_SIZE = 20;
 
-  const validateElectoralRegisterQuery = (req, res, params) => {
-    const validated = {};
-    for (const [name, value] of Object.entries(params)) {
-      if (typeof value === 'undefined' || value === '') {
-        validated[name] = value;
-        continue;
-      }
-
-      const paramValue = typeof value === 'string' ? value : '';
-      validated[name] = validateQueryParam(req, res, `?electoralRegister${name}=${paramValue}`);
-      if (validated[name] === null) {
-        return null;
-      }
-    }
-    return validated;
-  };
-
   module.exports.getDashboard = app => async (req, res) => {
-    const filters = validateElectoralRegisterQuery(req, res,
-      _.pick(req.query, ['localAuthorityFilter', 'status', 'sortBy', 'sortOrder']));
-    if (!filters) {
-      return;
-    }
-    const { localAuthorityFilter, status, sortBy, sortOrder } = filters;
+    const { localAuthorityFilter, status, sortBy, sortOrder } = req.query;
 
     const tmpErrors = _.clone(req.session.errors);
     const bannerMessage = _.clone(req.session.bannerMessage);
@@ -126,6 +104,9 @@
         markEmailDelivered:
           app.namedRoutes.build('electoral-register.post') +
           buildQueryParams(status, localAuthorityFilter, sortBy, sortOrder, 'mark-email-delivered'),
+        initialErEmail:
+          app.namedRoutes.build('electoral-register.post') +
+          buildQueryParams(status, localAuthorityFilter, sortBy, sortOrder, 'initial-er-email'),
       },
       actionRoutes: {
         setDeadline: app.namedRoutes.build('electoral-register.set-deadline.get'),
@@ -160,34 +141,20 @@
   };
 
   module.exports.postLocalAuthorityFilter = app => (req, res) => {
+    const { status, sortBy, sortOrder } = req.query;
     const localAuthorityCode = req.session.localAuthorities.find(
       la => la.localAuthorityName === req.body.localAuthorityFilter
     )?.localAuthorityCode;
-    const filters = validateElectoralRegisterQuery(req, res, {
-      localAuthorityFilter: localAuthorityCode,
-      ..._.pick(req.query, ['sortBy', 'sortOrder']),
-    });
-    if (!filters) {
-      return;
-    }
-    const { localAuthorityFilter, sortBy, sortOrder } = filters;
 
     delete req.session.erDashboardData;
 
     return res.redirect(
-      app.namedRoutes.build('electoral-register.get')
-        + buildQueryParams('all', localAuthorityFilter, sortBy, sortOrder)
+      app.namedRoutes.build('electoral-register.get') + buildQueryParams('all', localAuthorityCode, sortBy, sortOrder)
     );
   };
 
   module.exports.getFilterUploadStatus = app => async (req, res) => {
-    const filters = validateElectoralRegisterQuery(req, res,
-      _.pick(req.query, ['localAuthorityFilter', 'status']));
-    if (!filters) {
-      return;
-    }
-    const { localAuthorityFilter, status } = filters;
-
+    const { localAuthorityFilter, status } = req.query;
     delete req.session.erDashboardData;
     return res.redirect(
       app.namedRoutes.build('electoral-register.get') + buildQueryParams(status, localAuthorityFilter)
@@ -195,12 +162,12 @@
   };
 
   module.exports.postSelectedLocalAuthorities = app => (req, res) => {
-    const filters = validateElectoralRegisterQuery(req, res,
-      _.pick(req.query, ['action', 'status', 'localAuthorityFilter']));
-    if (!filters) {
-      return;
-    }
-    const { action, status, localAuthorityFilter } = filters;
+    const { action, status, localAuthorityFilter } = req.query;
+
+    console.log('Post selected local authorities action triggered');
+    console.log('Action:', action);
+    console.log('Status:', status);
+    console.log('Local authority filter:', localAuthorityFilter);
 
     if (
       !req.session.erDashboardData?.checkedLocalAuthorities ||
@@ -225,6 +192,10 @@
         return res.redirect(app.namedRoutes.build('electoral-register.send-reminder.get'));
       case 'mark-email-delivered':
         return res.redirect(app.namedRoutes.build('electoral-register.mark-email-delivered.get'));
+      case 'initial-er-email':
+        console.log('Initial ER email action triggered');
+        console.log('Selected authorities:', req.session.checkedLaCodes);
+        return res.redirect(app.namedRoutes.build('electoral-register.initial-er-email.get'));
       default:
         return res.redirect(
           app.namedRoutes.build('electoral-register.get') + buildQueryParams(status, localAuthorityFilter)
@@ -406,9 +377,56 @@
   };
 
   const buildQueryParams = (status, localAuthorityFilter, sortBy, sortOrder, action) => {
-    const params = { action, localAuthorityFilter, status, sortBy, sortOrder };
-    const query = new URLSearchParams(Object.entries(params).filter(([, value]) => value)).toString();
-    return query ? '?' + query : '';
-  };
+    let queryParams = '';
 
+    let statusValue='';
+    let localAuthorityFilterValue='';
+    let sortByValue='';
+    let sortOrderValue='';
+    let actionValue='';
+
+    if (status) {
+      if (['not-uploaded', 'uploaded', 'all'].includes(status.toLowerCase())){
+        statusValue = status;
+      }
+    }
+    if (sortBy){
+      if (['localauthorityname', 'uploadstatus', 'lastuploaddate'].includes(sortBy.toLowerCase())){
+        sortByValue = sortBy;
+      }
+    }
+    if(sortOrder){
+      if (['ascending', 'descending'].includes(sortOrder.toLowerCase())){
+        sortOrderValue = sortOrder;
+      }
+    }
+    if (action){
+      if (['send-reminder', 'mark-email-delivered', 'initial-er-email'].includes(action.toLowerCase())){
+        actionValue = action;
+      }
+    }
+    if (localAuthorityFilter) {
+      if (localAuthorityFilter.trim().length <= 3
+          && localAuthorityFilter.split('').every(character => character >= '0' && character <= '9')) {
+        localAuthorityFilterValue = localAuthorityFilter;
+      }
+    }
+
+    if (actionValue) {
+      queryParams += `?action=${actionValue}`;
+    }
+    if (localAuthorityFilterValue) {
+      queryParams += (queryParams.length ? '&' : '?') + `localAuthorityFilter=${localAuthorityFilterValue}`;
+    }
+    if (statusValue) {
+      queryParams += (queryParams.length ? '&' : '?') + `status=${statusValue}`;
+    }
+    if (sortByValue) {
+      queryParams += (queryParams.length ? '&' : '?') + `sortBy=${sortByValue}`;
+    }
+    if (sortOrderValue) {
+      queryParams += (queryParams.length ? '&' : '?') + `sortOrder=${sortOrderValue}`;
+    }
+    return queryParams;
+  };
 })();
