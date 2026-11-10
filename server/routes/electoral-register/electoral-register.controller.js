@@ -308,7 +308,6 @@
         classes: 'jd-middle-align',
         sort: sortBy === 'uploadStatus' ? sortOrder : 'none',
       },
-      // TODO: Replace 'Not sent' with dynamic status once available from the backend
       {
         id: 'initialErEmail',
         value: 'Initial ER email',
@@ -357,12 +356,10 @@
               '</strong>',
             classes: 'jd-middle-align',
           },
-          // TODO: Replace 'Not sent' with dynamic status once available from the backend
           {
             html:
               `<strong class='govuk-tag ${localAuthority.initialEmailStatus === 'NOT_SENT' ? 'govuk-tag--grey' : ''}'>` +
-              // `${toSentenceCase(localAuthority.initialEmailStatus)}` +
-              'Not sent' +
+              `${toSentenceCase(localAuthority.initialEmailStatus)}` +
               '</strong>',
             classes: 'jd-middle-align',
           },
