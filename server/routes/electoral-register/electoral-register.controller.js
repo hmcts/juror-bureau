@@ -308,6 +308,13 @@
         classes: 'jd-middle-align',
         sort: sortBy === 'uploadStatus' ? sortOrder : 'none',
       },
+      // TODO: Replace 'Not sent' with dynamic status once available from the backend
+      {
+        id: 'initialErEmail',
+        value: 'Initial ER email',
+        classes: 'jd-middle-align',
+        sort: sortBy === 'initialErEmail' ? sortOrder : 'none',
+      },
       {
         id: 'lastUploadDate',
         value: 'Last data upload',
@@ -336,7 +343,6 @@
             classes: 'jd-middle-align',
           },
           {
-            // TODO: Add link to authority details page
             html:
               `<a class='govuk-body govuk-link'` +
               ` href='${app.namedRoutes.build('electoral-register.local-authority.get', { laCode: localAuthority.localAuthorityCode })}'>` +
@@ -348,6 +354,15 @@
             html:
               `<strong class='govuk-tag ${localAuthority.uploadStatus === 'NOT_UPLOADED' ? 'govuk-tag--grey' : ''}'>` +
               `${toSentenceCase(localAuthority.uploadStatus)}` +
+              '</strong>',
+            classes: 'jd-middle-align',
+          },
+          // TODO: Replace 'Not sent' with dynamic status once available from the backend
+          {
+            html:
+              `<strong class='govuk-tag ${localAuthority.initialEmailStatus === 'NOT_SENT' ? 'govuk-tag--grey' : ''}'>` +
+              // `${toSentenceCase(localAuthority.initialEmailStatus)}` +
+              'Not sent' +
               '</strong>',
             classes: 'jd-middle-align',
           },
@@ -384,7 +399,7 @@
       }
     }
     if (sortBy){
-      if (['localauthorityname', 'uploadstatus', 'lastuploaddate'].includes(sortBy.toLowerCase())){
+      if (['localauthorityname', 'uploadstatus', 'lastuploaddate', 'initialeremail'].includes(sortBy.toLowerCase())){
         sortByValue = sortBy;
       }
     }
