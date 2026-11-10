@@ -61,11 +61,11 @@
     }
   });
   
-  module.exports.sendReminderDAO = new DAO('moj/notification/send-la-reminder', {
-    post: function(body) {
+  module.exports.sendLaEmailDAO = new DAO('moj/notification/send-la-reminder', {
+    post: function(laCodes, notificationType) {
       return {
         uri: this.resource,
-        body: replaceAllObjKeys(body, _.snakeCase),
+        body: replaceAllObjKeys({ laCodes, notificationType }, _.snakeCase),
         transform: basicDataTransform,
       }
     }
