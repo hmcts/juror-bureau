@@ -2,19 +2,36 @@
   'use strict';
 
   const _ = require('lodash');
-  const { localAuthorityInfoDAO, sendReminderDAO } = require('../../../objects/electoral-register');
+  const { localAuthorityInfoDAO, sendLaEmailDAO } = require('../../../objects/electoral-register');
 
-  module.exports.getSendReminder = (app) => async (req, res) => {
+  const routeMapping = {
+    reminder: {
+      routeName: 'send-reminder',
+      apiKey: 'REMINDER_EMAIL',
+      template: 'send-reminder',
+      individualSuccess: 'Email reminder sent',
+      bulkSuccess: 'Reminders sent to'
+    },
+    initial: {
+      routeName: 'initial-email',
+      apiKey: 'INITIAL_EMAIL',
+      template: 'initial-email',
+      individualSuccess: 'Initial ER email sent',
+      bulkSuccess: 'Initial ER emails sent to'
+    }
+  };
+
+  module.exports.getSendLaEmail = (app, notificationType) => async (req, res) => {
     const indivdualLaFlow = req.url.includes('/local-authority/');
     const { laCode } = req.params;
 
     let localAuthorityInfo;
     let laCodes;
     let cancelUrl = app.namedRoutes.build('electoral-register.get');
-    let postUrl = app.namedRoutes.build('electoral-register.send-reminder.post');
+    let postUrl = app.namedRoutes.build(`electoral-register.${routeMapping[notificationType].routeName}.post`);
     if (indivdualLaFlow) {
       cancelUrl = app.namedRoutes.build('electoral-register.local-authority.get', { laCode });
-      postUrl = app.namedRoutes.build('electoral-register.local-authority.send-reminder.post', { laCode });
+      postUrl = app.namedRoutes.build(`electoral-register.local-authority.${routeMapping[notificationType].routeName}.post`, { laCode });
       try {
         localAuthorityInfo = await localAuthorityInfoDAO.get(req, laCode);
         app.logger.info('Fetched local authority information for sending reminder', {
@@ -33,7 +50,7 @@
       laCodes = req.session.checkedLaCodes;
     }
 
-    return res.render('electoral-register/send-reminder.njk', {
+    return res.render(`electoral-register/${routeMapping[notificationType].template}.njk`, {
       indivdualLaFlow,
       noLocalAuthorities: laCodes?.length || 0,
       localAuthorityInfo,
@@ -46,7 +63,7 @@
     });
   };
 
-  module.exports.postSendReminder = (app) => async (req, res) => {
+  module.exports.postSendLaEmail = (app, notificationType) => async (req, res) => {
     const indivdualLaFlow = req.url.includes('/local-authority/');
     const { laCode } = req.params;
     const laCodes = indivdualLaFlow ? [laCode] : req.session.checkedLaCodes;
@@ -55,9 +72,9 @@
 
     let response;
     try {
-      response = await sendReminderDAO.post(req, { laCodes });
+      response = await sendLaEmailDAO.post(req, laCodes, routeMapping[notificationType].apiKey);
     } catch (err) {
-      app.logger.crit('Failed to send reminder email to local authority', {
+      app.logger.crit(`Failed to send ${notificationType} email to local authority`, {
         auth: req.session.authentication,
         laCodes,
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
@@ -66,7 +83,7 @@
       return res.render('_errors/generic', { err });
     }
 
-    app.logger.info('Sent reminder email to local authorities', {
+    app.logger.info(`Sent ${notificationType} email to local authorities`, {
       auth: req.session.authentication,
       laCodes,
     });
@@ -74,7 +91,7 @@
     if (response.failedNotifications?.length) {
       const failedLaErrors = {};
       if (indivdualLaFlow) {
-        app.logger.crit('Failed to send reminder email to local authority in individual LA flow', {
+        app.logger.crit(`Failed to send ${notificationType} email to local authority in individual LA flow`, {
           auth: req.session.authentication,
           laCode,
           errors: response.failedNotifications.map(failure => ({laCode: failure.laCode, failureReason: failure.failureReason})),
@@ -82,12 +99,12 @@
 
         response.failedNotifications.forEach(failure => {
           failedLaErrors[`${failure.laCode}${failure.emailAddress ? `-${failure.emailAddress}` : ''}`] = [{
-            summary: errorMessageMapping(failure),
-            details: errorMessageMapping(failure),
+            summary: errorMessageMapping(failure, notificationType),
+            details: errorMessageMapping(failure, notificationType),
           }];
         });
       } else {
-        app.logger.crit('Failed to send reminder email to local authorities', {
+        app.logger.crit(`Failed to send ${notificationType} email to local authorities`, {
           auth: req.session.authentication,
           laCode,
           errors: response.failedNotifications.map(failure => ({laCode: failure.laCode, failureReason: failure.failureReason})),
@@ -97,41 +114,41 @@
         response.failedNotifications.forEach(failure => {
           if (!failedLaErrors[failure.laCode]) {
             failedLaErrors[failure.laCode] = [{
-            summary: `Failed to send one or more reminder emails to ${failure.laName || (`LA code ${failure.laCode}`)}.`,
-            details: `Failed to send one or more reminder emails to ${failure.laName || (`LA code ${failure.laCode}`)}.`,
+            summary: `Failed to send one or more ${notificationType} emails to ${failure.laName || (`LA code ${failure.laCode}`)}.`,
+            details: `Failed to send one or more ${notificationType} emails to ${failure.laName || (`LA code ${failure.laCode}`)}.`,
           }];
           }
         });
       }
       req.session.errors = failedLaErrors;
       if (response.totalLaCodesRequested - response.failedNotifications.length > 0) {
-        req.session.bannerMessage = `Reminders sent to ${response.totalLaCodesRequested - response.failedNotifications.length} 
+        req.session.bannerMessage = `${routeMapping[notificationType].bulkSuccess} ${response.totalLaCodesRequested - response.failedNotifications.length} 
           local ${response.totalLaCodesRequested - response.failedNotifications.length > 1 ? 'authorities' : 'authority'}.`;
       }
     }
 
     if (indivdualLaFlow) {
       if (!response.failedNotifications?.length) {
-        req.session.bannerMessage = 'Email reminder sent.';
+        req.session.bannerMessage = routeMapping[notificationType].individualSuccess;
       }
       return res.redirect(app.namedRoutes.build('electoral-register.local-authority.get', { laCode }));
     }
 
     if (!response.failedNotifications?.length) {
-      req.session.bannerMessage = `Reminders sent to ${response.totalLaCodesRequested} 
+      req.session.bannerMessage = `${routeMapping[notificationType].bulkSuccess} ${response.totalLaCodesRequested} 
         local ${response.totalLaCodesRequested > 1 ? 'authorities' : 'authority'}.`;
     }
     return res.redirect(app.namedRoutes.build('electoral-register.get'));
   };
 
-  const errorMessageMapping = (failure) => {
+  const errorMessageMapping = (failure, notificationType) => {
     const mappings = {
-      NOTIFY_API_ERROR: `Failed to send reminder email to ${failure.emailAddress}: Email failed to send via GOV.UK Notify`,
-      LA_NOT_FOUND: `Failed to send reminder email to ${failure.laCode}: Local authority not found`,
-      NO_USERS_FOR_LA: `Failed to send reminder email to ${failure.laName}: Local authority exists but has no users`,
-      EMAIL_ADDRESS_BLANK: `Failed to send reminder email to ${failure.laName}: User has no email address`,
-      USER_INACTIVE: `Failed to send reminder email to ${failure.emailAddress}: User is inactive`,
-      UNEXPECTED_ERROR: `Failed to send reminder email to ${failure.emailAddress}: An unexpected error occurred`
+      NOTIFY_API_ERROR: `Failed to send ${notificationType} email to ${failure.emailAddress}: Email failed to send via GOV.UK Notify`,
+      LA_NOT_FOUND: `Failed to send ${notificationType} email to ${failure.laCode}: Local authority not found`,
+      NO_USERS_FOR_LA: `Failed to send ${notificationType} email to ${failure.laName}: Local authority exists but has no users`,
+      EMAIL_ADDRESS_BLANK: `Failed to send ${notificationType} email to ${failure.laName}: User has no email address`,
+      USER_INACTIVE: `Failed to send ${notificationType} email to ${failure.emailAddress}: User is inactive`,
+      UNEXPECTED_ERROR: `Failed to send ${notificationType} email to ${failure.emailAddress}: An unexpected error occurred`
     }
     return mappings[failure.failureReason] || "An unknown error occurred";
   };

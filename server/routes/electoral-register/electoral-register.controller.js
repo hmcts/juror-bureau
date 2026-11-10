@@ -188,7 +188,7 @@
       case 'mark-email-delivered':
         return res.redirect(app.namedRoutes.build('electoral-register.mark-email-delivered.get'));
       case 'initial-er-email':
-        return res.redirect(app.namedRoutes.build('electoral-register.initial-er-email.get'));
+        return res.redirect(app.namedRoutes.build('electoral-register.initial-email.get'));
       default:
         return res.redirect(
           app.namedRoutes.build('electoral-register.get') + buildQueryParams(status, localAuthorityFilter)
