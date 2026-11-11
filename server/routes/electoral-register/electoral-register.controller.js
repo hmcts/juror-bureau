@@ -236,6 +236,7 @@
   };
 
   const sortLocalAuthorities = (sortBy, sortDirection, tableData) => {
+    console.log('\n\nSorting local authorities by:', sortBy, 'Direction:', sortDirection);
     if (sortBy) {
       return tableData.sort((a, b) => {
         let _a;
@@ -309,10 +310,10 @@
         sort: sortBy === 'uploadStatus' ? sortOrder : 'none',
       },
       {
-        id: 'initialErEmail',
+        id: 'initialEmailStatus',
         value: 'Initial ER email',
         classes: 'jd-middle-align',
-        sort: sortBy === 'initialErEmail' ? sortOrder : 'none',
+        sort: sortBy === 'initialEmailStatus' ? sortOrder : 'none',
       },
       {
         id: 'lastUploadDate',
@@ -396,7 +397,7 @@
       }
     }
     if (sortBy){
-      if (['localauthorityname', 'uploadstatus', 'lastuploaddate', 'initialeremail'].includes(sortBy.toLowerCase())){
+      if (['localauthorityname', 'uploadstatus', 'lastuploaddate', 'initialemailstatus'].includes(sortBy.toLowerCase())){
         sortByValue = sortBy;
       }
     }
