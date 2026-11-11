@@ -109,22 +109,4 @@
     }
   });
 
-  // module.exports.initialErEmailDAO = new DAO('moj/notification/send-la-reminder', {
-  //   post: function(body) {
-  //     return {
-  //       uri: this.resource,
-  //       body: replaceAllObjKeys(body, _.snakeCase),
-  //       transform: basicDataTransform,
-  //     }
-  //   }
-  // });
-
-  module.exports.initialErEmailDAO = {
-    post: function(req, body) {
-      return {
-        totalLaCodesRequested: body.laCodes.length
-      }
-    }
-  };
-
 })();
