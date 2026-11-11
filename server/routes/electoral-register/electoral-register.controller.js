@@ -236,7 +236,6 @@
   };
 
   const sortLocalAuthorities = (sortBy, sortDirection, tableData) => {
-    console.log('\n\nSorting local authorities by:', sortBy, 'Direction:', sortDirection);
     if (sortBy) {
       return tableData.sort((a, b) => {
         let _a;
