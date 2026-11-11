@@ -156,7 +156,8 @@
             , repliedTotal
             , jurorReponseCount = 0
             , onlineResponseCount = 0
-            , manualResponseCount;
+            , manualResponseCount
+            , noResponseCount;
 
           app.logger.info('Fetched and parsed dashboard totals: ', {
             auth: req.session.authentication,
@@ -171,6 +172,8 @@
           onlineResponseCount = response.mandatoryKpis.onlineResponsesTotal;
           manualResponseCount =
             onlineResponseCount - response.autoProcessedResponseData.autoProcessedOnlineResponseTotal;
+          noResponseCount = 
+            response.autoProcessedResponseData.summonedTotal - response.autoProcessedResponseData.autoProcessedOnlineResponseTotal - manualResponseCount;
 
           dashboardData = {
             historicTotals: getHistoricTotals(response),
@@ -209,7 +212,10 @@
               automaticPercent: Math.round(response.autoProcessedResponseData.percentAutoProcessedOnlineResponses),
               manualCount: manualResponseCount,
               manualFormatted: manualResponseCount.toLocaleString(),
-              manualPercent: getPercentageValue(onlineResponseCount, manualResponseCount),
+              manualPercent: getPercentageValue(response.autoProcessedResponseData.summonedTotal, manualResponseCount),
+              noResponseCount: noResponseCount,
+              noResponseFormatted: noResponseCount.toLocaleString(),
+              noResponsePercent: getPercentageValue(response.autoProcessedResponseData.summonedTotal, noResponseCount)
             },
             timeReceived: {
               within7DaysDigital: response.mandatoryKpis.onlineResponsesOverTime.within7Days,
