@@ -15,7 +15,7 @@
   const { deferralPoolsObject, changeDeferralObject } = require('../../../objects/deferral-mod');
   const { deferralReasonAndDecision, deferralDateAndPool } = require('../../../config/validation/deferral-mod');
   const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
-  const { makeManualError } = require('../../../lib/mod-utils');
+  const { makeManualError, validateQueryParam } = require('../../../lib/mod-utils');
 
   module.exports.index = function(app) {
     return async function(req, res) {
@@ -363,14 +363,31 @@
             });
             req.session.errors = makeManualError('deferral', 'Cannot refuse first deferral');
             break;
-          case 'JUROR_HAS_BEEN_DEFERRED_BEFORE':
+          case 'JUROR_HAS_BEEN_DEFERRED_BEFORE': {
             app.logger.warn('Failed to decline deferral for juror', {
               auth: req.session.authentication,
               error: typeof err.error !== 'undefined' ? err.error : err.toString(),
             });
+            const deferralReasonParamValue = validateQueryParam(
+              req,
+              res,
+              `?deferralReason=${req.body.deferralReason}`
+            );
+            const deferralDateParamValue = validateQueryParam(
+              req,
+              res,
+              `?date=${req.body.deferralDate}`,
+              { dateFormat: 'DD/MM/YYYY' }
+            );
+
+            if (!deferralReasonParamValue || !deferralDateParamValue) {
+              return;
+            }
+
             return res.redirect(app.namedRoutes.build('juror.update.deferral.confirm.get', {
               jurorNumber,
-            }) + `?deferralReason=${req.body.deferralReason}&deferralDate=${req.body.deferralDate}`);
+            }) + `?deferralReason=${deferralReasonParamValue}&deferralDate=${deferralDateParamValue}`);
+          }
           case 'CANNOT_DEFER_JUROR_WITH_APPEARANCE':
             req.session.errors = makeManualError('deferral', 'Juror cannot be deferred as they already have an appearance at court');
             break;
