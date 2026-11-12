@@ -340,7 +340,7 @@
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
-        if (err.statusCode === 422 && err.error?.code === 'COULD_NOT_FIND_ENOUGH_VOTERS') {
+        if (err.statusCode === 422 && ['COULD_NOT_FIND_ENOUGH_VOTERS','COULD_NOT_FIND_ENOUGH_ELIGIBLE_VOTERS',].includes(err.error?.code)) {
           const message = 'Not enough eligible jurors found to create a pool';
 
           req.session.errors = {
