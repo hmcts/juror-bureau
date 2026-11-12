@@ -3,7 +3,7 @@
 
   const _ = require('lodash');
   const { getDraftExpensesDAO, submitDraftExpenses } = require('../../../../objects/expense-record');
-  const { makeManualError } = require('../../../../lib/mod-utils');
+  const { makeManualError, validateQueryParam } = require('../../../../lib/mod-utils');
 
   module.exports.getDraftExpenses = function(app) {
     return function(req, res) {
@@ -131,12 +131,22 @@
       }
 
       if (action === 'ADD_SMARTCARD_SPEND') {
+        const datesParamValue = validateQueryParam(
+          req,
+          res,
+          `?dates=${req.body['checked-expenses']}`
+        );
+
+        if (!datesParamValue) {
+          return;
+        }
+
         return res.redirect(app.namedRoutes.build(
           'juror-management.unpaid-attendance.expense-record.add-smartcard-spend.get', {
             jurorNumber,
             locCode,
           }
-        ) + `?dates=${req.body['checked-expenses']}`);
+        ) + `?dates=${datesParamValue}`);
       }
 
       try {
