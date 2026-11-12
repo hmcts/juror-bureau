@@ -5,7 +5,7 @@ const { dateFilter, convert12to24 } = require('../../../components/filters');
 const { jurorsOnTrialDAO, confirmAttendanceDAO } = require('../../../objects');
 const { panelListDAO } = require('../../../objects/panel');
 const { Logger } = require('../../../components/logger');
-const { setPreviousWorkingDay, makeManualError } = require('../../../lib/mod-utils');
+const { setPreviousWorkingDay, makeManualError, validateQueryParam } = require('../../../lib/mod-utils');
 const validate = require('validate.js');
 const { jurorsOnTrial: jurorsOnTrialValidator } = require('../../../config/validation/jurors-on-trial');
 const { changeAttendanceTimes } = require('../../../config/validation/change-attendance-times');
@@ -121,6 +121,16 @@ module.exports.postConfirmAttendance = function(app) {
   return async function(req, res) {
     const { trialNumber } = req.params;
     const { attendance_date: attendanceDate } = req.query;
+    const attendanceDateParamValue = validateQueryParam(
+      req,
+      res,
+      `?date=${attendanceDate}`,
+      { dateFormat: 'YYYY-MM-DD' }
+    );
+
+    if (!attendanceDateParamValue) {
+      return;
+    }
 
     const validatorResult = validatePostConfirm(req);
 
@@ -130,7 +140,7 @@ module.exports.postConfirmAttendance = function(app) {
 
       return res.redirect(app.namedRoutes.build('juror-management.jurors-on-trial.confirm-attendance.get', {
         trialNumber,
-      }) + '?attendance_date=' + attendanceDate);
+      }) + '?attendance_date=' + attendanceDateParamValue);
     };
 
     const payload = buildConfirmAttendancePayload(req);
@@ -157,7 +167,7 @@ module.exports.postConfirmAttendance = function(app) {
 
         return res.redirect(app.namedRoutes.build('juror-management.jurors-on-trial.confirm-attendance.get', {
           trialNumber,
-        }) + '?attendance_date=' + attendanceDate);
+        }) + '?attendance_date=' + attendanceDateParamValue);
       }
 
       return res.render('_errors/generic', { err });
