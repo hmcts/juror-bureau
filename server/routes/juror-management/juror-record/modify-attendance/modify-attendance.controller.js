@@ -16,6 +16,7 @@
       const tmpBody = _.clone(req.session.formFields);
       const { jurorNumber, poolNumber } = req.params;
       const attendanceDate = req.query.date;
+      const encodedAttendanceDate = encodeURIComponent(attendanceDate);
 
       delete req.session.errors;
       delete req.session.formFields;
@@ -47,11 +48,11 @@
         deleteUrl: app.namedRoutes.build('juror-record.attendance.delete-juror-attendance.get', {
           jurorNumber,
           poolNumber,
-        }) + `?date=${attendanceDate}`,
+        }) + `?date=${encodedAttendanceDate}`,
         processUrl: app.namedRoutes.build('juror-record.attendance.modify-juror-attendance.post', {
           jurorNumber,
           poolNumber,
-        }) + `?date=${attendanceDate}`,
+        }) + `?date=${encodedAttendanceDate}`,
         cancelUrl: app.namedRoutes.build('juror-record.attendance.get', {
           jurorNumber,
         }),
@@ -70,10 +71,11 @@
     return async function(req, res) {
       const { jurorNumber, poolNumber } = req.params;
       const attendanceDate = req.query.date;
+      const encodedAttendanceDate = encodeURIComponent(attendanceDate);
       const errorUrl = app.namedRoutes.build('juror-record.attendance.modify-juror-attendance.get', {
         jurorNumber,
         poolNumber,
-      }) + `?date=${attendanceDate}`;
+      }) + `?date=${encodedAttendanceDate}`;
       const validationRedirect = function(validatorResult) {
         req.session.errors = validatorResult;
         req.session.formFields = req.body;
@@ -165,6 +167,7 @@
   async function sendUpdateRequest(app, req, res, payload) {
     const { jurorNumber, poolNumber } = req.params;
     const attendanceDate = req.query.date;
+    const encodedAttendanceDate = encodeURIComponent(attendanceDate);
 
     try {
       await modifyJurorAttendance.patch(req, mapCamelToSnake(payload));
@@ -195,7 +198,7 @@
       return res.redirect(app.namedRoutes.build('juror-record.attendance.modify-juror-attendance.get', {
         jurorNumber,
         poolNumber,
-      }) + `?date=${attendanceDate}`);
+      }) + `?date=${encodedAttendanceDate}`);
     };
   }
 
