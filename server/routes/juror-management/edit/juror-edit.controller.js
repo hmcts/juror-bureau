@@ -1274,11 +1274,20 @@
     return (req, res) => {
       const { jurorNumber } = req.params;
       const { loc_code } = req.query;
+      let locCodeParamValue;
+
+      if (loc_code) {
+        locCodeParamValue = modUtils.validateQueryParam(req, res, `?loc_code=${loc_code}`);
+        if (!locCodeParamValue) {
+          return;
+        }
+      }
+
       return res.render('juror-management/edit/communication-changed', {
         jurorNumber,
         processUrl: app.namedRoutes.build('juror-record.details-edit.communication-changed.post', {
           jurorNumber,
-        }) + (loc_code ? '?loc_code=' + loc_code : ''),
+        }) + (locCodeParamValue ? '?loc_code=' + locCodeParamValue : ''),
       });
     };
   };
@@ -1287,6 +1296,14 @@
     return async (req, res) => {
       const { jurorNumber } = req.params;
       const { loc_code } = req.query;
+      let locCodeParamValue;
+
+      if (loc_code) {
+        locCodeParamValue = modUtils.validateQueryParam(req, res, `?loc_code=${loc_code}`);
+        if (!locCodeParamValue) {
+          return;
+        }
+      }
 
       delete req.session[`sendFullPaperSummons-${jurorNumber}`];
 
@@ -1313,7 +1330,7 @@
       
       return res.redirect(app.namedRoutes.build('juror-record.details.get', {
         jurorNumber,
-      }) + (loc_code ? '?loc_code=' + loc_code : ''));
+      }) + (locCodeParamValue ? '?loc_code=' + locCodeParamValue : ''));
     };
   };
 

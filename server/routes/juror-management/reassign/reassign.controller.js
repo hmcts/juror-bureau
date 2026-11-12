@@ -444,18 +444,17 @@
       cancelText: ineligibleReassignments.cancelText,
       ineligibleJurors: ineligibleJurorsWithDetails,
       bannerMessage: _.clone(req.session.bannerMessage),
-      cancelUrl: ineligibleReassignments.returnUrl || getCancelReassignReturnUrl(app, req),
+      cancelUrl: getCancelReassignReturnUrl(app, req),
       processUrl: getReassignIneligibleAgePostUrl(app, req),
     });
   };
 
   module.exports.postReassignIneligibleAge = (app) => async (req, res) => {
-    const ineligibleReassignments = _.clone(req.session.ineligibleReassignments);
     let { jurorNumbers } = req.body;
 
     jurorNumbers = Array.isArray(jurorNumbers) ? jurorNumbers : [jurorNumbers];
 
-    const returnUrl = ineligibleReassignments?.returnUrl || getCancelReassignReturnUrl(app, req);
+    const returnUrl = getCancelReassignReturnUrl(app, req);
 
     delete req.session.ineligibleReassignments;
     delete req.session.poolJurorsReassign;
@@ -513,7 +512,6 @@
 
           req.session.ineligibleReassignments = {
             jurors: ageDisqualifiedJurors,
-            returnUrl: getReassignReturnUrl(app, req, payload),
             cancelText: getReassignIneligibleAgeCancelText(req),
           };
 
