@@ -48,6 +48,7 @@
   //       sortReload?: boolean, // Reload page on sort
   //       printSorting?: { dataSet: string }, // Print sorting config
   //       defaultSortColumn?: string, // Default sort column for bespoke report
+  //       fixFirstColumn?: boolean, // Fix the first table column in place when scrolling
   //     },
   //     headings?: string[], // Table column headings (API field names)
   //     unsortable?: boolean, // Prevent sorting of report table
@@ -2050,7 +2051,8 @@
               otherRows.sort(sort(_sortBy, sortDirection));
               return [...otherRows, totalRow];
             },
-          }
+          },
+          fixFirstColumn: true
         },
         defaultSortColumn: 'staffName',
         printLandscape: true,

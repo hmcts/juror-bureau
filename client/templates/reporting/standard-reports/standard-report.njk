@@ -121,27 +121,30 @@
         {% endif %}
 
         <div class="govuk-grid-row">
-          <div class="govuk-grid-column-full mod-overflow-auto">
+          <div class="govuk-grid-column-full">
             {% if table.title %}
               <div class="mod-juror-record__title">
                 <h2 class="govuk-heading-m govuk-!-margin-bottom-2">{{ table.title }}</h2>
               </div>
             {% endif %}
 
-            {% if grouped %}
-              {% include "./grouped-table.njk" %}
-            {% else %}
-              {{ govukTableWithFoot({
-                attributes: {
-                  'data-module': 'mod-sortable-table'
-                } if not unsortable and not grouped,
-                caption: "Report data",
-                captionClasses: "govuk-visually-hidden",
-                head: table.headers,
-                rows: table.rows,
-                foot: tableFootHtml
-              }) }}
-            {% endif %}
+            <div class="mod-overflow-auto">
+              {% if grouped %}
+                {% include "./grouped-table.njk" %}
+              {% else %}
+                {{ govukTableWithFoot({
+                  classes: table.classes,
+                  attributes: {
+                    'data-module': 'mod-sortable-table'
+                  } if not unsortable and not grouped,
+                  caption: "Report data",
+                  captionClasses: "govuk-visually-hidden",
+                  head: table.headers,
+                  rows: table.rows,
+                  foot: tableFootHtml
+                }) }}
+              {% endif %}
+            </div>
 
           </div>
         </div>
