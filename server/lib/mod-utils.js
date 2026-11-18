@@ -1608,7 +1608,7 @@
         isParamValid = ['true', 'false'].includes(paramValue.toLowerCase());
         break;
       case 'date':
-        isParamValid = validateDate(paramValue);
+        isParamValid = validateDate(paramValue, options?.dateFormat || 'YYYYMMDD');
         break;
       case 'status':
         isParamValid = validateStatus(paramValue, options?.statusType);
@@ -1650,8 +1650,8 @@
         });
   };
 
-  const validateDate = (paramValue) => {
-    return moment(paramValue, 'YYYYMMDD', true).isValid();
+  const validateDate = (paramValue, dateFormat) => {
+    return moment(paramValue, dateFormat, true).isValid();
   };
 
   const validateStatus = (paramValue, statusType = 'expenses') => {
