@@ -3,6 +3,7 @@
 
   const { addSmartcardSpend } = require('../../../../objects/expense-record');
   const smartcardSpendValidator = require('../../../../config/validation/add-smartcard-spend');
+  const { validateQueryParam } = require('../../../../lib/mod-utils');
   const validate = require('validate.js');
 
   module.exports.getAddSmartcardSpend = function(app) {
@@ -49,6 +50,11 @@
       const { attendanceDates, smartcardAmount } = req.body;
 
       const validatorResult = validate(req.body, smartcardSpendValidator());
+      const datesParamValue = validateQueryParam(req, res, `?dates=${attendanceDates}`);
+
+      if (!datesParamValue) {
+        return;
+      }
 
       if (validatorResult) {
         req.session.errors = validatorResult;
@@ -59,7 +65,7 @@
             jurorNumber,
             locCode,
           },
-        ) + `?dates=${attendanceDates}`);
+        ) + `?dates=${datesParamValue}`);
       }
 
       const body = {
@@ -103,7 +109,7 @@
             jurorNumber,
             locCode,
           },
-        ) + `?dates=${attendanceDates}`);
+        ) + `?dates=${datesParamValue}`);
       }
     };
   };
