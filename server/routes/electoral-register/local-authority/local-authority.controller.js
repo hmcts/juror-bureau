@@ -57,6 +57,7 @@
           laCode,
           status: 'activate'
         }),
+        sendInitialEmail: app.namedRoutes.build('electoral-register.local-authority.initial-email.get', { laCode }),
         sendReminder: app.namedRoutes.build('electoral-register.local-authority.send-reminder.get', { laCode }),
         editNotes: app.namedRoutes.build('electoral-register.local-authority.edit-notes.get', { laCode }),
         changeEmailRequestStatus: app.namedRoutes.build('electoral-register.local-authority.change-email-request-status.get', { laCode }),
