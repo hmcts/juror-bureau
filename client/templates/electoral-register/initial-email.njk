@@ -16,17 +16,24 @@
     <div class="govuk-grid-column-two-thirds">
       {% if individualLaFlow %}
         <span class="govuk-caption-xl">{{ localAuthorityInfo.localAuthorityName }}</span>
-        <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">Are you sure you want to send the initial ER email?</h1>
+        <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">Are you sure you want to send an initial email?</h1>
       {% else %}
         <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">Are you sure you want to send the initial ER email to {{ noLocalAuthorities }} local {{ "authorities" if noLocalAuthorities > 1 else "authority" }}?</h1>
       {% endif %}
 
-      <p class="govuk-body">This email asks the selected local authorities to upload their electoral register data by the deadline.</p>
+      {% if not individualLaFlow %}
+        <p class="govuk-body">This email asks the selected local authorities to upload their electoral register data by the deadline.</p>
+      {% endif %}
 
       <form action="{{ postUrl }}" method="post" id="initialErEmailForm">
         <div class="govuk-button-group">
+          {% if individualLaFlow  %}
+            {% set initialButtonText = "Yes - send initial email" %}
+          {% else %}
+            {% set initialButtonText = "Yes - send initial ER emails" %}
+          {% endif %}
           {{ govukButton({
-            text: "Yes - send initial ER email" + ("s" if not individualLaFlow else ""),
+            text: initialButtonText,
             type: "submit"
           }) }}
 
