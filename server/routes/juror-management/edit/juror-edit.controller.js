@@ -1277,7 +1277,7 @@
       let locCodeParamValue;
 
       if (loc_code) {
-        locCodeParamValue = modUtils.validateQueryParam(req, res, `?loc_code=${loc_code}`);
+        locCodeParamValue = modUtils.validateQueryParam(req, res, `?locCode=${loc_code}`);
         if (!locCodeParamValue) {
           return;
         }
@@ -1299,7 +1299,7 @@
       let locCodeParamValue;
 
       if (loc_code) {
-        locCodeParamValue = modUtils.validateQueryParam(req, res, `?loc_code=${loc_code}`);
+        locCodeParamValue = modUtils.validateQueryParam(req, res, `?locCode=${loc_code}`);
         if (!locCodeParamValue) {
           return;
         }

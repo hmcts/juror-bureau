@@ -1601,7 +1601,7 @@
       case 'poolnumber':
         isParamValid = validatePoolNumber(paramValue);
         break;
-      case 'loc_code':
+      case 'loccode':
         isParamValid = validateLocationCode(paramValue);
         break;
       case 'trialnumber':
