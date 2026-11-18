@@ -104,6 +104,9 @@
         markEmailDelivered:
           app.namedRoutes.build('electoral-register.post') +
           buildQueryParams(status, localAuthorityFilter, sortBy, sortOrder, 'mark-email-delivered'),
+        initialErEmail:
+          app.namedRoutes.build('electoral-register.post') +
+          buildQueryParams(status, localAuthorityFilter, sortBy, sortOrder, 'initial-er-email'),
       },
       actionRoutes: {
         setDeadline: app.namedRoutes.build('electoral-register.set-deadline.get'),
@@ -184,6 +187,8 @@
         return res.redirect(app.namedRoutes.build('electoral-register.send-reminder.get'));
       case 'mark-email-delivered':
         return res.redirect(app.namedRoutes.build('electoral-register.mark-email-delivered.get'));
+      case 'initial-er-email':
+        return res.redirect(app.namedRoutes.build('electoral-register.initial-email.get'));
       default:
         return res.redirect(
           app.namedRoutes.build('electoral-register.get') + buildQueryParams(status, localAuthorityFilter)
@@ -304,6 +309,12 @@
         sort: sortBy === 'uploadStatus' ? sortOrder : 'none',
       },
       {
+        id: 'initialEmailStatus',
+        value: 'Initial ER email',
+        classes: 'jd-middle-align',
+        sort: sortBy === 'initialEmailStatus' ? sortOrder : 'none',
+      },
+      {
         id: 'lastUploadDate',
         value: 'Last data upload',
         classes: 'jd-middle-align',
@@ -331,7 +342,6 @@
             classes: 'jd-middle-align',
           },
           {
-            // TODO: Add link to authority details page
             html:
               `<a class='govuk-body govuk-link'` +
               ` href='${app.namedRoutes.build('electoral-register.local-authority.get', { laCode: localAuthority.localAuthorityCode })}'>` +
@@ -343,6 +353,13 @@
             html:
               `<strong class='govuk-tag ${localAuthority.uploadStatus === 'NOT_UPLOADED' ? 'govuk-tag--grey' : ''}'>` +
               `${toSentenceCase(localAuthority.uploadStatus)}` +
+              '</strong>',
+            classes: 'jd-middle-align',
+          },
+          {
+            html:
+              `<strong class='govuk-tag ${localAuthority.initialEmailStatus === 'NOT_SENT' ? 'govuk-tag--grey' : ''}'>` +
+              `${toSentenceCase(localAuthority.initialEmailStatus)}` +
               '</strong>',
             classes: 'jd-middle-align',
           },
@@ -379,7 +396,7 @@
       }
     }
     if (sortBy){
-      if (['localauthorityname', 'uploadstatus', 'lastuploaddate'].includes(sortBy.toLowerCase())){
+      if (['localauthorityname', 'uploadstatus', 'lastuploaddate', 'initialemailstatus'].includes(sortBy.toLowerCase())){
         sortByValue = sortBy;
       }
     }
@@ -389,7 +406,7 @@
       }
     }
     if (action){
-      if (['send-reminder', 'mark-email-delivered'].includes(action.toLowerCase())){
+      if (['send-reminder', 'mark-email-delivered', 'initial-er-email'].includes(action.toLowerCase())){
         actionValue = action;
       }
     }

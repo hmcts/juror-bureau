@@ -202,6 +202,15 @@
 
           <div class="govuk-button-group">
             {{ govukButton({
+              text: "Send initial ER email",
+              classes: "govuk-button--secondary",
+              type: "submit",
+              attributes: {
+                id: "initialErEmailButton",
+                formAction: postRoutes.initialErEmail
+              }
+            }) }}
+            {{ govukButton({
               text: "Send reminder",
               classes: "govuk-button--secondary",
               type: "submit",

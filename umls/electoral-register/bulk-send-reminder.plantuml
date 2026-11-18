@@ -16,7 +16,7 @@ participant GenericErrorPage <</error>>
 ''' CONTROLLER AND REQUEST OBJECTS
 participant ElectoralRegisterController <<electoral-register.controller.js>> #lightyellow
 participant SendReminderController <<send-reminder.controller.js>> #lightyellow
-participant SendReminderDAO <<sendReminderDAO.post()>> #lightyellow
+participant SendReminderDAO <<sendLaEmailDAO.post()>> #lightyellow
 
 ''' TEMPLATES
 participant ElectoralRegisterDashTemplate <<electoral-register/dashboard.njk>> #lavender
