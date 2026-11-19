@@ -619,6 +619,7 @@
     const tmpErrors = _.cloneDeep(req.session.errors);
     const routeParameters = {
       id,
+      type: null,
     };
     let postUrl = app.namedRoutes.build('response.detail.responded.get', routeParameters);
     let cancelUrl = app.namedRoutes.build('response.detail.get', routeParameters);
@@ -706,7 +707,7 @@
       if (type === 'paper'){
         return res.redirect(app.namedRoutes.build('response.detail.responded.get', {id, type:'paper'}));
       }
-      return res.redirect(app.namedRoutes.build('response.detail.responded.get', {id}));
+      return res.redirect(app.namedRoutes.build('response.detail.responded.get', {id, type: null}));
     }
 
     if (type === 'paper') {
@@ -786,6 +787,7 @@
     const { id, type } = req.params;
     const routeParameters = {
       id,
+      type: null,
     };
 
     if (type === 'paper') {

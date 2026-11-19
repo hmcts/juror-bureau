@@ -13,11 +13,12 @@
       let processUrl
         , cancelUrl
         , attendanceDate = req.session.attendanceListDate;
+      const encodedAttendanceDate = encodeURIComponent(attendanceDate);
 
       processUrl = app.namedRoutes.build('juror-management.attendance.confirm-attendance.post');
       cancelUrl = app.namedRoutes.build('juror-management.attendance.get', {
         status: 'in-waiting'
-      }) + '?date=' + attendanceDate;
+      }) + '?date=' + encodedAttendanceDate;
 
       try {
         const body = {
@@ -81,6 +82,7 @@
   module.exports.postConfirmAttendance = function(app) {
     return async function(req, res) {
       const attendanceDate = req.session.attendanceListDate;
+      const encodedAttendanceDate = encodeURIComponent(attendanceDate);
 
       const payload = {
         commonData: {
@@ -97,7 +99,7 @@
 
         return res.redirect(app.namedRoutes.build('juror-management.attendance.get', {
           status: 'in-waiting'
-        }) + '?date=' + attendanceDate);
+        }) + '?date=' + encodedAttendanceDate);
       } catch (err) {
         app.logger.crit('Failed to confirm the attendance for the jurors', {
           auth: req.session.authentication,
@@ -118,6 +120,7 @@
         , tmpBody = _.clone(req.session.formFields)
         , attendanceDate = req.session.attendanceListDate
         , jurorsNotCheckedOut = req.session.jurorsNotCheckedOut;
+      const encodedAttendanceDate = encodeURIComponent(attendanceDate);
 
       delete req.session.errors;
       delete req.session.formFields;
@@ -125,7 +128,7 @@
       processUrl = app.namedRoutes.build('juror-management.attendance.confirm-attendance.not-checked-out.post');
       cancelUrl = app.namedRoutes.build('juror-management.attendance.get', {
         status: 'in-waiting'
-      }) + '?date=' + attendanceDate;
+      }) + '?date=' + encodedAttendanceDate;
 
       const checkOutTime = {
         hour: typeof tmpBody !== 'undefined' ? tmpBody.checkOutTimeHour : '',
@@ -262,4 +265,3 @@
   };
 
 })();
-

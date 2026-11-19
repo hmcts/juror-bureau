@@ -368,9 +368,19 @@
               auth: req.session.authentication,
               error: typeof err.error !== 'undefined' ? err.error : err.toString(),
             });
+
+            let validDeferralReason = ''
+            if (req.body.deferralReason && req.body.deferralReason.length <= 3) {
+              validDeferralReason = req.body.deferralReason;
+            }
+            let encodedDeferralDate = ''
+            if (req.body.deferralDate) {
+              encodedDeferralDate = encodeURIComponent(req.body.deferralDate);
+            }
+
             return res.redirect(app.namedRoutes.build('juror.update.deferral.confirm.get', {
               jurorNumber,
-            }) + `?deferralReason=${req.body.deferralReason}&deferralDate=${req.body.deferralDate}`);
+            }) + `?deferralReason=${validDeferralReason}&deferralDate=${encodedDeferralDate}`);
           case 'CANNOT_DEFER_JUROR_WITH_APPEARANCE':
             req.session.errors = makeManualError('deferral', 'Juror cannot be deferred as they already have an appearance at court');
             break;

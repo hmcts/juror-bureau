@@ -344,13 +344,23 @@ module.exports.postCheckJuror = function(app) {
 };
 
 function urlBuilder(searchKey, searchTerm) {
-  if (searchKey === 'juror') {
-    return ('juror=' + searchTerm);
-  } else if (searchKey === 'name') {
-    return ('name=' + searchTerm);
-  } else if (searchKey === 'pool'){
-    return ('pool=' + searchTerm);
+  const validSearchKeys = ['juror', 'name', 'pool'];
+
+  let validSearchKey = '';
+  if (validSearchKeys.includes(searchKey)) {
+    validSearchKey = searchKey;
   }
+
+  let validSearchTerm = '';
+  if (typeof searchTerm === 'string') {
+    validSearchTerm = searchTerm.trim();
+  }
+
+  if (validSearchKey === '' || validSearchTerm === '') {
+    return '';
+  }
+
+  return new URLSearchParams([[validSearchKey, validSearchTerm]]).toString();
 }
 
 module.exports.urlBuilder = urlBuilder;

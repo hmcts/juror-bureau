@@ -8,6 +8,11 @@
 {% block page_title %}{{ serviceName }} - Change Court{% endblock %}
 {% block page_identifier %}Change Court{% endblock %}
 
+{% set courtSearchError = undefined %}
+{% if errors.items["courtSearch"] %}
+  {% set courtSearchError = {"text": errors.items['courtSearch'][0].details} %}
+{% endif %}
+
 {% macro courtsTableLinks(court) %}
   <a
     class="govuk-link govuk-link--no-visited-state link-block"
@@ -59,7 +64,7 @@
           id: "courtSearch",
           name: "courtSearch",
           errorMessage: courtSearchError,
-          value: filter
+          value: tmpBody.courtSearch if tmpBody.courtSearch else filter
         }) }}
 
         <div class="govuk-button-group">

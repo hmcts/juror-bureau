@@ -121,12 +121,20 @@
           app.logger.crit('Failed to create pool and summon citizens: ', {
             auth: req.session.authentication,
             data: { body: req.body },
+            statusCode: err.statusCode,
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
 
-          if (err.statusCode === 422 && err.error?.code === 'COULD_NOT_FIND_ENOUGH_ELIGIBLE_VOTERS') {
-            req.session.errors = modUtils
-              .makeManualError('citizensToSummon', 'Not enough eligible voters found to create a pool');
+          if (err.statusCode === 422 && err.error?.code === 'COULD_NOT_FIND_ENOUGH_VOTERS') {
+            req.session.errors = modUtils.makeManualError(
+              'citizensToSummon',
+              'Not enough eligible voters found to create a pool'
+            );
+          } else if (err.statusCode === 422 && err.error?.code === 'COULD_NOT_FIND_ENOUGH_ELIGIBLE_VOTERS') {
+            req.session.errors = modUtils.makeManualError(
+              'citizensToSummon',
+              'Not enough eligible voters found to create a pool'
+            );
           } else if (err.error?.code === 'ERR_BAD_REQUEST' && err.error?.reasonCode === 'invalid_yield') {
             req.session.errors = modUtils
               .makeManualError('citizensToSummon', 'The number of citizens summoned is too high and exceeds the yield');

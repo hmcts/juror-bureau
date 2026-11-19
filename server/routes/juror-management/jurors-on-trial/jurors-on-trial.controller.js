@@ -121,6 +121,7 @@ module.exports.postConfirmAttendance = function(app) {
   return async function(req, res) {
     const { trialNumber } = req.params;
     const { attendance_date: attendanceDate } = req.query;
+    const encodedAttendanceDate = encodeURIComponent(attendanceDate);
 
     const validatorResult = validatePostConfirm(req);
 
@@ -130,7 +131,7 @@ module.exports.postConfirmAttendance = function(app) {
 
       return res.redirect(app.namedRoutes.build('juror-management.jurors-on-trial.confirm-attendance.get', {
         trialNumber,
-      }) + '?attendance_date=' + attendanceDate);
+      }) + '?attendance_date=' + encodedAttendanceDate);
     };
 
     const payload = buildConfirmAttendancePayload(req);
@@ -157,7 +158,7 @@ module.exports.postConfirmAttendance = function(app) {
 
         return res.redirect(app.namedRoutes.build('juror-management.jurors-on-trial.confirm-attendance.get', {
           trialNumber,
-        }) + '?attendance_date=' + attendanceDate);
+        }) + '?attendance_date=' + encodedAttendanceDate);
       }
 
       return res.render('_errors/generic', { err });
