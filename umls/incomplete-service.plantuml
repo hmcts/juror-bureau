@@ -1,0 +1,43 @@
+@startuml incomplete-service-report
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant "Statistics page" as HomePage <</statistics>>
+participant "Incomplete service report" as SelectPage <</reporting/incomplete-service>>
+participant "Standard report renderer" as ReportPage <</reporting/incomplete-service/report/{date}>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant "Incomplete service controller" as Controller <<incomplete-service.controller.js>> #LightYellow
+
+''' TEMPLATES
+participant "Incomplete service template" as Template <<reporting/incomplete-service/cutoff-date.njk>> #lavender
+
+Actor -> HomePage : Click 'Incomplete service report'
+
+' Select renderer
+HomePage -> Controller : call page controller
+Controller -> Template : request and build template
+Controller <- Template : return HTML
+SelectPage <- Controller : return HTML
+Actor <- Controller : return and render HTML
+|||
+
+Actor -> SelectPage : Submit form details
+SelectPage -> Controller : call page controller
+Controller -> Controller : local form validation
+
+alt Invalid form data
+  Controller -> Template : request and build template
+  Controller <- Template : return HTML
+  SelectPage <- Controller : return HTML
+  Actor <- Controller : return and render HTML with error message
+end
+|||
+
+ReportPage <- Controller : invoke standard report renderer
+
+Actor <-- ReportPage : report displayed by standard renderer

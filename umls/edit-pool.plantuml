@@ -1,0 +1,71 @@
+@startuml edit-pool
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant "Pool Overview" as HomePage <</pool-management/pool-overview/{poolNumber}>>
+participant "Edit Pool" as FormPage <</pool-management/pool/{poolNumber}/edit>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant "Edit Pool Controller" as Controller <<edit-pool.controller.js>> #LightYellow
+participant "Edit Pool DAO" as SubmitDAO <<editPoolDAO.post()>> #LightYellow
+
+''' TEMPLATES
+participant CreateCoronerPoolPage as FormTemplate <<pool-management/coroner-court/select-court.njk>> #lavender
+participant CreateCoronerDetailsPage as DetailsTemplate <<pool-management/coroner-court/details.njk>> #lavender
+participant CheckDetailsPage as ConfirmationTemplate <<pool-management/coroner-court/check-details.njk>> #lavender
+participant ErrorTemplate as Error <<_errors/generic.njk>> #lavender
+
+''' FILTERS AND VALIDATORS
+participant "Edit Pool Validator" as Validator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+
+Actor -> HomePage : Click 'Edit Pool'
+
+HomePage -> Controller : call page controller
+
+''' Form
+Controller -> FormTemplate : request and build template
+Controller <- FormTemplate : return HTML
+FormPage <- Controller : return HTML
+Actor <- FormPage : render HTML
+
+Actor -> FormPage : submit form details
+FormPage -> Controller : POST form
+Controller -> Validator : validate form submission
+
+alt Form missing selections
+  Controller <-- Validator : invalid form
+  Controller -> FormTemplate : request and build template
+  Controller <- FormTemplate : return HTML
+  FormPage <- Controller : return error HTML
+  Actor <- FormPage : render error message
+end
+|||
+
+Controller <- Validator : valid form submission
+
+Controller -> SubmitDAO : build request object
+SubmitDAO -> BackendController : send backend request
+
+alt API failure
+  SubmitDAO <-- BackendController : error response
+  Controller <-- SubmitDAO : reject requestObject
+  Controller -> Error : request and build template
+  Controller <- Error : return HTML
+  Error <- Controller : return HTML
+  Actor <- Error : render error page
+end
+|||
+
+SubmitDAO <- BackendController : ok response
+Controller <- SubmitDAO : resolve request
+HomePage <- Controller : redirect to trial details
+
+Actor <- HomePage : render HTML

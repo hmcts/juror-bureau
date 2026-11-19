@@ -1,0 +1,37 @@
+@startuml reports-list
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant "Homepage" as HomePage <</homepage>>
+participant "Reports list - Court" as CourtReports <</reporting>>
+participant "Reports list - Bureau" as BureauReports <</reporting>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant "Reports list controller" as Controller <<reporting.controller.js>> #LightYellow
+
+''' TEMPLATES
+participant "Court reports list template" as CourtReportsTemplate <<reporting/court-reports.njk>> #lavender
+participant "Bureau reports list template" as BureauReportsTemplate <<reporting/bureau-reports.njk>> #lavender
+
+''' SELECT PAGE
+Actor -> HomePage : Click 'Apps' and 'Reports'
+
+' Select renderer
+HomePage -> Controller : call page controller
+
+|||
+Controller -> CourtReportsTemplate : request and build template (Court users)
+Controller <- CourtReportsTemplate : return HTML (Court users)
+|||
+Controller -> BureauReportsTemplate : request and build template (Bureau users)
+Controller <- BureauReportsTemplate : return HTML (Bureau users)
+|||
+
+ReportsListPage <- Controller : return HTML
+Actor <- Controller : return and render HTML
+
+Actor <-- ReportsListPage : display the correct reports list for the current user
