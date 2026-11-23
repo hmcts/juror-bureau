@@ -643,12 +643,18 @@
         tableRows = buildStandardTableRows(tableData, tableHeadings);
       }
 
+      let classes = '';
+      if (reportType.bespokeReport.fixFirstColumn) {
+        classes += 'mod-fix-first-column-table';
+      }
+
       return tableRows.length || groups.length ? [{
         title: capitalizeFully(sectionHeading),
         headers: tableHeaders,
         rows: tableRows,
         groups,
         tableFoot,
+        classes
       }] : [];
     }
 
