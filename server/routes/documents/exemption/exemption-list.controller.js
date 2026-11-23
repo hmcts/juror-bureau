@@ -11,7 +11,7 @@
       const backLinkUrl = app.namedRoutes.build('documents.get');
       const changeUrl = app.namedRoutes.build('documents.certificate-of-exemption.get');
       const tmpErrors = _.clone(req.session.errors);
-      const locCode = req.session.authentication.owner;
+      const locCode = req.session.authentication.locCode;
       const { caseNumber } = req.params;
 
       delete req.session.errors;
