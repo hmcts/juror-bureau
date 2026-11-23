@@ -340,7 +340,21 @@
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
-        req.session.addCitizensError = true;
+        if (err.statusCode === 422 && ['COULD_NOT_FIND_ENOUGH_VOTERS','COULD_NOT_FIND_ENOUGH_ELIGIBLE_VOTERS',].includes(err.error?.code)) {
+          const message = 'Not enough eligible jurors found to create a pool';
+
+          req.session.errors = {
+            coronerPostcodes: [{
+              summary: [message],
+              details: [message],
+              fields: ['postcodesList'],
+            }],
+          };
+
+          delete req.session.addCitizensError;
+        } else {
+          req.session.addCitizensError = true;
+        }
 
         return res.redirect(
           app.namedRoutes.build('coroner-pool.postcodes.get', {

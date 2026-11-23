@@ -30,6 +30,11 @@
   </a>
 {% endmacro %}
 
+{% set courtSearchError = undefined %}
+{% if errors.items["courtSearch"] %}
+  {% set courtSearchError = {"text": errors.items['courtSearch'][0].details} %}
+{% endif %}
+
 {% block content %}
 
   {% set courtTableRows = [] %}
@@ -83,7 +88,7 @@
           id: "courtSearch",
           name: "courtSearch",
           errorMessage: courtSearchError,
-          value: filter
+          value: tmpBody.courtSearch if tmpBody.courtSearch else filter
         }) }}
 
         <div class="govuk-button-group">

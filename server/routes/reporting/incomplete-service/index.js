@@ -7,6 +7,8 @@
   const auth = require('../../../components/auth');
 
   module.exports = function(app) {
+    const completeService = getCompleteService(app);
+
     app.get('/reporting/incomplete-service',
       'reports.incomplete-service.filter.get',
       auth.verify,
@@ -16,10 +18,11 @@
       auth.verify,
       filterCutoffDatePost(app));
 
-    app.get('/reporting/incomplete-service/complete/:jurorNumber/:lastAttendanceDate?',
+    app.get('/reporting/incomplete-service/complete/:jurorNumber/:lastAttendanceDate',
       'reports.incomplete-service.complete-redirect.get',
       auth.verify,
-      getCompleteService(app));
+      completeService);
+    app.get('/reporting/incomplete-service/complete/:jurorNumber', auth.verify, completeService);
 
     app.get('/reporting/incomplete-service/complete-service/:jurorNumber',
       'reports.incomplete-service.complete.get',

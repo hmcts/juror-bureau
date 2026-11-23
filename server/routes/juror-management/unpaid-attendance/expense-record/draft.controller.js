@@ -130,13 +130,15 @@
         req.body['checked-expenses'] = [req.body['checked-expenses']];
       }
 
+      const encodedCheckedExpenses = encodeURIComponent(req.body['checked-expenses']);
+
       if (action === 'ADD_SMARTCARD_SPEND') {
         return res.redirect(app.namedRoutes.build(
           'juror-management.unpaid-attendance.expense-record.add-smartcard-spend.get', {
             jurorNumber,
             locCode,
           }
-        ) + `?dates=${req.body['checked-expenses']}`);
+        ) + `?dates=${encodedCheckedExpenses}`);
       }
 
       try {
