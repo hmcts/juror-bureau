@@ -1610,6 +1610,9 @@
       case 'date':
         isParamValid = validateDate(paramValue, options?.dateFormat || 'YYYYMMDD');
         break;
+      case 'dates':
+        isParamValid = validateDates(paramValue);
+        break;
       case 'status':
         isParamValid = validateStatus(paramValue, options?.statusType);
         break;
@@ -1676,6 +1679,13 @@
 
   const validateDeferralReason = (paramValue) => {
     return /^[A-Z0-9]$/.test(paramValue);
+  };
+
+  const validateDates = (paramValue) => {
+    const dates = paramValue.split(',');
+
+    return dates.length > 0
+        && dates.every(date => moment(date, 'YYYY-MM-DD', true).isValid());
   };
 
   const validateStatus = (paramValue, statusType = 'expenses') => {
