@@ -1608,7 +1608,7 @@
         isParamValid = ['true', 'false'].includes(paramValue.toLowerCase());
         break;
       case 'date':
-        isParamValid = validateDate(paramValue);
+        isParamValid = validateDate(paramValue, options?.dateFormat || 'YYYYMMDD');
         break;
       case 'status':
         isParamValid = validateStatus(paramValue, options?.statusType);
@@ -1616,6 +1616,8 @@
       case 'action':
         isParamValid = ['fix', 'new'].includes(paramValue);
         break;
+      case 'deferralreason':
+        isParamValid = validateDeferralReason(paramValue);
       case 'courtsearch':
         isParamValid = /^[a-z0-9]+$/i.test(paramValue);
         break;
@@ -1668,8 +1670,12 @@
         });
   };
 
-  const validateDate = (paramValue) => {
-    return moment(paramValue, 'YYYYMMDD', true).isValid();
+  const validateDate = (paramValue, dateFormat) => {
+    return moment(paramValue, dateFormat, true).isValid();
+  };
+
+  const validateDeferralReason = (paramValue) => {
+    return /^[A-Z0-9]$/.test(paramValue);
   };
 
   const validateStatus = (paramValue, statusType = 'expenses') => {
