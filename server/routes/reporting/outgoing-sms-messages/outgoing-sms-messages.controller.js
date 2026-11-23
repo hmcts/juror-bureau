@@ -67,13 +67,15 @@
     return async function(req, res) {
       const { fromDate, toDate } = req.query;
       try {
+        const encodedFromDate = encodeURIComponent(fromDate);
+        const encodedToDate = encodeURIComponent(toDate);
         const courtsData = await fetchAllCourtsDAO.get(req);
         const locCodes = courtsData.courts.map((court) => court.locationCode);
         req.session.reportCourts = locCodes;
 
         return res.redirect(app.namedRoutes.build('reports.outgoing-sms-messages.report.export', {
           filter: 'courts',
-        }) + `?fromDate=${fromDate}&toDate=${toDate}`);
+        }) + `?fromDate=${encodedFromDate}&toDate=${encodedToDate}`);
       } catch (err) {
         app.logger.crit('Failed to fetch courts list for sms management dashboard export: ', {
           auth: req.session.authentication,

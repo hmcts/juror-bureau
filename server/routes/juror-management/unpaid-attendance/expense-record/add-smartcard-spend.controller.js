@@ -48,6 +48,7 @@
     return async function(req, res) {
       const { jurorNumber, locCode } = req.params;
       const { attendanceDates, smartcardAmount } = req.body;
+      const encodedAttendanceDates = encodeURIComponent(attendanceDates);
 
       const validatorResult = validate(req.body, smartcardSpendValidator());
       const datesParamValue = validateQueryParam(req, res, `?dates=${attendanceDates}`);

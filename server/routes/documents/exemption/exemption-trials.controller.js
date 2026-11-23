@@ -11,7 +11,7 @@
       const backLinkUrl = app.namedRoutes.build('documents.get');
       const tmpErrors = _.clone(req.session.errors);
       const { caseNumber } = req.params;
-      const locCode = req.session.authentication.owner;
+      const locCode = req.session.authentication.locCode;
 
       certificateOfExemptionDAO.getTrialExemptionList(
         req,

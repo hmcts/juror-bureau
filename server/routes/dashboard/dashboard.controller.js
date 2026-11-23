@@ -156,7 +156,8 @@
             , repliedTotal
             , jurorReponseCount = 0
             , onlineResponseCount = 0
-            , manualResponseCount;
+            , automaticResponseCount
+            , notAutomaticCount;
 
           app.logger.info('Fetched and parsed dashboard totals: ', {
             auth: req.session.authentication,
@@ -169,8 +170,9 @@
           // eslint-disable-next-line max-len
           jurorReponseCount = response.thirdPtyResponseData.onlineResponseTotal - response.thirdPtyResponseData.thirdPtyOnlineResponseTotal;
           onlineResponseCount = response.mandatoryKpis.onlineResponsesTotal;
-          manualResponseCount =
-            onlineResponseCount - response.autoProcessedResponseData.autoProcessedOnlineResponseTotal;
+          automaticResponseCount = response.autoProcessedResponseData.autoProcessedOnlineResponseTotal;
+          notAutomaticCount = 
+            response.autoProcessedResponseData.summonedTotal - response.autoProcessedResponseData.autoProcessedOnlineResponseTotal;
 
           dashboardData = {
             historicTotals: getHistoricTotals(response),
@@ -207,9 +209,9 @@
               automaticCount: response.autoProcessedResponseData.autoProcessedOnlineResponseTotal,
               automaticFormatted: response.autoProcessedResponseData.autoProcessedOnlineResponseTotal.toLocaleString(),
               automaticPercent: Math.round(response.autoProcessedResponseData.percentAutoProcessedOnlineResponses),
-              manualCount: manualResponseCount,
-              manualFormatted: manualResponseCount.toLocaleString(),
-              manualPercent: getPercentageValue(onlineResponseCount, manualResponseCount),
+              notAutomaticCount: notAutomaticCount,
+              notAutomaticFormatted: notAutomaticCount.toLocaleString(),
+              notAutomaticPercent: getPercentageValue(response.autoProcessedResponseData.summonedTotal, notAutomaticCount)
             },
             timeReceived: {
               within7DaysDigital: response.mandatoryKpis.onlineResponsesOverTime.within7Days,

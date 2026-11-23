@@ -62,13 +62,14 @@
 
       Chart.defaults.global.defaultFontSize = 15;
 
-      new Chart(canvas.getContext('2d'), {
+      var chart = new Chart(canvas.getContext('2d'), {
         type: 'doughnut',
         options: {
           legend: {
             display: true,
             position: 'left',
             labels: {
+              fontSize: 16,
               fontStyle: 'bold',
               fontColor: '#000'
             }
@@ -94,6 +95,10 @@
             });
           }
         }]
+      });
+
+      document.addEventListener('DOMContentLoaded', function() {
+        chart.update();
       });
     })();
   </script>

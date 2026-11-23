@@ -130,6 +130,8 @@
         req.body['checked-expenses'] = [req.body['checked-expenses']];
       }
 
+      const encodedCheckedExpenses = encodeURIComponent(req.body['checked-expenses']);
+
       if (action === 'ADD_SMARTCARD_SPEND') {
         const datesParamValue = validateQueryParam(
           req,

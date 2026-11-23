@@ -154,6 +154,7 @@
   module.exports.postCheckOutAllJurors = function(app) {
     return async function(req, res) {
       const attendanceDate = req.session.attendanceListDate;
+      const encodedAttendanceDate = encodeURIComponent(attendanceDate);
       const attendees = req.session.dailyAttendanceList
         .filter(a => a.checkInTime !== null && a.checkOutTime === null);
 
@@ -179,7 +180,7 @@
 
         return res.redirect(
           app.namedRoutes.build('juror-management.attendance.get', { status: 'in-waiting' })
-          + '?date=' + attendanceDate
+          + '?date=' + encodedAttendanceDate
         );
       };
 
@@ -193,7 +194,7 @@
         req.session.errors = makeManualError('checkOutTimeHour', 'Check out time cannot be earlier than check in time')
         return res.redirect(
           app.namedRoutes.build('juror-management.attendance.get', { status: 'in-waiting' })
-          + '?date=' + attendanceDate
+          + '?date=' + encodedAttendanceDate
         );
       }
 
@@ -236,7 +237,7 @@
 
         return res.redirect(
           app.namedRoutes.build('juror-management.attendance.get', { status: 'in-waiting' })
-          + '?date=' + attendanceDate
+          + '?date=' + encodedAttendanceDate
         );
       } catch (err) {
         app.logger.crit('Failed when trying to check all jurors out', {
@@ -253,6 +254,7 @@
   module.exports.getCheckOutPanelledJurors = function(app) {
     return function(req, res) {
       const attendanceDate = req.session.attendanceListDate;
+      const encodedAttendanceDate = encodeURIComponent(attendanceDate);
       const panelledJurorNo = req.session.checkOutPanelled.panelledJurors;
       const time = req.session.checkOutPanelled.checkOutTime;
 
@@ -266,7 +268,7 @@
         time,
         processUrl: app.namedRoutes.build('juror-management.check-out-panelled.post'),
         cancelUrl: app.namedRoutes.build('juror-management.attendance.get', { status: 'in-waiting' })
-          + '?date=' + attendanceDate,
+          + '?date=' + encodedAttendanceDate,
       });
     };
   };
@@ -274,6 +276,7 @@
   module.exports.postCheckOutPanelledJurors = function(app) {
     return async function(req, res) {
       const attendanceDate = req.session.attendanceListDate;
+      const encodedAttendanceDate = encodeURIComponent(attendanceDate);
 
       const payload = _.cloneDeep(req.session.checkOutPanelled.payload);
 
@@ -287,7 +290,7 @@
 
         return res.redirect(
           app.namedRoutes.build('juror-management.attendance.get', { status: 'in-waiting' })
-          + '?date=' + attendanceDate
+          + '?date=' + encodedAttendanceDate
         );
       } catch (err) {
         app.logger.crit('Failed when trying to check all panelled jurors out', {
@@ -305,12 +308,13 @@
     return function(req, res) {
       const { jurorNumber } = req.params;
       const attendanceDate = req.session.attendanceListDate;
+      const encodedAttendanceDate = encodeURIComponent(attendanceDate);
 
       const processUrl = app.namedRoutes.build('juror-management.attendance.delete-attendance.post', {
         jurorNumber,
       });
       const cancelUrl = app.namedRoutes.build('juror-management.attendance.get', { status: 'in-waiting' })
-        + '?date=' + attendanceDate;
+        + '?date=' + encodedAttendanceDate;
 
       // TODO: revise this way of getting the juror
       const selectedJuror = req.session.dailyAttendanceList.find(a => a.jurorNumber === jurorNumber);
@@ -328,6 +332,7 @@
     return async function(req, res) {
       const { jurorNumber } = req.params;
       const attendanceDate = req.session.attendanceListDate;
+      const encodedAttendanceDate = encodeURIComponent(attendanceDate);
 
       const absencePayload = {
         'jurorNumber': jurorNumber,
@@ -340,7 +345,7 @@
 
         res.redirect(
           app.namedRoutes.build('juror-management.attendance.get', { status: 'in-waiting' })
-          + '?date=' + attendanceDate
+          + '?date=' + encodedAttendanceDate
         );
       } catch (err) {
         app.logger.crit('Unable to delete the jurors attendance', {
