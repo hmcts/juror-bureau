@@ -3,7 +3,7 @@ const _ = require('lodash');
 const secretsConfig = require('config');
 const jwt = require('jsonwebtoken');
 const { axiosClient } = require('../../objects/axios-instance');
-const { makeManualError, replaceAllObjKeys } = require('../../lib/mod-utils');
+const { makeManualError, replaceAllObjKeys, validateQueryParam } = require('../../lib/mod-utils');
 const { isSuperUser, isSystemAdministrator } = require('../../components/auth/user-type');
 const { transformCourtName } = require('../../components/filters');
 
@@ -143,8 +143,12 @@ module.exports.getSelectCourt = function(app) {
 module.exports.getChangeCourt = (app) => async (req, res) => {
   const authToken = getNoKeyAuthToken(req);
   const body = { email: req.session.email || req.session.authentication?.email };
+  const tmpErrors = _.clone(req.session.errors);
+  const tmpBody = _.clone(req.session.formFields);
   let courtsList;
   let { filter } = req.query;
+
+  delete req.session.formFields;
 
   if (!body.email) {
     req.session.errors = makeManualError('email', 'Email is required for courts list');
@@ -193,6 +197,12 @@ module.exports.getChangeCourt = (app) => async (req, res) => {
     filterUrl: app.namedRoutes.build('authentication.change-court.filter'),
     clearFilterUrl: app.namedRoutes.build('authentication.change-court.get'),
     selectedCourt: req.session.selectedCourt, // this only gets set if the user is authenticated
+    tmpBody,
+    errors: {
+      title: 'Please check the form',
+      count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+      items: tmpErrors,
+    },
   });
 };
 
@@ -201,7 +211,21 @@ module.exports.postFilterChangeCourts = function(app) {
     if (req.body.courtSearch === '') {
       return res.redirect(app.namedRoutes.build('authentication.change-court.get'));
     }
-    const filter = encodeURIComponent(req.body.courtSearch);
+
+    if (!/^[a-z0-9]+$/i.test(req.body.courtSearch)) {
+      req.session.errors = makeManualError(
+        'courtSearch',
+        'Court name or location code must only contain alphanumeric characters',
+      );
+      req.session.formFields = req.body;
+      return res.redirect(app.namedRoutes.build('authentication.change-court.get'));
+    }
+
+    const filter = validateQueryParam(req, res, `?courtSearch=${req.body.courtSearch}`);
+    if (!filter) {
+      return;
+    }
+
     return res.redirect(app.namedRoutes.build('authentication.change-court.get') + '?filter=' + filter);
   };
 };

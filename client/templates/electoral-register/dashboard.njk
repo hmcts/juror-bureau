@@ -165,35 +165,40 @@
     {{ csrfProtection(csrftoken) }}
   </form>
   
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      {{ govukRadios({
-        classes: "govuk-radios--inline",
-        name: "status",
-        fieldset: {
-          legend: {
-            text: "Show",
-            classes: "govuk-fieldset__legend--s"
-          }
-        },
-        items: [
-          {
-            value: "not-uploaded",
-            text: "Not uploaded"
+  <form id="statusFilterForm" method="get" action="{{ url('electoral-register.filter-status.get') }}">
+    {% if localAuthorityFilter %}
+      <input type="hidden" name="localAuthorityFilter" value="{{ localAuthorityFilter }}">
+    {% endif %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        {{ govukRadios({
+          classes: "govuk-radios--inline",
+          name: "status",
+          fieldset: {
+            legend: {
+              text: "Show",
+              classes: "govuk-fieldset__legend--s"
+            }
           },
-          {
-            value: "uploaded",
-            text: "Uploaded"
-          },
-          {
-            value: "all",
-            text: "All statuses"
-          }
-        ],
-        value: status
-      }) }}
+          items: [
+            {
+              value: "not-uploaded",
+              text: "Not uploaded"
+            },
+            {
+              value: "uploaded",
+              text: "Uploaded"
+            },
+            {
+              value: "all",
+              text: "All statuses"
+            }
+          ],
+          value: status
+        }) }}
+      </div>
     </div>
-  </div>
+  </form>
 
   {% if localAuthorities.rows | length %}
     <form method="post" id="authoritiesForm">

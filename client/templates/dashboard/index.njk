@@ -3,7 +3,6 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 
 {% from "./chartmacro-doughnut.njk" import dashboardChartDoughnut %}
-{% from "./chartmacro-autoProcessed.njk" import dashboardAutoProcessed %}
 {% from "./chartmacro-stacked.njk" import dashboardChartStacked %}
 {% from "./datemacro-monthyear.njk" import dashboardDateMonthYear %}
 
@@ -229,14 +228,14 @@
 
     {# How many online replies were automatically processed? #}
     <div class="govuk-grid-column-one-half">
-      {{ dashboardAutoProcessed({
+      {{ dashboardChartDoughnut({
         id: "automaticallyProcessed",
         nonce: nonce,
-        chartHeading: "How many online replies were automatically processed?",
-        labels: ["Automatically processed"],
-        values: [dashboardData.automaticallyProcessed.automaticCount, dashboardData.automaticallyProcessed.manualCount],
-        valuesFormatted: [dashboardData.automaticallyProcessed.automaticFormatted, dashboardData.automaticallyProcessed.manualFormatted],
-        valuesPerc: [dashboardData.automaticallyProcessed.automaticPercent, dashboardData.automaticallyProcessed.manualPercent],
+        chartHeading: "How many replies were automatically processed as a percentage of summonses sent?",
+        labels: ["Auto processed", "Not auto processed"],
+        values: [dashboardData.automaticallyProcessed.automaticCount, dashboardData.automaticallyProcessed.notAutomaticCount],
+        valuesFormatted: [dashboardData.automaticallyProcessed.automaticFormatted, dashboardData.automaticallyProcessed.notAutomaticFormatted],
+        valuesPerc: [dashboardData.automaticallyProcessed.automaticPercent, dashboardData.automaticallyProcessed.notAutomaticPercent],
         showSubTotals: true,
         showTotal: false
       }) }}

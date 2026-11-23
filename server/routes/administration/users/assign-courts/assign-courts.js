@@ -6,16 +6,18 @@
   const validator = require('../../../../config/validation/assign-courts');
   const { userRecordDAO, assignCourtsDAO } = require('../../../../objects/users');
   const { courtsDAO } = require('../../../../objects/administration');
-  const { replaceAllObjKeys } = require('../../../../lib/mod-utils');
+  const { replaceAllObjKeys, validateQueryParam, makeManualError } = require('../../../../lib/mod-utils');
 
   module.exports.getAssignCourts = function(app) {
     return async function(req, res) {
       const { username } = req.params;
       const tmpErrors = _.clone(req.session.errors);
+      const tmpBody = _.clone(req.session.formFields);
       let courts = [];
       let { filter } = req.query;
 
       delete req.session.errors;
+      delete req.session.formFields;
 
       let assignedPrimaryCourts = [];
 
@@ -61,6 +63,7 @@
           clearFilterUrl: app.namedRoutes.build('administration.users.assign-courts.clear-filter', { username }),
           processUrl: app.namedRoutes.build('administration.users.assign-courts.post', { username }),
           cancelUrl: app.namedRoutes.build('administration.users.details.get', { username }),
+          tmpBody,
           errors: {
             title: 'Please check the form',
             count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
@@ -83,7 +86,29 @@
   module.exports.postFilterCourts = function(app) {
     return async function(req, res) {
       const { username } = req.params;
-      const filter = encodeURIComponent(req.body.courtSearch);
+
+      if (req.body.courtSearch === '') {
+        return res.redirect(app.namedRoutes.build('administration.users.assign-courts.get', {
+          username,
+        }));
+      }
+
+      if (!/^[a-z0-9]+$/i.test(req.body.courtSearch)) {
+        req.session.errors = makeManualError(
+          'courtSearch',
+          'Court name or location code must only contain alphanumeric characters',
+        );
+        req.session.formFields = req.body;
+        return res.redirect(app.namedRoutes.build('administration.users.assign-courts.get', {
+          username,
+        }));
+      }
+
+      const filter = validateQueryParam(req, res, `?courtSearch=${req.body.courtSearch}`);
+      if (!filter) {
+        return;
+      }
+
       return res.redirect(app.namedRoutes.build('administration.users.assign-courts.get', {
         username,
       }) + '?filter=' + filter);
