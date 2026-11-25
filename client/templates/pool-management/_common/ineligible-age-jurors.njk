@@ -45,13 +45,13 @@
                 text: juror.activePool.status
               },
               {
-                text: juror.newDate | dateFilter("yyyy-mm-DD", "D MMMM yyyy"),
+                text: juror.newDate | dateFilter("yyyy-MM-DD", "D MMMM yyyy"),
                 attributes: {
                   "data-sort-value": juror.newDate
                 }
               },
               {
-                text: juror.dob | dateFilter("yyyy-mm-DD", "D MMMM yyyy"),
+                text: juror.dob | dateFilter("yyyy-MM-DD", "D MMMM yyyy"),
                 attributes: {
                   "data-sort-value": juror.dob
                 }
