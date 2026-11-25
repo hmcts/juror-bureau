@@ -24,7 +24,7 @@
         });
       } else {
         const csvResult = [];
-        const filename = `${status}-local-authority-emails-${dateFilter(new Date(), null, 'DD-MM-YYYY')}.csv`;
+        const filename = 'local-authority-contact-details.csv';
 
 
         //TODO: Update api to return active status;
