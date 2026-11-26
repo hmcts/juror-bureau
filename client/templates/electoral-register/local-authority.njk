@@ -241,6 +241,9 @@
       <h3 class="govuk-heading-s">Actions</h3>
       {% if localAuthorityInfo.isActive %}
         <p class="govuk-body">
+          <a href="{{ actionRoutes.sendInitialEmail }}" class="govuk-link govuk-link--no-visited-state">Send initial email</a>
+        </p>
+        <p class="govuk-body">
           <a href="{{ actionRoutes.sendReminder }}" class="govuk-link govuk-link--no-visited-state">Send email reminder</a>
         </p>
         <p class="govuk-body">

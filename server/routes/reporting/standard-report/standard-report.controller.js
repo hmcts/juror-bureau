@@ -643,12 +643,18 @@
         tableRows = buildStandardTableRows(tableData, tableHeadings);
       }
 
+      let classes = '';
+      if (reportType.bespokeReport?.fixFirstColumn) {
+        classes += 'mod-fix-first-column-table';
+      }
+
       return tableRows.length || groups.length ? [{
         title: capitalizeFully(sectionHeading),
         headers: tableHeaders,
         rows: tableRows,
         groups,
         tableFoot,
+        classes
       }] : [];
     }
 
@@ -881,7 +887,7 @@
       app.logger.crit('Failed to fetch standard report data: ', {
         auth: req.session.authentication,
         data: { reportKey, isPrint, isExport },
-        error: (typeof e.error !== 'undefined') ? e.error : e.toString,
+        error: (typeof e.error !== 'undefined') ? e.error : e.toString(),
       });
     }
 

@@ -1601,6 +1601,9 @@
       case 'poolnumber':
         isParamValid = validatePoolNumber(paramValue);
         break;
+      case 'loccode':
+        isParamValid = validateLocationCode(paramValue);
+        break;
       case 'trialnumber':
         isParamValid = validateTrialNumber(paramValue);
         break;
@@ -1608,7 +1611,10 @@
         isParamValid = ['true', 'false'].includes(paramValue.toLowerCase());
         break;
       case 'date':
-        isParamValid = validateDate(paramValue);
+        isParamValid = validateDate(paramValue, options?.dateFormat || 'YYYYMMDD');
+        break;
+      case 'dates':
+        isParamValid = validateDates(paramValue);
         break;
       case 'status':
         isParamValid = validateStatus(paramValue, options?.statusType);
@@ -1616,6 +1622,8 @@
       case 'action':
         isParamValid = ['fix', 'new'].includes(paramValue);
         break;
+      case 'deferralreason':
+        isParamValid = validateDeferralReason(paramValue);
       case 'courtsearch':
         isParamValid = /^[a-z0-9]+$/i.test(paramValue);
         break;
@@ -1657,6 +1665,11 @@
         && paramValue.split('').every(character => character >= '0' && character <= '9');
   };
 
+  const validateLocationCode = (paramValue) => {
+    return paramValue.length === 3
+        && paramValue.split('').every(character => character >= '0' && character <= '9');
+  };
+
   const validateTrialNumber = (paramValue) => {
     return paramValue.length > 0
         && paramValue.length <= 16
@@ -1668,8 +1681,19 @@
         });
   };
 
-  const validateDate = (paramValue) => {
-    return moment(paramValue, 'YYYYMMDD', true).isValid();
+  const validateDate = (paramValue, dateFormat) => {
+    return moment(paramValue, dateFormat, true).isValid();
+  };
+
+  const validateDeferralReason = (paramValue) => {
+    return /^[A-Z0-9]$/.test(paramValue);
+  };
+
+  const validateDates = (paramValue) => {
+    const dates = paramValue.split(',');
+
+    return dates.length > 0
+        && dates.every(date => moment(date, 'YYYY-MM-DD', true).isValid());
   };
 
   const validateStatus = (paramValue, statusType = 'expenses') => {
