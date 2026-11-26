@@ -1601,6 +1601,9 @@
       case 'poolnumber':
         isParamValid = validatePoolNumber(paramValue);
         break;
+      case 'loccode':
+        isParamValid = validateLocationCode(paramValue);
+        break;
       case 'trialnumber':
         isParamValid = validateTrialNumber(paramValue);
         break;
@@ -1659,6 +1662,11 @@
 
   const validatePoolNumber = (paramValue) => {
     return paramValue.trim().length === 9
+        && paramValue.split('').every(character => character >= '0' && character <= '9');
+  };
+
+  const validateLocationCode = (paramValue) => {
+    return paramValue.length === 3
         && paramValue.split('').every(character => character >= '0' && character <= '9');
   };
 
