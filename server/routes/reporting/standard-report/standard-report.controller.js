@@ -644,7 +644,7 @@
       }
 
       let classes = '';
-      if (reportType.bespokeReport.fixFirstColumn) {
+      if (reportType.bespokeReport?.fixFirstColumn) {
         classes += 'mod-fix-first-column-table';
       }
 
@@ -887,7 +887,7 @@
       app.logger.crit('Failed to fetch standard report data: ', {
         auth: req.session.authentication,
         data: { reportKey, isPrint, isExport },
-        error: (typeof e.error !== 'undefined') ? e.error : e.toString,
+        error: (typeof e.error !== 'undefined') ? e.error : e.toString(),
       });
     }
 
