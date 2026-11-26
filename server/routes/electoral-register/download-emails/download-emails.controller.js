@@ -27,7 +27,6 @@
         const filename = 'local-authority-contact-details.csv';
 
 
-        //TODO: Update api to return active status;
         csvResult.push(['Local authority', 'LA active?', 'Email address', 'Upload status', 'Last upload date', 'Initial email status']);
         laEmailData.forEach(la => {
           la.emailAddresses.forEach(email => {
