@@ -17,7 +17,7 @@ participant GenericErrorPage <</error>>
 participant LocalAuthorityInfoController <<local-authority-info.controller.js>> #lightyellow
 participant SendReminderController <<send-reminder.controller.js>> #lightyellow
 participant LocalAuthorityInfoDAO <<localAuthorityInfo.get()>> #lightyellow
-participant SendReminderDAO <<sendReminderDAO.post()>> #lightyellow
+participant SendReminderDAO <<sendLaEmailDAO.post()>> #lightyellow
 
 ''' TEMPLATES
 participant SendReminderTemplate <<electoral-register/send-reminder.njk>> #lavender
